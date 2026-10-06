@@ -2,7 +2,7 @@
 <title>Papá o la Papa</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Gochi+Hand&family=Caveat+Brush&family=Gaegu:wght@400;700&family=Patrick+Hand&family=Short+Stack&family=Grandstander:wght@400;700&family=Gamja+Flower&family=Darumadrop+One&family=Sniglet:wght@400;800&display=swap">
 <style>
   @font-face {
     font-family: "Ugly Duck";
@@ -19,8 +19,8 @@
     --surround: #e9e4de;       /* around the phone on wide screens */
     --ink: #2b1a10;            /* hand-drawn strokes, title */
     --ink-soft: #7a6c61;       /* captions */
-    --seg: #dcd8d3;            /* progress blob, upcoming */
-    --seg-now: #9b958f;        /* progress blob, current */
+    --seg: #dadada;            /* progress blob, upcoming */
+    --seg-now: #8c8c8c;        /* progress blob, current */
     --wash: #d9d9d9;           /* empty frame placeholder */
     --mic-fill: #6d97a7;       /* mic capsule */
     --pad: rgb(176 210 234 / 0.5);   /* voice pad: a light blue wash */
@@ -31,7 +31,10 @@
     --panel-ink: #3a2c22;
     --focus: #2b1a10;
 
-    --hand: "Ugly Duck", "Kalam", "Bradley Hand", "Segoe Print", "Comic Sans MS", cursive;
+    --hand-family: "Kalam";
+    --hand-bold: 700;
+    --hand-scale: 1;
+    --hand: var(--hand-family), "Kalam", "Bradley Hand", "Segoe Print", "Comic Sans MS", cursive;
     --ui: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
 
     --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
@@ -109,10 +112,10 @@
 
   .progress {
     position: absolute;
-    left: calc(90 * var(--u));
-    top: calc(80 * var(--u));
-    width: calc(290 * var(--u));
-    height: calc(17 * var(--u));
+    left: calc(96 * var(--u));
+    top: calc(83 * var(--u));
+    width: calc(280 * var(--u));
+    height: calc(12 * var(--u));
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -134,8 +137,8 @@
     margin: 0;
     text-align: center;
     font-family: var(--hand);
-    font-weight: 700;
-    font-size: calc(30 * var(--u));
+    font-weight: var(--hand-bold);
+    font-size: calc(30 * var(--hand-scale) * var(--u));
     line-height: 1.2;
     color: var(--ink);
     z-index: 3;
@@ -403,6 +406,25 @@
   .file-btn { display: inline-flex; align-items: center; gap: 6px; width: max-content; }
   .file-btn input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
   .note { margin: 0; color: var(--ink-soft); font-size: 12px; }
+  .fonts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+  .fonts button {
+    display: grid;
+    gap: 2px;
+    justify-items: start;
+    text-align: left;
+    padding: 8px 10px;
+    border: 1px solid var(--panel-line);
+    border-radius: 10px;
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+    min-width: 0;
+  }
+  .fonts button[aria-pressed="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+  .fonts button:disabled { opacity: 0.45; cursor: not-allowed; }
+  .fonts button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  .fonts .sample { font-size: 26px; line-height: 1.15; color: var(--ink); }
+  .fonts .name { font: 500 11px/1.2 var(--ui); color: var(--ink-soft); overflow-wrap: anywhere; }
 
   @media (prefers-reduced-motion: reduce) {
     .voice, .mic, .waves, .dots, .panel { transition-duration: 1ms !important; }
@@ -506,6 +528,12 @@
   </section>
 
   <section class="group">
+    <h3>Font</h3>
+    <div class="fonts" id="fonts"></div>
+    <p class="note" id="fontNote">Tap one to try it on the screen.</p>
+  </section>
+
+  <section class="group">
     <h3>Paper</h3>
     <div class="row"><label for="toothSize">Tooth size</label><output for="toothSize"></output><input id="toothSize" type="range" min="0.5" max="2" step="0.01" value="1"></div>
     <div class="row"><label for="toothDepth">Tooth depth</label><output for="toothDepth"></output><input id="toothDepth" type="range" min="0" max="1" step="0.01" value="0.4"></div>
@@ -514,11 +542,11 @@
 
   <section class="group">
     <h3>Image</h3>
-    <div class="row"><label for="edgeFade">Edge fade</label><output for="edgeFade"></output><input id="edgeFade" type="range" min="0" max="0.35" step="0.005" value="0.16"></div>
-    <div class="row"><label for="edgeBlur">Edge blur</label><output for="edgeBlur"></output><input id="edgeBlur" type="range" min="0" max="1" step="0.01" value="0.75"></div>
+    <div class="row"><label for="edgeFade">Edge fade</label><output for="edgeFade"></output><input id="edgeFade" type="range" min="0" max="0.35" step="0.005" value="0.21"></div>
+    <div class="row"><label for="edgeBlur">Edge blur</label><output for="edgeBlur"></output><input id="edgeBlur" type="range" min="0" max="1" step="0.01" value="0.95"></div>
     <div class="row"><label for="softness">Overall softness</label><output for="softness"></output><input id="softness" type="range" min="0" max="1" step="0.01" value="0.15"></div>
-    <div class="row"><label for="wetEdges">Wet edges</label><output for="wetEdges"></output><input id="wetEdges" type="range" min="0" max="1" step="0.01" value="0.6"></div>
-    <div class="row"><label for="paintTime">Painting time</label><output for="paintTime"></output><input id="paintTime" type="range" min="1" max="7" step="0.1" value="3.6"></div>
+    <div class="row"><label for="wetEdges">Wet edges</label><output for="wetEdges"></output><input id="wetEdges" type="range" min="0" max="1" step="0.01" value="0.35"></div>
+    <div class="row"><label for="paintTime">Painting time</label><output for="paintTime"></output><input id="paintTime" type="range" min="1" max="7" step="0.1" value="3"></div>
   </section>
 
   <section class="group">
@@ -542,7 +570,7 @@
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   /* ---------------- Settings (remembered per browser) ---------------- */
-  const KEY = "papa-settings-v2";
+  const KEY = "papa-settings-v3";
   const ids = ["toothSize", "toothDepth", "warmth", "edgeFade", "edgeBlur", "softness", "wetEdges", "paintTime"];
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) {}
@@ -589,11 +617,12 @@
   }
 
   /* ---------------- Watercolor painter (WebGL) ----------------
-     Each image is painted in four washes, light to dark, the way a
-     watercolorist works: a pale wash of the overall colour, a stronger
-     wash, the mid-tones, then the darks and detail. Every wash spreads
-     from its own spot with an irregular wet front, and pigment pools
-     along that front as it dries. */
+     The background and the subject are painted as separate passes, the
+     way a watercolorist leaves the figure white and washes around it.
+     Background: three quick washes spreading from the middle, starting in
+     a paler, shifted hue that settles into the picture's own colours.
+     Subject: three slower washes that bloom in patch by patch inside a
+     soft outline of the figure (assets/*-mask.png). */
   const canvas = $("#paint");
   const gl = canvas.getContext("webgl", { premultipliedAlpha: true, alpha: true, antialias: false });
   const TEX_W = 540, TEX_H = 720;
@@ -602,15 +631,31 @@
   const FRAG = `
     precision mediump float;
     varying vec2 v;
-    uniform sampler2D tSharp, tSoft, tWash, tNoise;
-    uniform vec4 uP;
-    uniform float uFade, uFeather, uEdgeBlur, uSoft, uWet, uSeed;
+    uniform sampler2D tSharp, tSoft, tWash, tNoise, tMask;
+    uniform vec3 uB, uS;
+    uniform float uHue, uFade, uFeather, uEdgeBlur, uSoft, uWet, uSeed;
+    const mat3 toYIQ = mat3(.299,.596,.211, .587,-.274,-.523, .114,-.322,.312);
+    const mat3 toRGB = mat3(1.,1.,1., .956,-.272,-1.106, .621,-.647,1.703);
     float n(vec2 p){ return texture2D(tNoise, p).r; }
     float fbm(vec2 p){ return n(p)*.5 + n(p*2.03+.17)*.3 + n(p*4.07+.31)*.2; }
-    float cover(float p, vec2 uv, vec2 c, float k, float off){
-      float f = length((uv-c)*vec2(1.,.78)) + (fbm(uv*k + off + uSeed) - .5)*.62;
-      float R = p*1.3 - .1;
-      return 1. - smoothstep(R - .07, R, f);
+    // background wash: spreads outward from a spot with a wobbly wet front
+    float spread(float p, vec2 uv, vec2 c, float k, float off){
+      float f = length((uv-c)*vec2(1.,.78)) + (fbm(uv*k + off + uSeed) - .5)*.6;
+      float R = p*1.35 - .12;
+      return 1. - smoothstep(R - .14, R, f);
+    }
+    // subject wash: blooms in patches rather than spreading from one spot
+    float bloom(float p, vec2 uv, float k, float off){
+      float f = fbm(uv*k + off + uSeed*.7);
+      float R = p*1.4 - .12;
+      return 1. - smoothstep(R - .3, R, f);
+    }
+    // the background's colour settling: hue turned and chroma reduced at first
+    vec3 settle(vec3 c){
+      vec3 y = toYIQ * c;
+      float h = atan(y.z, y.y) + (1. - uHue) * .75;
+      float ch = length(y.yz) * mix(.5, 1., uHue);
+      return toRGB * vec3(y.x + (1. - uHue)*.05, ch*cos(h), ch*sin(h));
     }
     float band(float c){ return c*(1.-c)*4.; }
     void main(){
@@ -618,44 +663,47 @@
       vec3 sharp = texture2D(tSharp, uv).rgb;
       vec3 soft  = texture2D(tSoft,  uv).rgb;
       vec3 wash  = texture2D(tWash,  uv).rgb;
+      float m    = texture2D(tMask,  uv).r;
 
       // Frame: irregular feathered edge, blurrier toward the rim
       float ed = min(min(uv.x, 1.-uv.x), min(uv.y, 1.-uv.y));
-      float en = (fbm(uv*1.6 + 3.1) - .5) * uFeather * 1.1;
+      float en = (fbm(uv*1.6 + 3.1) - .5) * uFeather * 1.2;
       float frameA = smoothstep(0., uFeather + .0001, ed + en);
-      float rim = (1. - smoothstep(0., uFeather*2.2 + .0001, ed + en)) * uEdgeBlur;
-
+      float rim = (1. - smoothstep(0., uFeather*2.6 + .0001, ed + en)) * uEdgeBlur;
       vec3 fin = mix(mix(sharp, soft, uSoft), wash, rim);
-      vec3 L0 = mix(wash, vec3(1.), .64);
-      vec3 L1 = mix(wash, vec3(1.), .3);
-      vec3 L2 = mix(soft, wash, rim);
-      vec3 L3 = fin;
 
-      float c0 = cover(uP.x, uv, vec2(.5,.52), 1.2, 0.);
-      float c1 = cover(uP.y, uv, vec2(.42,.42), 1.9, 1.7);
-      float c2 = cover(uP.z, uv, vec2(.58,.46), 2.6, 3.9);
-      float c3 = cover(uP.w, uv, vec2(.5,.4), 3.4, 6.1);
+      // three stages, each with a background colour and a subject colour
+      vec3 B0 = settle(mix(wash, vec3(1.), .55)), S0 = mix(soft, vec3(1.), .6);
+      vec3 B1 = settle(mix(wash, vec3(1.), .18)), S1 = mix(soft, vec3(1.), .22);
+      vec3 B2 = settle(fin),                      S2 = fin;
 
+      float b0 = spread(uB.x, uv, vec2(.5,.5), 1.2, 0.);
+      float b1 = spread(uB.y, uv, vec2(.44,.46), 1.9, 1.7);
+      float b2 = spread(uB.z, uv, vec2(.56,.5), 2.6, 3.9);
+      float s0 = bloom(uS.x, uv, 2.2, 5.3);
+      float s1 = bloom(uS.y, uv, 3.1, 7.1);
+      float s2 = bloom(uS.z, uv, 4.3, 9.7);
+
+      float k0 = b0*(1.-m) + s0*m, k1 = b1*(1.-m) + s1*m, k2 = b2*(1.-m) + s2*m;
       vec3 c = vec3(1.);
-      c = mix(c, L0, c0);
-      c = mix(c, L1, c1);
-      c = mix(c, L2, c2);
-      c = mix(c, L3, c3);
+      c = mix(c, mix(B0, S0, m), k0);
+      c = mix(c, mix(B1, S1, m), k1);
+      c = mix(c, mix(B2, S2, m), k2);
 
-      // pigment pooling along each drying front, tinted by its own wash
-      c *= mix(vec3(1.), L0*L0, band(c0)*uWet*.55);
-      c *= mix(vec3(1.), L1*L1, band(c1)*uWet*.5);
-      c *= mix(vec3(1.), L2,    band(c2)*uWet*.45);
-      c *= mix(vec3(1.), L3,    band(c3)*uWet*.35);
+      // a little pigment pooling along the background's drying fronts
+      float bg = 1. - m;
+      c *= mix(vec3(1.), B0, band(b0)*uWet*.35*bg);
+      c *= mix(vec3(1.), B1, band(b1)*uWet*.3*bg);
 
-      // granulation: pigment settling into the paper's tooth
+      // granulation: pigment settling into the paper's tooth while wet
       float g = n(uv*5.3 + uSeed*.37);
-      c *= 1. - (g - .5) * .09 * max(c0 - c3*.6, 0.);
+      c *= 1. - (g - .5) * .06 * max(k0 - k2*.7, 0.);
 
-      float a = frameA * uFade * max(max(c0, c1), max(c2, c3));
+      float a = frameA * uFade * max(max(k0, k1), k2);
       gl_FragColor = vec4(c * a, a);
     }`;
 
+  const TEX_UNITS = ["tSharp", "tSoft", "tWash", "tNoise", "tMask"];
   let prog, uni = {}, tex = {};
   const glOk = !!gl && (() => {
     const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { console.warn(gl.getShaderInfoLog(s)); return null; } return s; };
@@ -667,13 +715,13 @@
     const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
     const loc = gl.getAttribLocation(prog, "p"); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-    ["tSharp","tSoft","tWash","tNoise","uP","uFade","uFeather","uEdgeBlur","uSoft","uWet","uSeed"].forEach((k) => uni[k] = gl.getUniformLocation(prog, k));
-    ["tSharp","tSoft","tWash","tNoise"].forEach((k, i) => { gl.uniform1i(uni[k], i); tex[k] = gl.createTexture(); });
+    ["tSharp","tSoft","tWash","tNoise","tMask","uB","uS","uHue","uFade","uFeather","uEdgeBlur","uSoft","uWet","uSeed"].forEach((k) => uni[k] = gl.getUniformLocation(prog, k));
+    TEX_UNITS.forEach((k, i) => { gl.uniform1i(uni[k], i); tex[k] = gl.createTexture(); });
     return true;
   })();
 
   function upload(name, source, repeat) {
-    const unit = ["tSharp","tSoft","tWash","tNoise"].indexOf(name);
+    const unit = TEX_UNITS.indexOf(name);
     gl.activeTexture(gl.TEXTURE0 + unit);
     gl.bindTexture(gl.TEXTURE_2D, tex[name]);
     gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
@@ -720,16 +768,28 @@
   }
 
   const sources = { pope: "assets/pope.jpg", potato: "assets/potato.jpg", dad: "assets/dad.jpg" };
+  const masks = { pope: "assets/pope-mask.png", potato: "assets/potato-mask.png", dad: "assets/dad-mask.png" };
+  /* Soft oval outline, for an uploaded photo that has no traced mask */
+  function ovalMask() {
+    const c = document.createElement("canvas"); c.width = 272; c.height = 363;
+    const x = c.getContext("2d"); x.fillStyle = "#000"; x.fillRect(0, 0, 272, 363);
+    if (canFilter) x.filter = "blur(14px)";
+    x.fillStyle = "#fff"; x.beginPath(); x.ellipse(136, 215, 92, 130, 0, 0, 7); x.fill();
+    return c;
+  }
   const cache = {};
   function loadImage(src) {
     return new Promise((res, rej) => { const i = new Image(); i.decoding = "async"; i.onload = () => res(i); i.onerror = rej; i.src = src; });
   }
   async function layersFor(key) {
-    if (!cache[key]) cache[key] = loadImage(sources[key]).then((img) => ({ sharp: layer(img, 0), soft: layer(img, 3), wash: layer(img, 26) }));
+    if (!cache[key]) cache[key] = Promise.all([
+      loadImage(sources[key]),
+      masks[key] ? loadImage(masks[key]).catch(() => ovalMask()) : Promise.resolve(ovalMask()),
+    ]).then(([img, mask]) => ({ sharp: layer(img, 0), soft: layer(img, 3), wash: layer(img, 26), mask }));
     return cache[key];
   }
 
-  const state = { p: [0, 0, 0, 0], fade: 1, seed: Math.random() * 10, current: null };
+  const state = { b: [0, 0, 0], s: [0, 0, 0], hue: 0, fade: 1, seed: Math.random() * 10, current: null };
   function sizeCanvas() {
     const r = canvas.getBoundingClientRect(), dpr = Math.min(devicePixelRatio || 1, 2);
     canvas.width = Math.max(2, Math.round(r.width * dpr)); canvas.height = Math.max(2, Math.round(r.height * dpr));
@@ -740,7 +800,9 @@
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
     if (!state.current) return;
-    gl.uniform4f(uni.uP, ...state.p);
+    gl.uniform3f(uni.uB, ...state.b);
+    gl.uniform3f(uni.uS, ...state.s);
+    gl.uniform1f(uni.uHue, state.hue);
     gl.uniform1f(uni.uFade, state.fade);
     gl.uniform1f(uni.uFeather, settings.edgeFade);
     gl.uniform1f(uni.uEdgeBlur, settings.edgeBlur);
@@ -777,13 +839,17 @@
       await tween(420, (t) => { state.fade = from * (1 - easeInOut(t)); });
       if (token !== paintToken) return;
     }
-    upload("tSharp", layers.sharp); upload("tSoft", layers.soft); upload("tWash", layers.wash);
-    state.current = key; state.fade = 1; state.p = [0, 0, 0, 0]; state.seed = Math.random() * 10;
+    upload("tSharp", layers.sharp); upload("tSoft", layers.soft); upload("tWash", layers.wash); upload("tMask", layers.mask);
+    state.current = key; state.fade = 1; state.b = [0, 0, 0]; state.s = [0, 0, 0]; state.hue = 0; state.seed = Math.random() * 10;
     frame.setAttribute("data-painted", "");
     canvas.setAttribute("aria-label", { pope: "Watercolor of the Pope", potato: "Watercolor of a potato", dad: "Watercolor portrait of Dad" }[key]);
-    const starts = [0, 0.2, 0.4, 0.58], len = 0.42;
+    // Background: quick washes, colour settling to the final hue.
+    // Subject: starts a beat later and comes in more slowly.
+    const stage = (t, start, len) => easeOut(Math.min(1, Math.max(0, (t - start) / len)));
     await tween(settings.paintTime * 1000, (t) => {
-      state.p = starts.map((s) => easeOut(Math.min(1, Math.max(0, (t - s) / len))));
+      state.b = [stage(t, 0, 0.36), stage(t, 0.08, 0.36), stage(t, 0.2, 0.4)];
+      state.hue = easeInOut(Math.min(1, t / 0.68));
+      state.s = [stage(t, 0.18, 0.5), stage(t, 0.32, 0.52), stage(t, 0.46, 0.54)];
     });
   }
 
@@ -984,10 +1050,62 @@
     const f = e.target.files && e.target.files[0];
     if (!f) return;
     sources.dad = URL.createObjectURL(f);
+    masks.dad = null; // no traced outline for a new photo: use a soft oval
     delete cache.dad;
     $("#dadNote").textContent = `Using “${f.name}” in this browser. To keep it, save it as assets/dad.jpg.`;
     simulate("papá");
   });
+
+  /* ---------------- Font picker ----------------
+     bold: the weight used for the "Dad" title; scale evens out the
+     very different sizes these faces draw at. */
+  const FONTS = [
+    { family: "Ugly Duck", bold: 400, scale: 1 },
+    { family: "Kalam", bold: 700, scale: 1 },
+    { family: "Gochi Hand", bold: 400, scale: 1.05 },
+    { family: "Caveat Brush", bold: 400, scale: 1.2 },
+    { family: "Gaegu", bold: 700, scale: 1.2 },
+    { family: "Patrick Hand", bold: 400, scale: 1.08 },
+    { family: "Short Stack", bold: 400, scale: 0.85 },
+    { family: "Grandstander", bold: 700, scale: 0.9 },
+    { family: "Gamja Flower", bold: 400, scale: 1.15 },
+    { family: "Darumadrop One", bold: 400, scale: 1 },
+    { family: "Sniglet", bold: 800, scale: 0.92 },
+  ];
+  const fontsEl = $("#fonts"), rootStyle = document.documentElement.style;
+  function setFont(f) {
+    rootStyle.setProperty("--hand-family", `"${f.family}"`);
+    rootStyle.setProperty("--hand-bold", f.bold);
+    rootStyle.setProperty("--hand-scale", f.scale);
+    fontsEl.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.family === f.family)));
+    try { localStorage.setItem("papa-font", f.family); } catch (e) {}
+  }
+  FONTS.forEach((f) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.dataset.family = f.family; b.setAttribute("aria-pressed", "false");
+    const sample = document.createElement("span"); sample.className = "sample"; sample.textContent = "Dad";
+    sample.style.fontFamily = `"${f.family}", var(--ui)`; sample.style.fontWeight = f.bold;
+    const name = document.createElement("span"); name.className = "name"; name.textContent = f.family;
+    b.append(sample, name);
+    b.addEventListener("click", () => setFont(f));
+    fontsEl.append(b);
+  });
+  let savedFont = null;
+  try { savedFont = localStorage.getItem("papa-font"); } catch (e) {}
+  setFont(FONTS.find((f) => f.family === savedFont) || FONTS[1]);
+  // Ugly Duck only works when it's installed or added as assets/fonts/UglyDuck.woff2
+  const ugly = fontsEl.querySelector('[data-family="Ugly Duck"]');
+  ugly.disabled = true;
+  ugly.querySelector(".name").textContent = "Ugly Duck (checking…)";
+  document.fonts.load('16px "Ugly Duck"').then((found) => {
+    if (found.some((f) => f.status === "loaded")) {
+      ugly.disabled = false;
+      ugly.querySelector(".name").textContent = "Ugly Duck";
+      if (!savedFont) setFont(FONTS[0]);
+    } else {
+      ugly.querySelector(".name").textContent = "Ugly Duck (not installed)";
+    }
+  }).catch(() => { ugly.querySelector(".name").textContent = "Ugly Duck (not installed)"; });
 
   /* ---------------- Panel toggle (narrow screens) ---------------- */
   const panel = $("#panel"), toggle = $("#adjustToggle");
