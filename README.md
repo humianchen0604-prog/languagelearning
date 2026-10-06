@@ -27,3 +27,4 @@ Where it isn't available, tapping the mic shows the three words to tap instead.
 - `index.html` — the whole prototype (paper, icons, voice pad, WebGL watercolor painter, Adjust panel)
 - `assets/pope.jpg`, `assets/potato.jpg` — watercolor art
 - `assets/dad.jpg` — **stand-in**; replace with the real portrait (3:4, e.g. 816 × 1088)
+- `assets/fonts/UglyDuck.woff2` — **add this**; the page uses the Ugly Duck font from here (or from your installed fonts) and falls back to Kalam until then
