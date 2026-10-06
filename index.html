@@ -511,7 +511,7 @@
     <div class="row"><label for="edgeBlur">Edge blur</label><output for="edgeBlur"></output><input id="edgeBlur" type="range" min="0" max="1" step="0.01" value="0.95"></div>
     <div class="row"><label for="softness">Overall softness</label><output for="softness"></output><input id="softness" type="range" min="0" max="1" step="0.01" value="0.15"></div>
     <div class="row"><label for="wetEdges">Wet edges</label><output for="wetEdges"></output><input id="wetEdges" type="range" min="0" max="1" step="0.01" value="0.35"></div>
-    <div class="row"><label for="paintTime">Painting time</label><output for="paintTime"></output><input id="paintTime" type="range" min="1" max="7" step="0.1" value="3"></div>
+    <div class="row"><label for="paintTime">Painting time</label><output for="paintTime"></output><input id="paintTime" type="range" min="0.8" max="6" step="0.1" value="2.2"></div>
   </section>
 
   <section class="group">
@@ -535,10 +535,13 @@
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   /* ---------------- Settings (remembered per browser) ---------------- */
-  const KEY = "papa-settings-v4";
+  const KEY = "papa-settings-v5";
   const ids = ["toothSize", "toothDepth", "warmth", "edgeFade", "edgeBlur", "softness", "wetEdges", "paintTime"];
   let saved = {};
-  try { saved = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) {}
+  try {
+    saved = JSON.parse(localStorage.getItem(KEY) || "null");
+    if (!saved) { saved = JSON.parse(localStorage.getItem("papa-settings-v4") || "{}"); delete saved.paintTime; }
+  } catch (e) { saved = {}; }
   const settings = {};
   const fmt = (id, v) => id === "paintTime" ? v.toFixed(1) + " s" : id === "toothSize" ? Math.pow(2, v).toFixed(2) + "×" : Math.round(v * (id === "edgeFade" ? 1000 : 100)) / (id === "edgeFade" ? 10 : 1) + "%";
   function persist() { try { localStorage.setItem(KEY, JSON.stringify(settings)); } catch (e) {} }
@@ -587,45 +590,57 @@
   }
 
   /* ---------------- Watercolor painter (WebGL) ----------------
-     The background and the subject are painted as separate passes, the
-     way a watercolorist leaves the figure white and washes around it.
-     Background: three quick washes spreading from the middle, starting in
-     a paler, shifted hue that settles into the picture's own colours.
-     Subject: three slower washes that bloom in patch by patch inside a
-     soft outline of the figure (assets/*-mask.png). */
+     The background and the subject are painted as separate passes.
+     Background: one quick fade, soft and slightly off-hue at first, that
+     comes into focus and settles into the picture's own colours.
+     Subject: drawn in with three passes of strokes inside a soft outline
+     of the figure (assets/*-mask.png), broad first, then fine detail. */
   const canvas = $("#paint");
   const gl = canvas.getContext("webgl", { premultipliedAlpha: true, alpha: true, antialias: false });
   const TEX_W = 540, TEX_H = 720;
 
   const VERT = `attribute vec2 p; varying vec2 v; void main(){ v = vec2(p.x*.5+.5, .5-p.y*.5); gl_Position = vec4(p,0.,1.); }`;
   const FRAG = `
+    #ifdef GL_FRAGMENT_PRECISION_HIGH
+    precision highp float;
+    #else
     precision mediump float;
+    #endif
     varying vec2 v;
     uniform sampler2D tSharp, tSoft, tWash, tNoise, tMask;
-    uniform vec3 uB, uS;
-    uniform float uHue, uFade, uFeather, uEdgeBlur, uSoft, uWet, uSeed;
+    uniform vec3 uB, uS;       // uB: fade, focus, (unused) · uS: three stroke passes
+    uniform float uHue, uEnd, uFade, uFeather, uEdgeBlur, uSoft, uWet, uSeed;
     const mat3 toYIQ = mat3(.299,.596,.211, .587,-.274,-.523, .114,-.322,.312);
     const mat3 toRGB = mat3(1.,1.,1., .956,-.272,-1.106, .621,-.647,1.703);
     float n(vec2 p){ return texture2D(tNoise, p).r; }
     float fbm(vec2 p){ return n(p)*.5 + n(p*2.03+.17)*.3 + n(p*4.07+.31)*.2; }
-    // background wash: spreads outward from a spot with a wobbly wet front
-    float spread(float p, vec2 uv, vec2 c, float k, float off){
-      float f = length((uv-c)*vec2(1.,.78)) + (fbm(uv*k + off + uSeed) - .5)*.6;
-      float R = p*1.35 - .12;
-      return 1. - smoothstep(R - .14, R, f);
-    }
-    // subject wash: blooms in patches rather than spreading from one spot
-    float bloom(float p, vec2 uv, float k, float off){
-      float f = fbm(uv*k + off + uSeed*.7);
-      float R = p*1.4 - .12;
-      return 1. - smoothstep(R - .3, R, f);
-    }
-    // the background's colour settling: hue turned and chroma reduced at first
+    float hash(float x){ return fract(sin(x*12.9898 + uSeed*7.13)*43758.5453); }
+    // background colour settling: hue turned and chroma reduced at first
     vec3 settle(vec3 c){
       vec3 y = toYIQ * c;
-      float h = atan(y.z, y.y) + (1. - uHue) * .75;
-      float ch = length(y.yz) * mix(.5, 1., uHue);
-      return toRGB * vec3(y.x + (1. - uHue)*.05, ch*cos(h), ch*sin(h));
+      float h = atan(y.z, y.y) + (1. - uHue) * .6;
+      float ch = length(y.yz) * mix(.6, 1., uHue);
+      return toRGB * vec3(y.x, ch*cos(h), ch*sin(h));
+    }
+    // Pen strokes: the area is split into parallel lanes at an angle; each
+    // lane is one stroke, drawn from one end to the other, starting at its
+    // own moment. Lanes are fuller in the middle, so strokes read as lines.
+    float strokes(float p, vec2 uv, float ang, float lanes, float off){
+      vec2 d = vec2(cos(ang), sin(ang));
+      float along = dot(uv, d);
+      // a slight hand wobble so strokes curve and vary instead of ruling straight
+      float across = dot(uv, vec2(-d.y, d.x)) * lanes + (fbm(uv * 1.7 + off) - .5) * 1.6;
+      float lo = min(0., d.x) + min(0., d.y), hi = max(0., d.x) + max(0., d.y);
+      float id = floor(across);
+      float start = hash(id + off) * .55;
+      float pos = (along - lo) / (hi - lo);
+      float dir = step(.5, hash(id * 1.7 + off));
+      pos = mix(pos, 1. - pos, dir);                      // some strokes run the other way
+      float drawn = smoothstep(pos - .05, pos, (p - start) / .45);
+      float w = 1. - pow(abs(fract(across) - .5) * 2., 2.5);
+      float rough = fbm(vec2(along * 3.1, across * .23) + off);
+      float body = smoothstep(.15, .55, w + (rough - .5) * .5);
+      return clamp(drawn * body + smoothstep(.8, 1., p), 0., 1.);
     }
     float band(float c){ return c*(1.-c)*4.; }
     void main(){
@@ -642,34 +657,24 @@
       float rim = (1. - smoothstep(0., uFeather*2.6 + .0001, ed + en)) * uEdgeBlur;
       vec3 fin = mix(mix(sharp, soft, uSoft), wash, rim);
 
-      // three stages, each with a background colour and a subject colour
-      vec3 B0 = settle(mix(wash, vec3(1.), .55)), S0 = mix(soft, vec3(1.), .6);
-      vec3 B1 = settle(mix(wash, vec3(1.), .18)), S1 = mix(soft, vec3(1.), .22);
-      vec3 B2 = settle(fin),                      S2 = fin;
+      // Background: one quick fade, soft and off-hue at first, coming into
+      // focus and into its own colours. Under the subject it stays a soft
+      // underpainting for the strokes to land on.
+      vec3 c = mix(settle(mix(wash, fin, uB.y)), mix(wash, vec3(1.), .32), m);
+      float bgA = uB.x;
 
-      float b0 = spread(uB.x, uv, vec2(.5,.5), 1.2, 0.);
-      float b1 = spread(uB.y, uv, vec2(.44,.46), 1.9, 1.7);
-      float b2 = spread(uB.z, uv, vec2(.56,.5), 2.6, 3.9);
-      float s0 = bloom(uS.x, uv, 2.2, 5.3);
-      float s1 = bloom(uS.y, uv, 3.1, 7.1);
-      float s2 = bloom(uS.z, uv, 4.3, 9.7);
+      // Subject: three passes of strokes, broad and soft, then sharper,
+      // then fine detail, each at its own angle
+      float s0 = strokes(uS.x, uv,  .62, 20., 1.3);
+      float s1 = strokes(uS.y, uv, -.48, 42., 4.1);
+      float s2 = strokes(uS.z, uv, 1.15, 64., 8.7);
+      vec3 S0 = mix(soft, wash, .3), S1 = mix(soft, fin, .55), S2 = fin;
+      c = mix(c, S0, s0 * m);
+      c = mix(c, S1, s1 * m);
+      c = mix(c, S2, s2 * m);
+      c = mix(c, fin, uEnd);                                // settle exactly on the picture
 
-      float k0 = b0*(1.-m) + s0*m, k1 = b1*(1.-m) + s1*m, k2 = b2*(1.-m) + s2*m;
-      vec3 c = vec3(1.);
-      c = mix(c, mix(B0, S0, m), k0);
-      c = mix(c, mix(B1, S1, m), k1);
-      c = mix(c, mix(B2, S2, m), k2);
-
-      // a little pigment pooling along the background's drying fronts
-      float bg = 1. - m;
-      c *= mix(vec3(1.), B0, band(b0)*uWet*.35*bg);
-      c *= mix(vec3(1.), B1, band(b1)*uWet*.3*bg);
-
-      // granulation: pigment settling into the paper's tooth while wet
-      float g = n(uv*5.3 + uSeed*.37);
-      c *= 1. - (g - .5) * .06 * max(k0 - k2*.7, 0.);
-
-      float a = frameA * uFade * max(max(k0, k1), k2);
+      float a = frameA * uFade * max(bgA, max(s0, max(s1, s2)) * m);
       gl_FragColor = vec4(c * a, a);
     }`;
 
@@ -685,7 +690,7 @@
     const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
     const loc = gl.getAttribLocation(prog, "p"); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-    ["tSharp","tSoft","tWash","tNoise","tMask","uB","uS","uHue","uFade","uFeather","uEdgeBlur","uSoft","uWet","uSeed"].forEach((k) => uni[k] = gl.getUniformLocation(prog, k));
+    ["tSharp","tSoft","tWash","tNoise","tMask","uB","uS","uHue","uEnd","uFade","uFeather","uEdgeBlur","uSoft","uWet","uSeed"].forEach((k) => uni[k] = gl.getUniformLocation(prog, k));
     TEX_UNITS.forEach((k, i) => { gl.uniform1i(uni[k], i); tex[k] = gl.createTexture(); });
     return true;
   })();
@@ -759,7 +764,7 @@
     return cache[key];
   }
 
-  const state = { b: [0, 0, 0], s: [0, 0, 0], hue: 0, fade: 1, seed: Math.random() * 10, current: null };
+  const state = { b: [0, 0, 0], s: [0, 0, 0], hue: 0, end: 0, fade: 1, seed: Math.random() * 10, current: null };
   function sizeCanvas() {
     const r = canvas.getBoundingClientRect(), dpr = Math.min(devicePixelRatio || 1, 2);
     canvas.width = Math.max(2, Math.round(r.width * dpr)); canvas.height = Math.max(2, Math.round(r.height * dpr));
@@ -773,6 +778,7 @@
     gl.uniform3f(uni.uB, ...state.b);
     gl.uniform3f(uni.uS, ...state.s);
     gl.uniform1f(uni.uHue, state.hue);
+    gl.uniform1f(uni.uEnd, state.end);
     gl.uniform1f(uni.uFade, state.fade);
     gl.uniform1f(uni.uFeather, settings.edgeFade);
     gl.uniform1f(uni.uEdgeBlur, settings.edgeBlur);
@@ -810,16 +816,17 @@
       if (token !== paintToken) return;
     }
     upload("tSharp", layers.sharp); upload("tSoft", layers.soft); upload("tWash", layers.wash); upload("tMask", layers.mask);
-    state.current = key; state.fade = 1; state.b = [0, 0, 0]; state.s = [0, 0, 0]; state.hue = 0; state.seed = Math.random() * 10;
+    state.current = key; state.fade = 1; state.b = [0, 0, 0]; state.s = [0, 0, 0]; state.hue = 0; state.end = 0; state.seed = Math.random() * 10;
     frame.setAttribute("data-painted", "");
     canvas.setAttribute("aria-label", { pope: "Watercolor of the Pope", potato: "Watercolor of a potato", dad: "Watercolor portrait of Dad" }[key]);
-    // Background: quick washes, colour settling to the final hue.
-    // Subject: starts a beat later and comes in more slowly.
-    const stage = (t, start, len) => easeOut(Math.min(1, Math.max(0, (t - start) / len)));
+    // Background: a quick fade that comes into focus and colour.
+    // Subject: three passes of strokes, starting just after the fade.
+    const stage = (t, start, len) => Math.min(1, Math.max(0, (t - start) / len));
     await tween(settings.paintTime * 1000, (t) => {
-      state.b = [stage(t, 0, 0.36), stage(t, 0.08, 0.36), stage(t, 0.2, 0.4)];
-      state.hue = easeInOut(Math.min(1, t / 0.68));
-      state.s = [stage(t, 0.18, 0.5), stage(t, 0.32, 0.52), stage(t, 0.46, 0.54)];
+      state.b = [easeOut(stage(t, 0, 0.28)), easeInOut(stage(t, 0.06, 0.5)), 0];
+      state.hue = easeInOut(stage(t, 0, 0.55));
+      state.s = [stage(t, 0.14, 0.42), stage(t, 0.3, 0.42), stage(t, 0.46, 0.44)];
+      state.end = easeInOut(stage(t, 0.9, 0.1));
     });
   }
 
