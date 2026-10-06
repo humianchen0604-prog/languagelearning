@@ -2,14 +2,8 @@
 <title>Papá o la Papa</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Gochi+Hand&family=Caveat+Brush&family=Gaegu:wght@400;700&family=Patrick+Hand&family=Short+Stack&family=Grandstander:wght@400;700&family=Gamja+Flower&family=Darumadrop+One&family=Sniglet:wght@400;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap">
 <style>
-  @font-face {
-    font-family: "Ugly Duck";
-    src: local("Ugly Duck"), local("UglyDuck"), local("UglyDuck-Regular"),
-         url("assets/fonts/UglyDuck.woff2") format("woff2");
-    font-display: swap;
-  }
   /* Layout: one 402 × 874 phone screen (Figma units, 1u = 100cqw / 402),
      scaled to fit; the Adjust panel sits beside it on wide screens and
      slides up as a sheet on narrow ones. Single paper look by design: heavy cold-press watercolor stock. */
@@ -31,10 +25,7 @@
     --panel-ink: #3a2c22;
     --focus: #2b1a10;
 
-    --hand-family: "Kalam";
-    --hand-bold: 700;
-    --hand-scale: 1;
-    --hand: var(--hand-family), "Kalam", "Bradley Hand", "Segoe Print", "Comic Sans MS", cursive;
+    --hand: "Gaegu", "Bradley Hand", "Segoe Print", "Comic Sans MS", cursive;
     --ui: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
 
     --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
@@ -137,8 +128,8 @@
     margin: 0;
     text-align: center;
     font-family: var(--hand);
-    font-weight: var(--hand-bold);
-    font-size: calc(30 * var(--hand-scale) * var(--u));
+    font-weight: 700;
+    font-size: calc(36 * var(--u));
     line-height: 1.2;
     color: var(--ink);
     z-index: 3;
@@ -278,13 +269,13 @@
     text-align: center;
     font-family: var(--hand);
     color: var(--ink-soft);
-    font-size: calc(17 * var(--u));
-    line-height: 1.35;
+    font-size: calc(20 * var(--u));
+    line-height: 1.3;
     min-height: 1.35em;
     z-index: 3;
     transition: opacity 300ms var(--ease-out);
   }
-  .heard small { display: block; font-size: calc(13 * var(--u)); opacity: 0.8; }
+  .heard small { display: block; font-size: calc(16 * var(--u)); opacity: 0.8; }
 
   /* Tap fallback when the browser can't listen */
   .say {
@@ -300,7 +291,7 @@
   .say[hidden] { display: none; }
   .say button {
     font-family: var(--hand);
-    font-size: calc(15 * var(--u));
+    font-size: calc(18 * var(--u));
     color: var(--ink);
     background: color-mix(in srgb, var(--pad) 70%, transparent);
     border: 1px solid color-mix(in srgb, var(--pad-rim) 45%, transparent);
@@ -374,7 +365,7 @@
 
   .panel h2 {
     margin: 0;
-    font: 700 22px/1.1 var(--hand);
+    font: 700 26px/1.1 var(--hand);
     color: var(--ink);
   }
   .group { display: grid; gap: 10px; }
@@ -402,30 +393,10 @@
   .seg button[aria-pressed="true"] { background: var(--panel-ink); color: var(--panel); border-color: var(--panel-ink); }
   .seg button:focus-visible, .file-btn:focus-within, .try button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
   .try { display: flex; gap: 6px; flex-wrap: wrap; }
-  .try button { font-family: var(--hand); font-size: 14px; }
+  .try button { font-family: var(--hand); font-size: 17px; font-weight: 700; }
   .file-btn { display: inline-flex; align-items: center; gap: 6px; width: max-content; }
   .file-btn input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
   .note { margin: 0; color: var(--ink-soft); font-size: 12px; }
-  .fonts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
-  .fonts button {
-    display: grid;
-    gap: 2px;
-    justify-items: start;
-    text-align: left;
-    padding: 8px 10px;
-    border: 1px solid var(--panel-line);
-    border-radius: 10px;
-    background: transparent;
-    color: var(--ink);
-    cursor: pointer;
-    min-width: 0;
-  }
-  .fonts button[aria-pressed="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
-  .fonts button:disabled { opacity: 0.45; cursor: not-allowed; }
-  .fonts button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-  .fonts .sample { font-size: 26px; line-height: 1.15; color: var(--ink); }
-  .fonts .name { font: 500 11px/1.2 var(--ui); color: var(--ink-soft); overflow-wrap: anywhere; }
-
   @media (prefers-reduced-motion: reduce) {
     .voice, .mic, .waves, .dots, .panel { transition-duration: 1ms !important; }
     .dots i { animation: none; opacity: 0.8; }
@@ -528,15 +499,9 @@
   </section>
 
   <section class="group">
-    <h3>Font</h3>
-    <div class="fonts" id="fonts"></div>
-    <p class="note" id="fontNote">Tap one to try it on the screen.</p>
-  </section>
-
-  <section class="group">
     <h3>Paper</h3>
-    <div class="row"><label for="toothSize">Tooth size</label><output for="toothSize"></output><input id="toothSize" type="range" min="0.5" max="2" step="0.01" value="1"></div>
-    <div class="row"><label for="toothDepth">Tooth depth</label><output for="toothDepth"></output><input id="toothDepth" type="range" min="0" max="1" step="0.01" value="0.4"></div>
+    <div class="row"><label for="toothSize">Tooth size</label><output for="toothSize"></output><input id="toothSize" type="range" min="-2" max="2" step="0.01" value="0"></div>
+    <div class="row"><label for="toothDepth">Tooth depth</label><output for="toothDepth"></output><input id="toothDepth" type="range" min="0" max="1" step="0.005" value="0.3"></div>
     <div class="row"><label for="warmth">Warmth</label><output for="warmth"></output><input id="warmth" type="range" min="0" max="1" step="0.01" value="0.3"></div>
   </section>
 
@@ -560,7 +525,7 @@
   <section class="group">
     <h3>Dad photo</h3>
     <label class="file-btn">Replace photo…<input id="dadFile" type="file" accept="image/*"></label>
-    <p class="note" id="dadNote">A stand-in is showing. Choose the real portrait to use it here.</p>
+    <p class="note" id="dadNote">Try a different portrait in this browser.</p>
   </section>
 </aside>
 
@@ -570,12 +535,12 @@
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   /* ---------------- Settings (remembered per browser) ---------------- */
-  const KEY = "papa-settings-v3";
+  const KEY = "papa-settings-v4";
   const ids = ["toothSize", "toothDepth", "warmth", "edgeFade", "edgeBlur", "softness", "wetEdges", "paintTime"];
   let saved = {};
   try { saved = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) {}
   const settings = {};
-  const fmt = (id, v) => id === "paintTime" ? v.toFixed(1) + " s" : id === "toothSize" ? v.toFixed(2) + "×" : Math.round(v * (id === "edgeFade" ? 1000 : 100)) / (id === "edgeFade" ? 10 : 1) + "%";
+  const fmt = (id, v) => id === "paintTime" ? v.toFixed(1) + " s" : id === "toothSize" ? Math.pow(2, v).toFixed(2) + "×" : Math.round(v * (id === "edgeFade" ? 1000 : 100)) / (id === "edgeFade" ? 10 : 1) + "%";
   function persist() { try { localStorage.setItem(KEY, JSON.stringify(settings)); } catch (e) {} }
 
   ids.forEach((id) => {
@@ -596,15 +561,20 @@
     const w = settings.warmth;
     const col = WHITE.map((c, i) => Math.round(c + (CREAM[i] - c) * w));
     const hex = "#" + col.map((c) => c.toString(16).padStart(2, "0")).join("");
-    const bf = (0.058 / settings.toothSize).toFixed(4);
-    const depth = (0.8 + settings.toothDepth * 3.2).toFixed(2);
-    const mixLit = (0.25 + settings.toothDepth * 0.5).toFixed(3);
+    // Size slider is logarithmic (0.25× to 4×); depth eases in so the low
+    // end gives fine control and 0 is perfectly smooth paper.
+    const size = Math.pow(2, settings.toothSize);
+    const d = Math.pow(settings.toothDepth, 1.6);
+    const bf = (0.058 / size).toFixed(4);
+    const soften = Math.min(2.6, 0.5 + 0.6 * size).toFixed(2);
+    const depth = (d * 4.5).toFixed(3);
+    const mixLit = (d * 0.8).toFixed(3);
     // One sheet the size of the screen (no tiles, so no seams); the rect
     // overhangs the edges so blur and lighting have no border to catch.
     const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='402' height='874' viewBox='0 0 402 874'>` +
       `<filter id='p' filterUnits='userSpaceOnUse' x='-30' y='-30' width='462' height='934' color-interpolation-filters='sRGB'>` +
       `<feTurbulence type='fractalNoise' baseFrequency='${bf}' numOctaves='3' seed='3' result='n'/>` +
-      `<feGaussianBlur in='n' stdDeviation='1.1' result='h'/>` +
+      `<feGaussianBlur in='n' stdDeviation='${soften}' result='h'/>` +
       `<feDiffuseLighting in='h' surfaceScale='${depth}' diffuseConstant='1.155' lighting-color='${hex}' result='lit'>` +
       `<feDistantLight azimuth='225' elevation='60'/></feDiffuseLighting>` +
       `<feFlood flood-color='${hex}' result='base'/>` +
@@ -1055,57 +1025,6 @@
     $("#dadNote").textContent = `Using “${f.name}” in this browser. To keep it, save it as assets/dad.jpg.`;
     simulate("papá");
   });
-
-  /* ---------------- Font picker ----------------
-     bold: the weight used for the "Dad" title; scale evens out the
-     very different sizes these faces draw at. */
-  const FONTS = [
-    { family: "Ugly Duck", bold: 400, scale: 1 },
-    { family: "Kalam", bold: 700, scale: 1 },
-    { family: "Gochi Hand", bold: 400, scale: 1.05 },
-    { family: "Caveat Brush", bold: 400, scale: 1.2 },
-    { family: "Gaegu", bold: 700, scale: 1.2 },
-    { family: "Patrick Hand", bold: 400, scale: 1.08 },
-    { family: "Short Stack", bold: 400, scale: 0.85 },
-    { family: "Grandstander", bold: 700, scale: 0.9 },
-    { family: "Gamja Flower", bold: 400, scale: 1.15 },
-    { family: "Darumadrop One", bold: 400, scale: 1 },
-    { family: "Sniglet", bold: 800, scale: 0.92 },
-  ];
-  const fontsEl = $("#fonts"), rootStyle = document.documentElement.style;
-  function setFont(f) {
-    rootStyle.setProperty("--hand-family", `"${f.family}"`);
-    rootStyle.setProperty("--hand-bold", f.bold);
-    rootStyle.setProperty("--hand-scale", f.scale);
-    fontsEl.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.family === f.family)));
-    try { localStorage.setItem("papa-font", f.family); } catch (e) {}
-  }
-  FONTS.forEach((f) => {
-    const b = document.createElement("button");
-    b.type = "button"; b.dataset.family = f.family; b.setAttribute("aria-pressed", "false");
-    const sample = document.createElement("span"); sample.className = "sample"; sample.textContent = "Dad";
-    sample.style.fontFamily = `"${f.family}", var(--ui)`; sample.style.fontWeight = f.bold;
-    const name = document.createElement("span"); name.className = "name"; name.textContent = f.family;
-    b.append(sample, name);
-    b.addEventListener("click", () => setFont(f));
-    fontsEl.append(b);
-  });
-  let savedFont = null;
-  try { savedFont = localStorage.getItem("papa-font"); } catch (e) {}
-  setFont(FONTS.find((f) => f.family === savedFont) || FONTS[1]);
-  // Ugly Duck only works when it's installed or added as assets/fonts/UglyDuck.woff2
-  const ugly = fontsEl.querySelector('[data-family="Ugly Duck"]');
-  ugly.disabled = true;
-  ugly.querySelector(".name").textContent = "Ugly Duck (checking…)";
-  document.fonts.load('16px "Ugly Duck"').then((found) => {
-    if (found.some((f) => f.status === "loaded")) {
-      ugly.disabled = false;
-      ugly.querySelector(".name").textContent = "Ugly Duck";
-      if (!savedFont) setFont(FONTS[0]);
-    } else {
-      ugly.querySelector(".name").textContent = "Ugly Duck (not installed)";
-    }
-  }).catch(() => { ugly.querySelector(".name").textContent = "Ugly Duck (not installed)"; });
 
   /* ---------------- Panel toggle (narrow screens) ---------------- */
   const panel = $("#panel"), toggle = $("#adjustToggle");
