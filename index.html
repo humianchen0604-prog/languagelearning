@@ -429,12 +429,18 @@
     <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="9" result="bloom" />
     <feColorMatrix in="bloom" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.7 0.55" result="bloomA" />
     <feComposite in="shape" in2="bloomA" operator="in" result="body" />
-    <feMorphology in="shape" operator="erode" radius="1.4" result="core" />
-    <feGaussianBlur in="core" stdDeviation="2" result="coreSoft" />
+    <!-- a pale tideline that fades gradually inward -->
+    <feMorphology in="shape" operator="erode" radius="2.5" result="core" />
+    <feGaussianBlur in="core" stdDeviation="4.5" result="coreSoft" />
     <feComposite in="shape" in2="coreSoft" operator="out" result="rim" />
-    <feFlood flood-color="#b4b1ad" flood-opacity="0.5" />
-    <feComposite in2="rim" operator="in" result="rimSoft" />
-    <feMerge><feMergeNode in="body" /><feMergeNode in="rimSoft" /></feMerge>
+    <feGaussianBlur in="rim" stdDeviation="0.8" result="rimBlur" />
+    <feFlood flood-color="#cdcac6" flood-opacity="0.32" />
+    <feComposite in2="rimBlur" operator="in" result="rimSoft" />
+    <!-- pigment bleeding a little past the edge into the paper -->
+    <feGaussianBlur in="body" stdDeviation="2.4" result="bleedBlur" />
+    <feComponentTransfer in="bleedBlur" result="bleed"><feFuncA type="linear" slope="0.35" /></feComponentTransfer>
+    <feGaussianBlur in="body" stdDeviation="0.6" result="bodySoft" />
+    <feMerge><feMergeNode in="bleed" /><feMergeNode in="bodySoft" /><feMergeNode in="rimSoft" /></feMerge>
   </filter>
   <!-- Extra softening for the colour drops inside the voice blob, so they melt together -->
   <filter id="dab-blur" x="-60%" y="-60%" width="220%" height="220%">
