@@ -16,7 +16,6 @@
     --seg: #dadada;            /* progress blob, upcoming */
     --seg-now: #8c8c8c;        /* progress blob, current */
     --wash: #d9d9d9;           /* empty frame placeholder */
-    --mic-fill: #6d97a7;       /* mic capsule */
     --pad: rgb(176 210 234 / 0.5);   /* light blue wash (chips) */
     --pad-rim: #78acd2;
     --blob-idle: #b3b0ab;            /* voice blob before speaking: medium grey */
@@ -493,7 +492,7 @@
         </svg>
         <span class="mic" aria-hidden="true">
           <svg viewBox="0 0 30 40" fill="none" stroke="var(--ink)" stroke-linecap="round" stroke-linejoin="round"><g filter="url(#rough)">
-            <rect x="10" y="2.5" width="10" height="19" rx="5" fill="var(--mic-fill)" stroke-width="1.6" />
+            <rect x="10" y="2.5" width="10" height="19" rx="5" stroke-width="1.6" />
             <path d="M11.4 4.6C12.4 3.4 17.8 3.2 18.8 5.2" stroke-width="0.6" opacity="0.6" />
             <path d="M4.6 15.6C4.4 22.4 9 26.8 15 26.8C21 26.8 25.6 22.6 25.4 15.4" stroke-width="1.5" />
             <path d="M5.4 16.4C5.8 22.8 10.4 25.6 15.4 25.8" stroke-width="0.6" opacity="0.6" />
@@ -933,7 +932,7 @@
   const SHAPES = {
     pebble: { radii: [1.04, 1, 0.94, 0.92, 0.97, 1.03, 1.07, 1.02], rot: -18,
       sats: [[-46, 4, 22, 19], [46, -2, 23, 20], [-24, -15, 14, 12], [26, 15, 15, 13]] },
-    bean:   { radii: [1, 1.05, 0.98, 0.8, 0.96, 1.06, 1.04, 1], rot: 8,
+    bean:   { radii: [1, 1.05, 0.98, 0.8, 0.96, 1.06, 1.04, 1], rot: 8, flip: true,
       sats: [[-44, -6, 20, 18], [43, 6, 24, 19], [20, -17, 13, 11], [-20, 16, 14, 12]] },
     cloud:  { radii: [1.1, 0.86, 1.04, 0.84, 1.08, 0.9], rot: -10,
       sats: [[-42, 8, 24, 18], [47, -4, 20, 17], [8, -21, 15, 12], [-14, 19, 13, 11]] },
@@ -944,12 +943,13 @@
   if (!SHAPES[shape]) shape = "pebble";
 
   // smooth closed path through points on a wobbly ellipse
-  function blobPath(radii, rx, ry, rotDeg, wobble, t) {
+  function blobPath(radii, rx, ry, rotDeg, wobble, t, flip) {
     const n = radii.length, rot = rotDeg * Math.PI / 180, pts = [];
     for (let i = 0; i < n; i++) {
       const a = (i / n) * Math.PI * 2, r = radii[i] * (1 + wobble * Math.sin(t * 2.1 + i * 1.9));
       const x = Math.cos(a) * rx * r, y = Math.sin(a) * ry * r;
-      pts.push([x * Math.cos(rot) - y * Math.sin(rot), x * Math.sin(rot) + y * Math.cos(rot)]);
+      const px = x * Math.cos(rot) - y * Math.sin(rot);
+      pts.push([flip ? -px : px, x * Math.sin(rot) + y * Math.cos(rot)]);
     }
     let d = `M${pts[0][0].toFixed(2)} ${pts[0][1].toFixed(2)}`;
     for (let i = 0; i < n; i++) {
@@ -963,12 +963,12 @@
     const sh = SHAPES[shape], now = performance.now() / 1000;
     const lv = levels.reduce((a, b) => a + b, 0) / levels.length;
     const e = easeBlob(spread);
-    blobMain.setAttribute("d", blobPath(sh.radii, 32 * (1 + lv * 0.08), 28 * (1 + lv * 0.1), sh.rot, 0.035 * e, now));
+    blobMain.setAttribute("d", blobPath(sh.radii, 32 * (1 + lv * 0.08), 28 * (1 + lv * 0.1), sh.rot, 0.035 * e, now, sh.flip));
     sats.forEach((el, i) => {
       const [x, y, rx, ry] = sh.sats[i];
       const pulse = 1 + (levels[(i + 1) % 5] || 0) * 0.28 * e + 0.04 * e * Math.sin(now * 2.6 + i * 2);
       const k = (0.4 + 0.6 * e) * pulse;
-      el.setAttribute("cx", (x * e).toFixed(2)); el.setAttribute("cy", (y * e).toFixed(2));
+      el.setAttribute("cx", ((sh.flip ? -x : x) * e).toFixed(2)); el.setAttribute("cy", (y * e).toFixed(2));
       el.setAttribute("rx", (rx * k).toFixed(2)); el.setAttribute("ry", (ry * k).toFixed(2));
     });
   }
