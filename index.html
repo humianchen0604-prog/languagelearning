@@ -433,7 +433,7 @@
     <feGaussianBlur in="core" stdDeviation="4.5" result="coreSoft" />
     <feComposite in="shape" in2="coreSoft" operator="out" result="rim" />
     <feGaussianBlur in="rim" stdDeviation="0.8" result="rimBlur" />
-    <feFlood flood-color="#cdcac6" flood-opacity="0.32" />
+    <feFlood id="blobRim" flood-color="#cdcac6" flood-opacity="0.32" />
     <feComposite in2="rimBlur" operator="in" result="rimSoft" />
     <!-- pigment bleeding a little past the edge into the paper -->
     <feGaussianBlur in="body" stdDeviation="2.4" result="bleedBlur" />
@@ -495,16 +495,16 @@
       <button class="voice" id="voice" type="button" data-state="idle" data-look="swirl" aria-label="Say “Dad” in Spanish">
         <svg class="blob" viewBox="-90 -48 180 96" aria-hidden="true" focusable="false">
           <defs>
-            <!-- colour drops stay inside the blob, a little in from its edge -->
+            <!-- colour drops stay inside the blob -->
             <clipPath id="blob-clip">
-              <use href="#blobMain" transform="scale(0.9)" /><use href="#sat0" transform="scale(0.9)" />
-              <use href="#sat1" transform="scale(0.9)" /><use href="#sat2" transform="scale(0.9)" /><use href="#sat3" transform="scale(0.9)" />
+              <use href="#blobMain" transform="scale(0.98)" /><use href="#sat0" transform="scale(0.98)" />
+              <use href="#sat1" transform="scale(0.98)" /><use href="#sat2" transform="scale(0.98)" /><use href="#sat3" transform="scale(0.98)" />
             </clipPath>
           </defs>
           <g filter="url(#blob-goo)">
             <path id="blobMain" />
             <ellipse class="sat" id="sat0" /><ellipse class="sat" id="sat1" /><ellipse class="sat" id="sat2" /><ellipse class="sat" id="sat3" />
-            <g class="mix" filter="url(#dab-blur)" clip-path="url(#blob-clip)"><ellipse class="dab" fill="#9cc1dc" /><ellipse class="dab" fill="#b4cfa8" /><ellipse class="dab" fill="#ead39c" /><ellipse class="dab" fill="#e2b3c2" /><ellipse class="dab" fill="#c0b2e0" /></g>
+            <g class="mix" filter="url(#dab-blur)" clip-path="url(#blob-clip)"><ellipse class="dab" fill="#b6d2e7" /><ellipse class="dab" fill="#c8ddbe" /><ellipse class="dab" fill="#f1e0b6" /><ellipse class="dab" fill="#ecc8d4" /><ellipse class="dab" fill="#d2c7eb" /></g>
           </g>
         </svg>
         <span class="mic" aria-hidden="true">
@@ -946,12 +946,13 @@
      slide out to these spots ([x, y, rx, ry], blob units) while listening.
      Five drops of colour inside it are mixed by the same gooey blur, so
      they blend like wet paint. Looks:
-       swirl   - drops slowly circle the middle, a little faster when louder
+       swirl   - large drops travel clockwise round the shape, slowly
        marble  - drops drift on looping paths and stretch, folding together
        ripples - drops bloom from the centre and spread out, fading
        ellipses- the row of ellipses (drawn outside the blob) */
   const PEBBLE = { radii: [1.04, 1, 0.94, 0.92, 0.97, 1.03, 1.07, 1.02], rot: -18,
     sats: [[-46, 4, 22, 19], [46, -2, 23, 20], [-24, -15, 14, 12], [26, 15, 15, 13]] };
+  const blobRim = $("#blobRim");
   const blobMain = $("#blobMain"), sats = [...voice.querySelectorAll(".sat")], dabs = [...voice.querySelectorAll(".dab")];
   let spread = 0, blobRaf = 0, phase = 0, lastT = performance.now() / 1000;
 
@@ -984,16 +985,17 @@
       const li = levels[i] || 0;
       if (look === "ellipses" || e < 0.01) return placeDab(el, 0, 0, 0, 0, 0, 0);
       if (look === "swirl") {
-        const a = phase * 1.6 + (i / n) * Math.PI * 2, R = (8 + lv * 4) * e;
-        placeDab(el, Math.cos(a) * R * 2.1, Math.sin(a) * R * 0.75, 30 + li * 9, 22 + li * 6, 0, 0.78 * e);
+        // clockwise (screen y points down), roughly one lap every 30 s
+        const a = phase * 0.9 + (i / n) * Math.PI * 2;
+        placeDab(el, Math.cos(a) * 36 * e, Math.sin(a) * 11 * e, 36 + li * 6, 31 + li * 4, 0, 0.88 * e);
       } else if (look === "marble") {
-        const x = Math.sin(phase * (0.8 + i * 0.19) + i * 1.3) * 24 * e;
+        const x = Math.sin(phase * (0.8 + i * 0.19) + i * 1.3) * 26 * e;
         const y = Math.sin(phase * (1.15 + i * 0.13) + i * 2.1) * 7 * e;
         const rot = (phase * 40 * (i % 2 ? 1 : -1) + i * 37) % 360;
-        placeDab(el, x, y, 33 + li * 9, 18 + li * 4.5, rot, 0.75 * e);
+        placeDab(el, x, y, 46 + li * 6, 27 + li * 4, rot, 0.85 * e);
       } else { // ripples
         const life = (phase * 0.42 + i / n) % 1;
-        const r = 6 + life * 66;
+        const r = 14 + life * 66;
         placeDab(el, 0, 0, r, r * 0.55, 0, Math.pow(1 - life, 0.6) * (0.75 + lv * 0.25) * e);
       }
     });
@@ -1012,6 +1014,8 @@
       el.setAttribute("rx", (rx * k).toFixed(2)); el.setAttribute("ry", (ry * k).toFixed(2));
     });
     renderMix(e, lv);
+    // the edge goes paler while listening, and back as the blob settles
+    blobRim.setAttribute("flood-opacity", (0.32 - 0.22 * e).toFixed(3));
   }
   function blobTick() {
     const target = voice.dataset.state === "listening" ? 1 : 0;
