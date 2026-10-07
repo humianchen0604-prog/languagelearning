@@ -18,8 +18,8 @@
     --wash: #d9d9d9;           /* empty frame placeholder */
     --pad: rgb(176 210 234 / 0.5);   /* light blue wash (chips) */
     --pad-rim: #78acd2;
-    --blob-idle: #b3b0ab;            /* voice blob before speaking: medium grey */
-    --blob-listen: #a9cde6;          /* voice blob while listening: light blue wash */
+    --blob-idle: #d3d0cb;            /* voice blob before speaking: light grey */
+    --blob-listen: #c9e0f0;          /* voice blob while listening: pale blue wash */
     --dot: #6a6662;            /* processing dots */
     --panel: #fbf9f6;
     --panel-line: #e2dbd2;
@@ -199,12 +199,12 @@
     mix-blend-mode: multiply;
     animation: wash-in 900ms var(--ease-out) both;
   }
-  .blob g {
+  .blob > g {
     fill: var(--blob-idle);
     fill-opacity: 0.85;
     transition: fill 450ms var(--ease-out), fill-opacity 450ms var(--ease-out);
   }
-  .voice[data-state="listening"] .blob g { fill: var(--blob-listen); fill-opacity: 0.8; }
+  .voice[data-state="listening"] .blob > g { fill: var(--blob-listen); fill-opacity: 0.85; }
   @keyframes wash-in {
     from { opacity: 0; }
     to   { opacity: 1; }
@@ -236,22 +236,12 @@
   .wave:nth-child(4) { --c: #d8cfa6; }
   .wave:nth-child(5) { --c: #94a090; }
 
-  /* Watercolor smudge variant: soft, irregular washes that bleed */
-  .voice[data-look="smudges"] .waves { gap: calc(0.8 * var(--u)); }
-  .voice[data-look="smudges"] .wave {
-    width: calc(22 * var(--u));
-    background: radial-gradient(closest-side, var(--c) 0 55%, color-mix(in srgb, var(--c) 40%, transparent) 80%, transparent);
-    border-radius: 46% 54% 42% 58% / 55% 45% 55% 45%;
-    filter: blur(calc(1.3 * var(--u)));
-    mix-blend-mode: multiply;
-    opacity: 0.85;
-  }
-  .voice[data-look="smudges"] .wave:nth-child(even) { border-radius: 58% 42% 55% 45% / 45% 58% 42% 55%; }
+  .voice:not([data-look="ellipses"]) .waves { display: none; }
 
-  .dots { gap: calc(4 * var(--u)); opacity: 0; transform: scale(0.6); }
+  .dots { gap: calc(2.5 * var(--u)); opacity: 0; transform: scale(0.6); }
   .dots i {
-    width: calc(7 * var(--u));
-    height: calc(7 * var(--u));
+    width: calc(3.5 * var(--u));
+    height: calc(3.5 * var(--u));
     border-radius: 50%;
     background: var(--dot);
     animation: dot 1.1s ease-in-out infinite both;
@@ -261,7 +251,7 @@
   .dots i:nth-child(3) { animation-delay: 0.3s; }
   @keyframes dot {
     0%, 100% { opacity: 0.35; transform: translateY(0); }
-    40% { opacity: 1; transform: translateY(calc(-2 * var(--u))); }
+    40% { opacity: 1; transform: translateY(calc(-1.2 * var(--u))); }
   }
 
   .voice[data-state="listening"] .mic,
@@ -483,16 +473,17 @@
         <canvas id="paint" role="img" aria-label="Painting area"></canvas>
       </div>
 
-      <button class="voice" id="voice" type="button" data-state="idle" data-look="ellipses" aria-label="Say “Dad” in Spanish">
+      <button class="voice" id="voice" type="button" data-state="idle" data-look="swirl" aria-label="Say “Dad” in Spanish">
         <svg class="blob" viewBox="-90 -48 180 96" aria-hidden="true" focusable="false">
           <g filter="url(#blob-goo)">
             <path id="blobMain" />
             <ellipse class="sat" /><ellipse class="sat" /><ellipse class="sat" /><ellipse class="sat" />
+            <g class="mix"><ellipse class="dab" fill="#9cc1dc" /><ellipse class="dab" fill="#b4cfa8" /><ellipse class="dab" fill="#ead39c" /><ellipse class="dab" fill="#e2b3c2" /><ellipse class="dab" fill="#c0b2e0" /></g>
           </g>
         </svg>
         <span class="mic" aria-hidden="true">
           <svg viewBox="0 0 30 40" fill="none" stroke="var(--ink)" stroke-linecap="round" stroke-linejoin="round"><g filter="url(#rough)">
-            <rect x="10" y="2.5" width="10" height="19" rx="5" stroke-width="1.6" />
+            <rect x="10" y="2.5" width="10" height="19" rx="5" stroke-width="1.6" fill="color-mix(in srgb, var(--ink) 40%, white)" style="fill: color-mix(in srgb, var(--ink) 40%, white)" />
             <path d="M11.4 4.6C12.4 3.4 17.8 3.2 18.8 5.2" stroke-width="0.6" opacity="0.6" />
             <path d="M4.6 15.6C4.4 22.4 9 26.8 15 26.8C21 26.8 25.6 22.6 25.4 15.4" stroke-width="1.5" />
             <path d="M5.4 16.4C5.8 22.8 10.4 25.6 15.4 25.8" stroke-width="0.6" opacity="0.6" />
@@ -546,16 +537,12 @@
   </section>
 
   <section class="group">
-    <h3>Voice button</h3>
-    <div class="seg" id="shape">
-      <button type="button" data-shape="pebble" aria-pressed="true">Pebble</button>
-      <button type="button" data-shape="bean" aria-pressed="false">Bean</button>
-      <button type="button" data-shape="cloud" aria-pressed="false">Cloud</button>
-    </div>
     <h3>Voice visual</h3>
     <div class="seg" id="look">
-      <button type="button" data-look="ellipses" aria-pressed="true">Ellipses</button>
-      <button type="button" data-look="smudges" aria-pressed="false">Watercolor smudges</button>
+      <button type="button" data-look="swirl" aria-pressed="true">Swirl</button>
+      <button type="button" data-look="marble" aria-pressed="false">Marble</button>
+      <button type="button" data-look="ripples" aria-pressed="false">Ripples</button>
+      <button type="button" data-look="ellipses" aria-pressed="false">Ellipses</button>
     </div>
   </section>
 
@@ -914,12 +901,14 @@
   /* ---------------- Voice pad ---------------- */
   const voice = $("#voice"), heard = $("#heard"), say = $("#say");
   const waves = [...voice.querySelectorAll(".wave")];
-  let look = "ellipses";
-  try { look = localStorage.getItem("papa-look") || look; } catch (e) {}
+  const LOOKS = ["swirl", "marble", "ripples", "ellipses"];
+  let look = "swirl";
+  try { look = localStorage.getItem("papa-look-v2") || look; } catch (e) {}
+  if (!LOOKS.includes(look)) look = "swirl";
   function setLook(l) {
     look = l; voice.dataset.look = l;
     document.querySelectorAll("#look button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.look === l)));
-    try { localStorage.setItem("papa-look", l); } catch (e) {}
+    try { localStorage.setItem("papa-look-v2", l); } catch (e) {}
   }
   setLook(look);
   document.querySelectorAll("#look button").forEach((b) => b.addEventListener("click", () => setLook(b.dataset.look)));
@@ -927,29 +916,26 @@
   let level = () => 0, levels = [0, 0, 0, 0, 0], waveRaf = 0;
 
   /* ---------------- Voice blob ----------------
-     Three base shapes; each has four smaller blobs hidden inside it that
-     slide out to these spots ([x, y, rx, ry], blob units) while listening. */
-  const SHAPES = {
-    pebble: { radii: [1.04, 1, 0.94, 0.92, 0.97, 1.03, 1.07, 1.02], rot: -18,
-      sats: [[-46, 4, 22, 19], [46, -2, 23, 20], [-24, -15, 14, 12], [26, 15, 15, 13]] },
-    bean:   { radii: [1, 1.05, 0.98, 0.8, 0.96, 1.06, 1.04, 1], rot: 8, flip: true,
-      sats: [[-44, -6, 20, 18], [43, 6, 24, 19], [20, -17, 13, 11], [-20, 16, 14, 12]] },
-    cloud:  { radii: [1.1, 0.86, 1.04, 0.84, 1.08, 0.9], rot: -10,
-      sats: [[-42, 8, 24, 18], [47, -4, 20, 17], [8, -21, 15, 12], [-14, 19, 13, 11]] },
-  };
-  const blobMain = $("#blobMain"), sats = [...voice.querySelectorAll(".sat")];
-  let shape = "pebble", spread = 0, blobRaf = 0;
-  try { shape = localStorage.getItem("papa-shape") || shape; } catch (e) {}
-  if (!SHAPES[shape]) shape = "pebble";
+     A pebble-shaped blob with four smaller blobs hidden inside it that
+     slide out to these spots ([x, y, rx, ry], blob units) while listening.
+     Five drops of colour inside it are mixed by the same gooey blur, so
+     they blend like wet paint. Looks:
+       swirl   - drops circle the middle, faster when louder
+       marble  - drops drift on looping paths and stretch, folding together
+       ripples - drops bloom from the centre and spread out, fading
+       ellipses- the row of ellipses (drawn outside the blob) */
+  const PEBBLE = { radii: [1.04, 1, 0.94, 0.92, 0.97, 1.03, 1.07, 1.02], rot: -18,
+    sats: [[-46, 4, 22, 19], [46, -2, 23, 20], [-24, -15, 14, 12], [26, 15, 15, 13]] };
+  const blobMain = $("#blobMain"), sats = [...voice.querySelectorAll(".sat")], dabs = [...voice.querySelectorAll(".dab")];
+  let spread = 0, blobRaf = 0, phase = 0, lastT = performance.now() / 1000;
 
   // smooth closed path through points on a wobbly ellipse
-  function blobPath(radii, rx, ry, rotDeg, wobble, t, flip) {
+  function blobPath(radii, rx, ry, rotDeg, wobble, t) {
     const n = radii.length, rot = rotDeg * Math.PI / 180, pts = [];
     for (let i = 0; i < n; i++) {
       const a = (i / n) * Math.PI * 2, r = radii[i] * (1 + wobble * Math.sin(t * 2.1 + i * 1.9));
       const x = Math.cos(a) * rx * r, y = Math.sin(a) * ry * r;
-      const px = x * Math.cos(rot) - y * Math.sin(rot);
-      pts.push([flip ? -px : px, x * Math.sin(rot) + y * Math.cos(rot)]);
+      pts.push([x * Math.cos(rot) - y * Math.sin(rot), x * Math.sin(rot) + y * Math.cos(rot)]);
     }
     let d = `M${pts[0][0].toFixed(2)} ${pts[0][1].toFixed(2)}`;
     for (let i = 0; i < n; i++) {
@@ -959,18 +945,47 @@
     return d + "Z";
   }
   const easeBlob = (t) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+  function placeDab(el, x, y, rx, ry, rot, op) {
+    el.setAttribute("cx", x.toFixed(2)); el.setAttribute("cy", y.toFixed(2));
+    el.setAttribute("rx", Math.max(0.01, rx).toFixed(2)); el.setAttribute("ry", Math.max(0.01, ry).toFixed(2));
+    el.setAttribute("transform", `rotate(${rot.toFixed(1)} ${x.toFixed(2)} ${y.toFixed(2)})`);
+    el.setAttribute("fill-opacity", Math.max(0, op).toFixed(3));
+  }
+  function renderMix(e, lv) {
+    const n = dabs.length;
+    dabs.forEach((el, i) => {
+      const li = levels[i] || 0;
+      if (look === "ellipses" || e < 0.01) return placeDab(el, 0, 0, 0, 0, 0, 0);
+      if (look === "swirl") {
+        const a = phase * 1.6 + (i / n) * Math.PI * 2, R = (12 + lv * 8) * e;
+        placeDab(el, Math.cos(a) * R * 2.1, Math.sin(a) * R * 0.75, 13 + li * 7, 11 + li * 6, 0, 0.62 * e);
+      } else if (look === "marble") {
+        const x = Math.sin(phase * (0.8 + i * 0.19) + i * 1.3) * 34 * e;
+        const y = Math.sin(phase * (1.15 + i * 0.13) + i * 2.1) * 10 * e;
+        const rot = (phase * 40 * (i % 2 ? 1 : -1) + i * 37) % 360;
+        placeDab(el, x, y, 18 + li * 9, 7 + li * 4, rot, 0.58 * e);
+      } else { // ripples
+        const life = (phase * 0.42 + i / n) % 1;
+        const r = 4 + life * 44;
+        placeDab(el, 0, 0, r, r * 0.52, 0, Math.pow(1 - life, 0.7) * (0.62 + lv * 0.4) * e);
+      }
+    });
+  }
   function renderBlob() {
-    const sh = SHAPES[shape], now = performance.now() / 1000;
+    const now = performance.now() / 1000, dt = Math.min(0.1, now - lastT); lastT = now;
     const lv = levels.reduce((a, b) => a + b, 0) / levels.length;
+    phase += dt * (0.9 + lv * 2.4);
     const e = easeBlob(spread);
-    blobMain.setAttribute("d", blobPath(sh.radii, 32 * (1 + lv * 0.08), 28 * (1 + lv * 0.1), sh.rot, 0.035 * e, now, sh.flip));
+    blobMain.setAttribute("d", blobPath(PEBBLE.radii, 32 * (1 + lv * 0.08), 28 * (1 + lv * 0.1), PEBBLE.rot, 0.035 * e, now));
     sats.forEach((el, i) => {
-      const [x, y, rx, ry] = sh.sats[i];
+      const [x, y, rx, ry] = PEBBLE.sats[i];
       const pulse = 1 + (levels[(i + 1) % 5] || 0) * 0.28 * e + 0.04 * e * Math.sin(now * 2.6 + i * 2);
       const k = (0.4 + 0.6 * e) * pulse;
-      el.setAttribute("cx", ((sh.flip ? -x : x) * e).toFixed(2)); el.setAttribute("cy", (y * e).toFixed(2));
+      el.setAttribute("cx", (x * e).toFixed(2)); el.setAttribute("cy", (y * e).toFixed(2));
       el.setAttribute("rx", (rx * k).toFixed(2)); el.setAttribute("ry", (ry * k).toFixed(2));
     });
+    renderMix(e, lv);
   }
   function blobTick() {
     const target = voice.dataset.state === "listening" ? 1 : 0;
@@ -979,15 +994,8 @@
     if (target === 1 || Math.abs(target - spread) > 0.002) blobRaf = requestAnimationFrame(blobTick);
     else { spread = target; renderBlob(); blobRaf = 0; }
   }
-  function kickBlob() { if (!blobRaf) blobRaf = requestAnimationFrame(blobTick); }
-  function setShape(sh) {
-    shape = sh;
-    document.querySelectorAll("#shape button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.shape === sh)));
-    try { localStorage.setItem("papa-shape", sh); } catch (e) {}
-    renderBlob();
-  }
-  document.querySelectorAll("#shape button").forEach((b) => b.addEventListener("click", () => setShape(b.dataset.shape)));
-  setShape(shape);
+  function kickBlob() { if (!blobRaf) { lastT = performance.now() / 1000; blobRaf = requestAnimationFrame(blobTick); } }
+  renderBlob();
 
   function setState(s) {
     voice.dataset.state = s;
@@ -1005,11 +1013,9 @@
       const target = Math.min(1, (Array.isArray(bands) ? bands[i] : bands * base[i]) * 1.15 + 0.04 * Math.sin(now * (5 + i) + i));
       levels[i] += (target - levels[i]) * 0.28;
       const h = 11 + levels[i] * 37;                 // design px
-      const wd = look === "smudges" ? 19 + levels[i] * 8 : 16 - levels[i] * 1.6;
+      const wd = 16 - levels[i] * 1.6;
       w.style.height = `calc(${h.toFixed(1)} * var(--u))`;
       w.style.width = `calc(${wd.toFixed(1)} * var(--u))`;
-      if (look === "smudges") w.style.transform = `rotate(${(Math.sin(now * 1.3 + i * 1.7) * 8).toFixed(1)}deg)`;
-      else w.style.transform = "";
     });
     waveRaf = requestAnimationFrame(animateWaves);
   }
