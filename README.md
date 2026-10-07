@@ -1,7 +1,7 @@
 # Papá o la Papa
 
-A one-screen prototype: the prompt is **Dad**, and you say it in Spanish.
-What you actually pronounce gets painted into the frame in watercolor washes:
+A one-screen prototype: the screen says **Translate: Dad**, and you say it in Spanish.
+What you actually pronounce gets painted into the frame in watercolor:
 
 | You say   | It paints  |
 |-----------|------------|
@@ -21,10 +21,15 @@ python3 -m http.server 8000
 
 Speech recognition uses the browser's built-in Spanish (Mexico) model.
 Where it isn't available, tapping the mic shows the three words to tap instead.
+The Adjust panel tunes the paper, the image edges, painting time and the voice blob's look.
+
+Published preview (tap words only, no mic): https://claude.ai/artifact/MrvbqSWJfhkj1HsnJr35ku
+
+Design notes and decisions for future work: `CLAUDE.md`.
 
 ## Files
 
-- `index.html` — the whole prototype (paper, icons, voice pad, WebGL watercolor painter, Adjust panel)
-- `assets/pope.jpg`, `assets/potato.jpg` — watercolor art
-- `assets/dad.jpg` — Dad portrait; `assets/*-mask.png` — soft subject outlines used to paint figure and background separately
+- `index.html`: the whole prototype (paper, icons, voice blob, WebGL watercolor painter, Adjust panel)
+- `assets/pope.jpg`, `assets/potato.jpg`: watercolor art
+- `assets/dad.jpg`: Dad portrait; `assets/*-mask.png`: soft subject outlines used to paint figure and background separately
 - Handwriting is set in Gaegu (Google Fonts)
