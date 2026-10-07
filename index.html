@@ -129,7 +129,7 @@
     text-align: center;
     font-family: var(--hand);
     font-weight: 700;
-    font-size: calc(36 * var(--u));
+    font-size: calc(26 * var(--u));
     line-height: 1.2;
     color: var(--ink);
     z-index: 3;
@@ -164,31 +164,31 @@
   .voice {
     position: absolute;
     left: 50%;
-    top: calc(604 * var(--u));
-    height: calc(82 * var(--u));
-    width: calc(82 * var(--u));
+    top: calc(612 * var(--u));
+    height: calc(66 * var(--u));
+    width: calc(66 * var(--u));
     translate: -50% 0;
     padding: 0;
     border: 0;
     background: none;
     cursor: pointer;
     z-index: 4;
-    border-radius: calc(16 * var(--u));
+    border-radius: calc(13 * var(--u));
     transition:
       width 520ms var(--ease-out),
       transform 160ms var(--ease-out);
   }
   .voice:focus-visible { outline: 2px solid var(--focus); outline-offset: 4px; }
   .voice:active { transform: scale(0.96); }
-  .voice[data-state="listening"] { width: calc(168 * var(--u)); }
+  .voice[data-state="listening"] { width: calc(134 * var(--u)); }
   .voice[data-state="processing"] { cursor: progress; }
 
   /* The pad: one flat wash of pale blue, slightly uneven, with pigment
      pooled along its edge. It fades in like a wash soaking into paper. */
   .pad {
     position: absolute;
-    inset: calc(2 * var(--u));
-    border-radius: calc(12 * var(--u));
+    inset: calc(1.6 * var(--u));
+    border-radius: calc(10 * var(--u));
     background: var(--pad);
     mix-blend-mode: multiply;
     filter: url(#wash);
@@ -207,13 +207,13 @@
     justify-content: center;
     transition: opacity 260ms var(--ease-out), transform 260ms var(--ease-out), filter 260ms var(--ease-out);
   }
-  .mic svg { width: calc(30 * var(--u)); height: calc(40 * var(--u)); overflow: visible; }
+  .mic svg { width: calc(24 * var(--u)); height: calc(32 * var(--u)); overflow: visible; }
 
-  .waves { gap: calc(5 * var(--u)); opacity: 0; transform: scale(0.6); filter: blur(4px); }
+  .waves { gap: calc(4 * var(--u)); opacity: 0; transform: scale(0.6); filter: blur(4px); }
   .wave {
     display: block;
-    width: calc(20 * var(--u));
-    height: calc(16 * var(--u));
+    width: calc(16 * var(--u));
+    height: calc(13 * var(--u));
     border-radius: 50%;
     background: var(--c);
     opacity: 0.92;
@@ -226,21 +226,21 @@
   .wave:nth-child(5) { --c: #94a090; }
 
   /* Watercolor smudge variant: soft, irregular washes that bleed */
-  .voice[data-look="smudges"] .waves { gap: calc(1 * var(--u)); }
+  .voice[data-look="smudges"] .waves { gap: calc(0.8 * var(--u)); }
   .voice[data-look="smudges"] .wave {
-    width: calc(27 * var(--u));
+    width: calc(22 * var(--u));
     background: radial-gradient(closest-side, var(--c) 0 55%, color-mix(in srgb, var(--c) 40%, transparent) 80%, transparent);
     border-radius: 46% 54% 42% 58% / 55% 45% 55% 45%;
-    filter: blur(calc(1.6 * var(--u)));
+    filter: blur(calc(1.3 * var(--u)));
     mix-blend-mode: multiply;
     opacity: 0.85;
   }
   .voice[data-look="smudges"] .wave:nth-child(even) { border-radius: 58% 42% 55% 45% / 45% 58% 42% 55%; }
 
-  .dots { gap: calc(5 * var(--u)); opacity: 0; transform: scale(0.6); }
+  .dots { gap: calc(4 * var(--u)); opacity: 0; transform: scale(0.6); }
   .dots i {
-    width: calc(9 * var(--u));
-    height: calc(9 * var(--u));
+    width: calc(7 * var(--u));
+    height: calc(7 * var(--u));
     border-radius: 50%;
     background: var(--dot);
     animation: dot 1.1s ease-in-out infinite both;
@@ -264,7 +264,7 @@
     position: absolute;
     left: calc(24 * var(--u));
     right: calc(24 * var(--u));
-    top: calc(700 * var(--u));
+    top: calc(690 * var(--u));
     margin: 0;
     text-align: center;
     font-family: var(--hand);
@@ -449,7 +449,7 @@
         <li><svg viewBox="0 0 40 28" aria-hidden="true"><path d="M1.0 13.1C1.6 10.8 3.3 8.7 4.8 6.9C6.2 5.2 8.0 3.8 9.7 2.9C11.5 1.9 13.4 1.2 15.3 1.0C17.1 0.8 19.0 1.0 20.7 1.4C22.3 1.8 23.4 2.9 25.2 3.4C27.1 3.8 29.7 3.1 31.6 4.0C33.6 4.8 35.8 6.6 37.0 8.5C38.3 10.4 39.2 13.3 38.9 15.6C38.7 17.9 37.1 20.4 35.6 22.1C34.1 23.9 31.8 25.1 29.9 25.9C28.0 26.7 25.8 26.5 24.0 26.7C22.2 26.9 20.6 27.2 19.0 27.1C17.3 27.0 15.7 26.6 14.0 26.1C12.3 25.7 10.6 25.2 8.5 24.3C6.4 23.4 2.6 22.5 1.3 20.6C0.1 18.8 0.4 15.4 1.0 13.1Z" /></svg></li>
       </ol>
 
-      <h1 class="prompt">Dad</h1>
+      <h1 class="prompt">Translate: Dad</h1>
 
       <div class="frame" id="frame">
         <div class="placeholder" aria-hidden="true"></div>
@@ -510,7 +510,6 @@
     <div class="row"><label for="edgeFade">Edge fade</label><output for="edgeFade"></output><input id="edgeFade" type="range" min="0" max="0.35" step="0.005" value="0.21"></div>
     <div class="row"><label for="edgeBlur">Edge blur</label><output for="edgeBlur"></output><input id="edgeBlur" type="range" min="0" max="1" step="0.01" value="0.95"></div>
     <div class="row"><label for="softness">Overall softness</label><output for="softness"></output><input id="softness" type="range" min="0" max="1" step="0.01" value="0.15"></div>
-    <div class="row"><label for="wetEdges">Wet edges</label><output for="wetEdges"></output><input id="wetEdges" type="range" min="0" max="1" step="0.01" value="0.35"></div>
     <div class="row"><label for="paintTime">Painting time</label><output for="paintTime"></output><input id="paintTime" type="range" min="0.8" max="6" step="0.1" value="2.2"></div>
   </section>
 
@@ -536,7 +535,7 @@
 
   /* ---------------- Settings (remembered per browser) ---------------- */
   const KEY = "papa-settings-v5";
-  const ids = ["toothSize", "toothDepth", "warmth", "edgeFade", "edgeBlur", "softness", "wetEdges", "paintTime"];
+  const ids = ["toothSize", "toothDepth", "warmth", "edgeFade", "edgeBlur", "softness", "paintTime"];
   let saved = {};
   try {
     saved = JSON.parse(localStorage.getItem(KEY) || "null");
@@ -590,11 +589,15 @@
   }
 
   /* ---------------- Watercolor painter (WebGL) ----------------
-     The background and the subject are painted as separate passes.
-     Background: one quick fade, soft and slightly off-hue at first, that
-     comes into focus and settles into the picture's own colours.
-     Subject: fades in a beat later inside a soft outline of the figure
-     (assets/*-mask.png) and comes into focus. */
+     The background and the subject are handled separately.
+     First picture: the background fades in, soft and slightly off-hue,
+     and comes into focus; the subject fades in a beat later inside a soft
+     outline of the figure (assets/*-mask.png).
+     Switching pictures: the background never leaves. Each point of it
+     shifts hue, lightness and strength from the old picture's colour to
+     the new one's, while the old subject dissolves into it and the new
+     subject fades in. Both pictures are on the GPU at once (A = old,
+     B = new); each one's outline rides in the alpha of its wash layer. */
   const canvas = $("#paint");
   const gl = canvas.getContext("webgl", { premultipliedAlpha: true, alpha: true, antialias: false });
   const TEX_W = 540, TEX_H = 720;
@@ -607,52 +610,69 @@
     precision mediump float;
     #endif
     varying vec2 v;
-    uniform sampler2D tSharp, tSoft, tWash, tNoise, tMask;
-    uniform vec3 uB, uS;       // x: fade, y: focus (z unused), for background and subject
-    uniform float uHue, uEnd, uFade, uFeather, uEdgeBlur, uSoft, uWet, uSeed;
+    uniform sampler2D tSharpA, tSoftA, tWashA, tSharpB, tSoftB, tWashB, tNoise;
+    uniform vec2 uB;           // first picture only: background fade, focus
+    uniform vec2 uS;           // new subject: fade, focus
+    uniform float uX, uOut;    // background colour morph A to B; old subject leaving
+    uniform float uHue, uEnd, uFade, uFeather, uEdgeBlur, uSoft;
     const mat3 toYIQ = mat3(.299,.596,.211, .587,-.274,-.523, .114,-.322,.312);
     const mat3 toRGB = mat3(1.,1.,1., .956,-.272,-1.106, .621,-.647,1.703);
     float n(vec2 p){ return texture2D(tNoise, p).r; }
     float fbm(vec2 p){ return n(p)*.5 + n(p*2.03+.17)*.3 + n(p*4.07+.31)*.2; }
-    // background colour settling: hue turned and chroma reduced at first
+    // first picture: hue turned and chroma reduced at first, settling
     vec3 settle(vec3 c){
       vec3 y = toYIQ * c;
-      float h = atan(y.z, y.y) + (1. - uHue) * .6;
+      float h = atan(y.z, y.y + 1e-5) + (1. - uHue) * .6;
       float ch = length(y.yz) * mix(.6, 1., uHue);
       return toRGB * vec3(y.x, ch*cos(h), ch*sin(h));
     }
-    float band(float c){ return c*(1.-c)*4.; }
+    // colour change between two pictures: walk the hue round the colour
+    // wheel the short way while lightness and strength ease across
+    vec3 morph(vec3 a, vec3 b, float t){
+      vec3 ya = toYIQ * a, yb = toYIQ * b;
+      float ca = length(ya.yz), cb = length(yb.yz);
+      float ha = atan(ya.z, ya.y + 1e-5), hb = atan(yb.z, yb.y + 1e-5);
+      float dh = mod(hb - ha + 3.14159265, 6.2831853) - 3.14159265;
+      float h = ha + dh * t, ch = mix(ca, cb, t);
+      vec3 turned = vec3(mix(ya.x, yb.x, t), ch*cos(h), ch*sin(h));
+      // near-grey colours have no real hue: blend those straight across
+      float w = smoothstep(.015, .06, min(ca, cb));
+      return toRGB * mix(mix(ya, yb, t), turned, w);
+    }
     void main(){
       vec2 uv = v;
-      vec3 sharp = texture2D(tSharp, uv).rgb;
-      vec3 soft  = texture2D(tSoft,  uv).rgb;
-      vec3 wash  = texture2D(tWash,  uv).rgb;
-      float m    = texture2D(tMask,  uv).r;
+      vec4 wA = texture2D(tWashA, uv), wB = texture2D(tWashB, uv);
+      float mA = wA.a, mB = wB.a;
 
       // Frame: irregular feathered edge, blurrier toward the rim
       float ed = min(min(uv.x, 1.-uv.x), min(uv.y, 1.-uv.y));
       float en = (fbm(uv*1.6 + 3.1) - .5) * uFeather * 1.2;
       float frameA = smoothstep(0., uFeather + .0001, ed + en);
       float rim = (1. - smoothstep(0., uFeather*2.6 + .0001, ed + en)) * uEdgeBlur;
-      vec3 fin = mix(mix(sharp, soft, uSoft), wash, rim);
 
-      // Background: one quick fade, soft and off-hue at first, coming into
-      // focus and into its own colours. Under the subject it stays a soft
-      // underpainting for the subject to fade in over.
-      vec3 c = mix(settle(mix(wash, fin, uB.y)), mix(wash, vec3(1.), .32), m);
-      float bgA = uB.x;
+      vec3 softA = texture2D(tSoftA, uv).rgb, softB = texture2D(tSoftB, uv).rgb;
+      vec3 finA = mix(mix(texture2D(tSharpA, uv).rgb, softA, uSoft), wA.rgb, rim);
+      vec3 finB = mix(mix(texture2D(tSharpB, uv).rgb, softB, uSoft), wB.rgb, rim);
 
-      // Subject: fades in just after the background and comes into focus
-      c = mix(c, mix(soft, fin, uS.y), uS.x * m);
-      c = mix(c, fin, uEnd);                                // settle exactly on the picture
+      // Each picture's background, with its subject area held as a soft
+      // underpainting
+      vec3 bgA = mix(finA, mix(wA.rgb, vec3(1.), .32), mA);
+      vec3 bgB = mix(settle(mix(wB.rgb, finB, uB.y)), mix(wB.rgb, vec3(1.), .32), mB);
 
-      float a = frameA * uFade * max(bgA, uS.x * m);
+      // the old subject's soft underpainting changes faster, so no ghost of it lingers
+      vec3 c = morph(bgA, bgB, clamp(uX * (1. + 1.4 * mA), 0., 1.));
+      c = mix(c, finA, mA * (1. - uOut));                    // old subject dissolving
+      c = mix(c, mix(softB, finB, uS.y), uS.x * mB);         // new subject fading in
+      c = mix(c, finB, uEnd);                                // settle exactly on the picture
+
+      float a = frameA * uFade * max(uB.x, uS.x * mB);
       gl_FragColor = vec4(c * a, a);
     }`;
 
-  const TEX_UNITS = ["tSharp", "tSoft", "tWash", "tNoise", "tMask"];
+  const TEX_UNITS = ["tSharpA", "tSoftA", "tWashA", "tSharpB", "tSoftB", "tWashB", "tNoise"];
+  const UNIFORMS = ["uB", "uS", "uX", "uOut", "uHue", "uEnd", "uFade", "uFeather", "uEdgeBlur", "uSoft"];
   let prog, uni = {}, tex = {};
-  const glOk = !!gl && (() => {
+  const glOk = !!gl && gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS) >= TEX_UNITS.length && (() => {
     const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { console.warn(gl.getShaderInfoLog(s)); return null; } return s; };
     const vs = sh(gl.VERTEX_SHADER, VERT), fs = sh(gl.FRAGMENT_SHADER, FRAG);
     if (!vs || !fs) return false;
@@ -662,22 +682,28 @@
     const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
     const loc = gl.getAttribLocation(prog, "p"); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-    ["tSharp","tSoft","tWash","tNoise","tMask","uB","uS","uHue","uEnd","uFade","uFeather","uEdgeBlur","uSoft","uWet","uSeed"].forEach((k) => uni[k] = gl.getUniformLocation(prog, k));
+    [...TEX_UNITS, ...UNIFORMS].forEach((k) => uni[k] = gl.getUniformLocation(prog, k));
     TEX_UNITS.forEach((k, i) => { gl.uniform1i(uni[k], i); tex[k] = gl.createTexture(); });
     return true;
   })();
 
+  /* source: a canvas, or {data, w, h} raw RGBA (keeps alpha un-premultiplied) */
   function upload(name, source, repeat) {
-    const unit = TEX_UNITS.indexOf(name);
-    gl.activeTexture(gl.TEXTURE0 + unit);
+    gl.activeTexture(gl.TEXTURE0 + TEX_UNITS.indexOf(name));
     gl.bindTexture(gl.TEXTURE_2D, tex[name]);
     gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
+    if (source.data) gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, source.w, source.h, 0, gl.RGBA, gl.UNSIGNED_BYTE, source.data);
+    else gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
     const wrap = repeat ? gl.REPEAT : gl.CLAMP_TO_EDGE;
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, wrap);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, wrap);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  }
+  function bind(slot, layers) {
+    upload("tSharp" + slot, layers.sharp);
+    upload("tSoft" + slot, layers.soft);
+    upload("tWash" + slot, layers.washMask);
   }
 
   /* Tileable value-noise texture for wet fronts, frame edge and granulation */
@@ -724,19 +750,29 @@
     x.fillStyle = "#fff"; x.beginPath(); x.ellipse(136, 215, 92, 130, 0, 0, 7); x.fill();
     return c;
   }
-  const cache = {};
   function loadImage(src) {
     return new Promise((res, rej) => { const i = new Image(); i.decoding = "async"; i.onload = () => res(i); i.onerror = rej; i.src = src; });
   }
+  /* The wash layer's colour with the subject outline packed into its alpha */
+  function washWithMask(wash, mask) {
+    const m = document.createElement("canvas"); m.width = TEX_W; m.height = TEX_H;
+    m.getContext("2d").drawImage(mask, 0, 0, TEX_W, TEX_H);
+    const wd = wash.getContext("2d").getImageData(0, 0, TEX_W, TEX_H).data;
+    const md = m.getContext("2d").getImageData(0, 0, TEX_W, TEX_H).data;
+    const data = new Uint8Array(wd.length);
+    for (let i = 0; i < wd.length; i += 4) { data[i] = wd[i]; data[i + 1] = wd[i + 1]; data[i + 2] = wd[i + 2]; data[i + 3] = md[i]; }
+    return { data, w: TEX_W, h: TEX_H };
+  }
+  const cache = {};
   async function layersFor(key) {
     if (!cache[key]) cache[key] = Promise.all([
       loadImage(sources[key]),
       masks[key] ? loadImage(masks[key]).catch(() => ovalMask()) : Promise.resolve(ovalMask()),
-    ]).then(([img, mask]) => ({ sharp: layer(img, 0), soft: layer(img, 3), wash: layer(img, 26), mask }));
+    ]).then(([img, mask]) => ({ sharp: layer(img, 0), soft: layer(img, 3), washMask: washWithMask(layer(img, 26), mask) }));
     return cache[key];
   }
 
-  const state = { b: [0, 0, 0], s: [0, 0, 0], hue: 0, end: 0, fade: 1, seed: Math.random() * 10, current: null };
+  const state = { b: [0, 0], s: [0, 0], x: 1, out: 1, hue: 0, end: 0, fade: 1, current: null };
   function sizeCanvas() {
     const r = canvas.getBoundingClientRect(), dpr = Math.min(devicePixelRatio || 1, 2);
     canvas.width = Math.max(2, Math.round(r.width * dpr)); canvas.height = Math.max(2, Math.round(r.height * dpr));
@@ -747,59 +783,72 @@
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
     if (!state.current) return;
-    gl.uniform3f(uni.uB, ...state.b);
-    gl.uniform3f(uni.uS, ...state.s);
+    gl.uniform2f(uni.uB, ...state.b);
+    gl.uniform2f(uni.uS, ...state.s);
+    gl.uniform1f(uni.uX, state.x);
+    gl.uniform1f(uni.uOut, state.out);
     gl.uniform1f(uni.uHue, state.hue);
     gl.uniform1f(uni.uEnd, state.end);
     gl.uniform1f(uni.uFade, state.fade);
     gl.uniform1f(uni.uFeather, settings.edgeFade);
     gl.uniform1f(uni.uEdgeBlur, settings.edgeBlur);
     gl.uniform1f(uni.uSoft, settings.softness);
-    gl.uniform1f(uni.uWet, settings.wetEdges);
-    gl.uniform1f(uni.uSeed, state.seed);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
 
   const easeOut = (t) => 1 - Math.pow(1 - t, 2.4);
   const easeInOut = (t) => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-  function tween(ms, step) {
+  function tween(ms, step, alive) {
     return new Promise((done) => {
       if (reduceMotion || ms <= 0) { step(1); draw(); return done(); }
       const t0 = performance.now();
-      const tick = (now) => { const t = Math.min(1, (now - t0) / ms); step(t); draw(); t < 1 ? requestAnimationFrame(tick) : done(); };
+      const tick = (now) => {
+        if (!alive()) return done();
+        const t = Math.min(1, (now - t0) / ms); step(t); draw();
+        t < 1 ? requestAnimationFrame(tick) : done();
+      };
       requestAnimationFrame(tick);
     });
   }
 
   let paintToken = 0;
   async function paint(key) {
-    const token = ++paintToken;
+    const token = ++paintToken, alive = () => token === paintToken;
     const frame = $("#frame");
-    const layers = await layersFor(key);
-    if (token !== paintToken) return;
+    const prev = state.current;
+    const [layers, before] = await Promise.all([layersFor(key), prev ? layersFor(prev) : null]);
+    if (!alive()) return;
     if (!glOk) { // no WebGL: show the image plainly
       const ctx = canvas.getContext("2d"); ctx && ctx.drawImage(layers.sharp, 0, 0, canvas.width, canvas.height);
       frame.setAttribute("data-painted", ""); return;
     }
-    // Lift the previous painting off the paper
-    if (state.current) {
-      const from = state.fade;
-      await tween(420, (t) => { state.fade = from * (1 - easeInOut(t)); });
-      if (token !== paintToken) return;
-    }
-    upload("tSharp", layers.sharp); upload("tSoft", layers.soft); upload("tWash", layers.wash); upload("tMask", layers.mask);
-    state.current = key; state.fade = 1; state.b = [0, 0, 0]; state.s = [0, 0, 0]; state.hue = 0; state.end = 0; state.seed = Math.random() * 10;
+    bind("A", before || layers);
+    bind("B", layers);
+    state.current = key; state.fade = 1; state.end = 0;
     frame.setAttribute("data-painted", "");
     canvas.setAttribute("aria-label", { pope: "Watercolor of the Pope", potato: "Watercolor of a potato", dad: "Watercolor portrait of Dad" }[key]);
-    // Background: a quick fade that comes into focus and colour.
-    // Subject: fades in just after the background, then sharpens.
     const stage = (t, start, len) => Math.min(1, Math.max(0, (t - start) / len));
+
+    if (!before) {
+      // First picture: background fades in and focuses; subject follows
+      state.x = 1; state.out = 1;
+      await tween(settings.paintTime * 1000, (t) => {
+        state.b = [easeOut(stage(t, 0, 0.28)), easeInOut(stage(t, 0.06, 0.5))];
+        state.hue = easeInOut(stage(t, 0, 0.55));
+        state.s = [easeOut(stage(t, 0.14, 0.4)), easeInOut(stage(t, 0.22, 0.6))];
+        state.end = easeInOut(stage(t, 0.9, 0.1));
+      }, alive);
+      return;
+    }
+    // Switching: background stays and changes colour; old subject
+    // dissolves into it, then the new subject fades in
+    state.b = [1, 1]; state.hue = 1; state.x = 0; state.out = 0; state.s = [0, 0];
     await tween(settings.paintTime * 1000, (t) => {
-      state.b = [easeOut(stage(t, 0, 0.28)), easeInOut(stage(t, 0.06, 0.5)), 0];
-      state.hue = easeInOut(stage(t, 0, 0.55));
-      state.s = [easeOut(stage(t, 0.14, 0.4)), easeInOut(stage(t, 0.22, 0.6)), 0];
+      state.out = easeInOut(stage(t, 0, 0.32));
+      state.x = easeInOut(stage(t, 0.04, 0.6));
+      state.s = [easeOut(stage(t, 0.4, 0.42)), easeInOut(stage(t, 0.44, 0.5))];
       state.end = easeInOut(stage(t, 0.9, 0.1));
-    });
+    }, alive);
   }
 
   if (glOk) { upload("tNoise", noiseCanvas(), true); }
@@ -852,8 +901,8 @@
     waves.forEach((w, i) => {
       const target = Math.min(1, (Array.isArray(bands) ? bands[i] : bands * base[i]) * 1.15 + 0.04 * Math.sin(now * (5 + i) + i));
       levels[i] += (target - levels[i]) * 0.28;
-      const h = 14 + levels[i] * 46;                 // design px
-      const wd = look === "smudges" ? 24 + levels[i] * 10 : 20 - levels[i] * 2;
+      const h = 11 + levels[i] * 37;                 // design px
+      const wd = look === "smudges" ? 19 + levels[i] * 8 : 16 - levels[i] * 1.6;
       w.style.height = `calc(${h.toFixed(1)} * var(--u))`;
       w.style.width = `calc(${wd.toFixed(1)} * var(--u))`;
       if (look === "smudges") w.style.transform = `rotate(${(Math.sin(now * 1.3 + i * 1.7) * 8).toFixed(1)}deg)`;
