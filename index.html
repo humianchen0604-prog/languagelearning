@@ -18,7 +18,8 @@
     --wash: #d9d9d9;           /* empty frame placeholder */
     --pad: rgb(176 210 234 / 0.5);   /* light blue wash (chips) */
     --pad-rim: #78acd2;
-    --blob-idle: #d3d0cb;            /* voice blob before speaking: light grey */
+    --blob-idle: #efeeec;            /* voice blob before speaking: near-white grey */
+    --mic-ink: #7f7d7a;              /* mic: soft pencil grey */
     --blob-listen: #c9e0f0;          /* voice blob while listening: pale blue wash */
     --dot: #6a6662;            /* processing dots */
     --panel: #fbf9f6;
@@ -201,7 +202,7 @@
   }
   .blob > g {
     fill: var(--blob-idle);
-    fill-opacity: 0.85;
+    fill-opacity: 1;
     transition: fill 450ms var(--ease-out), fill-opacity 450ms var(--ease-out);
   }
   .voice[data-state="listening"] .blob > g { fill: var(--blob-listen); fill-opacity: 0.85; }
@@ -410,6 +411,14 @@
     <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="2" seed="3" result="n" />
     <feDisplacementMap in="SourceGraphic" in2="n" scale="1.6" xChannelSelector="R" yChannelSelector="G" />
   </filter>
+  <!-- Pencil line: a slight hand wobble, then broken up by paper grain -->
+  <filter id="pencil" x="-15%" y="-15%" width="130%" height="130%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="2" seed="3" result="n" />
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="1.4" xChannelSelector="R" yChannelSelector="G" result="d" />
+    <feTurbulence type="fractalNoise" baseFrequency="1.3" numOctaves="1" seed="7" result="grain" />
+    <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1.7 -0.2" result="grainA" />
+    <feComposite in="d" in2="grainA" operator="in" />
+  </filter>
   <!-- Voice blob: shapes melt together (blur + sharp alpha cut), then get
        the watercolor treatment: wobbly outline, uneven pigment, darker rim -->
   <filter id="blob-goo" x="-30%" y="-40%" width="160%" height="180%" color-interpolation-filters="sRGB">
@@ -423,7 +432,8 @@
     <feMorphology in="shape" operator="erode" radius="1.4" result="core" />
     <feGaussianBlur in="core" stdDeviation="2" result="coreSoft" />
     <feComposite in="shape" in2="coreSoft" operator="out" result="rim" />
-    <feComponentTransfer in="rim" result="rimSoft"><feFuncA type="linear" slope="0.45" /></feComponentTransfer>
+    <feFlood flood-color="#b4b1ad" flood-opacity="0.5" />
+    <feComposite in2="rim" operator="in" result="rimSoft" />
     <feMerge><feMergeNode in="body" /><feMergeNode in="rimSoft" /></feMerge>
   </filter>
   <!-- Extra softening for the colour drops inside the voice blob, so they melt together -->
@@ -486,13 +496,13 @@
           </g>
         </svg>
         <span class="mic" aria-hidden="true">
-          <svg viewBox="0 0 30 40" fill="none" stroke="var(--ink)" stroke-linecap="round" stroke-linejoin="round"><g filter="url(#rough)">
-            <rect x="10" y="2.5" width="10" height="19" rx="5" stroke-width="1.6" fill="color-mix(in srgb, var(--ink) 40%, white)" style="fill: color-mix(in srgb, var(--ink) 40%, white)" />
+          <svg viewBox="0 0 30 40" fill="none" stroke="var(--mic-ink)" stroke-linecap="round" stroke-linejoin="round"><g filter="url(#pencil)">
+            <rect x="10" y="2.5" width="10" height="19" rx="5" stroke-width="1.8" fill="#cccbca" style="fill: color-mix(in srgb, var(--mic-ink) 40%, white)" />
             <path d="M11.4 4.6C12.4 3.4 17.8 3.2 18.8 5.2" stroke-width="0.6" opacity="0.6" />
-            <path d="M4.6 15.6C4.4 22.4 9 26.8 15 26.8C21 26.8 25.6 22.6 25.4 15.4" stroke-width="1.5" />
+            <path d="M4.6 15.6C4.4 22.4 9 26.8 15 26.8C21 26.8 25.6 22.6 25.4 15.4" stroke-width="1.7" />
             <path d="M5.4 16.4C5.8 22.8 10.4 25.6 15.4 25.8" stroke-width="0.6" opacity="0.6" />
-            <path d="M15 27C15.2 30.2 14.8 32.4 15 34.6" stroke-width="1.5" />
-            <path d="M9.6 35C13 34.4 17 34.6 20.6 35.2" stroke-width="1.5" />
+            <path d="M15 27C15.2 30.2 14.8 32.4 15 34.6" stroke-width="1.7" />
+            <path d="M9.6 35C13 34.4 17 34.6 20.6 35.2" stroke-width="1.7" />
           </g></svg>
         </span>
         <span class="waves" aria-hidden="true"><i class="wave"></i><i class="wave"></i><i class="wave"></i><i class="wave"></i><i class="wave"></i></span>
