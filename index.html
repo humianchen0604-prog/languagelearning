@@ -20,7 +20,7 @@
     --pad-rim: #78acd2;
     --blob-idle: #efeeec;            /* voice blob before speaking: near-white grey */
     --mic-ink: #7f7d7a;              /* mic: soft pencil grey */
-    --blob-listen: #c9e0f0;          /* voice blob while listening: pale blue wash */
+    --blob-listen: #e9e8e5;          /* voice blob while listening: a touch deeper grey */
     --dot: #6a6662;            /* processing dots */
     --panel: #fbf9f6;
     --panel-line: #e2dbd2;
@@ -495,10 +495,17 @@
 
       <button class="voice" id="voice" type="button" data-state="idle" data-look="swirl" aria-label="Say “Dad” in Spanish">
         <svg class="blob" viewBox="-90 -48 180 96" aria-hidden="true" focusable="false">
+          <defs>
+            <!-- colour drops stay inside the blob, a little in from its edge -->
+            <clipPath id="blob-clip">
+              <use href="#blobMain" transform="scale(0.9)" /><use href="#sat0" transform="scale(0.9)" />
+              <use href="#sat1" transform="scale(0.9)" /><use href="#sat2" transform="scale(0.9)" /><use href="#sat3" transform="scale(0.9)" />
+            </clipPath>
+          </defs>
           <g filter="url(#blob-goo)">
             <path id="blobMain" />
-            <ellipse class="sat" /><ellipse class="sat" /><ellipse class="sat" /><ellipse class="sat" />
-            <g class="mix" filter="url(#dab-blur)"><ellipse class="dab" fill="#9cc1dc" /><ellipse class="dab" fill="#b4cfa8" /><ellipse class="dab" fill="#ead39c" /><ellipse class="dab" fill="#e2b3c2" /><ellipse class="dab" fill="#c0b2e0" /></g>
+            <ellipse class="sat" id="sat0" /><ellipse class="sat" id="sat1" /><ellipse class="sat" id="sat2" /><ellipse class="sat" id="sat3" />
+            <g class="mix" filter="url(#dab-blur)" clip-path="url(#blob-clip)"><ellipse class="dab" fill="#9cc1dc" /><ellipse class="dab" fill="#b4cfa8" /><ellipse class="dab" fill="#ead39c" /><ellipse class="dab" fill="#e2b3c2" /><ellipse class="dab" fill="#c0b2e0" /></g>
           </g>
         </svg>
         <span class="mic" aria-hidden="true">
@@ -979,15 +986,15 @@
       if (look === "ellipses" || e < 0.01) return placeDab(el, 0, 0, 0, 0, 0, 0);
       if (look === "swirl") {
         const a = phase * 1.6 + (i / n) * Math.PI * 2, R = (8 + lv * 4) * e;
-        placeDab(el, Math.cos(a) * R * 2.1, Math.sin(a) * R * 0.75, 20 + li * 6, 15 + li * 4, 0, 0.78 * e);
+        placeDab(el, Math.cos(a) * R * 2.1, Math.sin(a) * R * 0.75, 30 + li * 9, 22 + li * 6, 0, 0.78 * e);
       } else if (look === "marble") {
         const x = Math.sin(phase * (0.8 + i * 0.19) + i * 1.3) * 24 * e;
         const y = Math.sin(phase * (1.15 + i * 0.13) + i * 2.1) * 7 * e;
         const rot = (phase * 40 * (i % 2 ? 1 : -1) + i * 37) % 360;
-        placeDab(el, x, y, 22 + li * 6, 12 + li * 3, rot, 0.75 * e);
+        placeDab(el, x, y, 33 + li * 9, 18 + li * 4.5, rot, 0.75 * e);
       } else { // ripples
         const life = (phase * 0.42 + i / n) % 1;
-        const r = 4 + life * 44;
+        const r = 6 + life * 66;
         placeDab(el, 0, 0, r, r * 0.55, 0, Math.pow(1 - life, 0.6) * (0.75 + lv * 0.25) * e);
       }
     });
