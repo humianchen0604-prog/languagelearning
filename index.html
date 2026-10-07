@@ -426,6 +426,10 @@
     <feComponentTransfer in="rim" result="rimSoft"><feFuncA type="linear" slope="0.45" /></feComponentTransfer>
     <feMerge><feMergeNode in="body" /><feMergeNode in="rimSoft" /></feMerge>
   </filter>
+  <!-- Extra softening for the colour drops inside the voice blob, so they melt together -->
+  <filter id="dab-blur" x="-60%" y="-60%" width="220%" height="220%">
+    <feGaussianBlur stdDeviation="6.5" />
+  </filter>
   <!-- Watercolor wash: wobbly outline, uneven pigment, darker tideline at the edge -->
   <filter id="wash" x="-10%" y="-20%" width="120%" height="140%" color-interpolation-filters="sRGB">
     <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" seed="5" result="warp" />
@@ -478,7 +482,7 @@
           <g filter="url(#blob-goo)">
             <path id="blobMain" />
             <ellipse class="sat" /><ellipse class="sat" /><ellipse class="sat" /><ellipse class="sat" />
-            <g class="mix"><ellipse class="dab" fill="#9cc1dc" /><ellipse class="dab" fill="#b4cfa8" /><ellipse class="dab" fill="#ead39c" /><ellipse class="dab" fill="#e2b3c2" /><ellipse class="dab" fill="#c0b2e0" /></g>
+            <g class="mix" filter="url(#dab-blur)"><ellipse class="dab" fill="#9cc1dc" /><ellipse class="dab" fill="#b4cfa8" /><ellipse class="dab" fill="#ead39c" /><ellipse class="dab" fill="#e2b3c2" /><ellipse class="dab" fill="#c0b2e0" /></g>
           </g>
         </svg>
         <span class="mic" aria-hidden="true">
@@ -920,7 +924,7 @@
      slide out to these spots ([x, y, rx, ry], blob units) while listening.
      Five drops of colour inside it are mixed by the same gooey blur, so
      they blend like wet paint. Looks:
-       swirl   - drops circle the middle, faster when louder
+       swirl   - drops slowly circle the middle, a little faster when louder
        marble  - drops drift on looping paths and stretch, folding together
        ripples - drops bloom from the centre and spread out, fading
        ellipses- the row of ellipses (drawn outside the blob) */
@@ -958,24 +962,24 @@
       const li = levels[i] || 0;
       if (look === "ellipses" || e < 0.01) return placeDab(el, 0, 0, 0, 0, 0, 0);
       if (look === "swirl") {
-        const a = phase * 1.6 + (i / n) * Math.PI * 2, R = (12 + lv * 8) * e;
-        placeDab(el, Math.cos(a) * R * 2.1, Math.sin(a) * R * 0.75, 13 + li * 7, 11 + li * 6, 0, 0.62 * e);
+        const a = phase * 1.6 + (i / n) * Math.PI * 2, R = (8 + lv * 4) * e;
+        placeDab(el, Math.cos(a) * R * 2.1, Math.sin(a) * R * 0.75, 20 + li * 6, 15 + li * 4, 0, 0.78 * e);
       } else if (look === "marble") {
-        const x = Math.sin(phase * (0.8 + i * 0.19) + i * 1.3) * 34 * e;
-        const y = Math.sin(phase * (1.15 + i * 0.13) + i * 2.1) * 10 * e;
+        const x = Math.sin(phase * (0.8 + i * 0.19) + i * 1.3) * 24 * e;
+        const y = Math.sin(phase * (1.15 + i * 0.13) + i * 2.1) * 7 * e;
         const rot = (phase * 40 * (i % 2 ? 1 : -1) + i * 37) % 360;
-        placeDab(el, x, y, 18 + li * 9, 7 + li * 4, rot, 0.58 * e);
+        placeDab(el, x, y, 22 + li * 6, 12 + li * 3, rot, 0.75 * e);
       } else { // ripples
         const life = (phase * 0.42 + i / n) % 1;
         const r = 4 + life * 44;
-        placeDab(el, 0, 0, r, r * 0.52, 0, Math.pow(1 - life, 0.7) * (0.62 + lv * 0.4) * e);
+        placeDab(el, 0, 0, r, r * 0.55, 0, Math.pow(1 - life, 0.6) * (0.75 + lv * 0.25) * e);
       }
     });
   }
   function renderBlob() {
     const now = performance.now() / 1000, dt = Math.min(0.1, now - lastT); lastT = now;
     const lv = levels.reduce((a, b) => a + b, 0) / levels.length;
-    phase += dt * (0.9 + lv * 2.4);
+    phase += dt * (0.22 + lv * 0.45);
     const e = easeBlob(spread);
     blobMain.setAttribute("d", blobPath(PEBBLE.radii, 32 * (1 + lv * 0.08), 28 * (1 + lv * 0.1), PEBBLE.rot, 0.035 * e, now));
     sats.forEach((el, i) => {
