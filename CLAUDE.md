@@ -52,6 +52,14 @@ cd papa && python3 -m http.server 8000   # mic needs http(s), not file://
   glare of the blue sweeps across it once, straight away (`.caption.shine`).
   For the Pope and the potato (wrong answers) there is no glare: the caption
   starts black and quickly changes to the red, which stays (`.caption.redden`).
+- Wrong-answer treatments (the Pope or the potato), picked in Adjust → "Wrong
+  answer" (saved as `papa-wfx`): Rise (red glow rising from the bottom, the
+  user's own idea), Edges (red creeping in from all four edges), Shake (picture
+  and caption shake "no"), Bleed (red wash blooming behind the caption), Ripples
+  (red rings out of the voice button), Scribble (pencil correction mark across
+  the word), Blush (voice button flushes pink and shakes). The stage carries
+  `data-wfx` and `data-won`; `.won-play` replays one-shot motion. They clear when
+  listening starts again or Dad is said.
 - Voice blob centred at (201, 674.5), 20% smaller than the Figma pebble
   (about 85 × 70); the tap-word chips sit below it.
 - Adjust panel: a column beside the phone at ≥980px wide, otherwise a bottom

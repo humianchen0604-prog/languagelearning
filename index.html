@@ -327,6 +327,102 @@
     min-height: calc(33 * var(--u));
   }
 
+  /* ---------- Wrong answer (the Pope or the potato) ----------
+     One of seven treatments, picked in Adjust. The stage carries
+     data-wfx (which one) and data-won (a wrong answer is showing); the
+     .won-play class is re-added each time so one-shot motion replays. */
+  .wrong { position: absolute; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; }
+  .wrong > * { position: absolute; opacity: 0; }
+  .stage { --wrong: 193 77 31; }   /* the caption red, #c14d1f */
+
+  /* 1 · Rise: a red glow rising from the bottom of the screen */
+  .w-rise {
+    left: -25%; right: -25%; bottom: -12%; height: 70%;
+    background: radial-gradient(ellipse 55% 80% at 50% 100%,
+      rgb(var(--wrong) / 0.42), rgb(var(--wrong) / 0.16) 48%, rgb(var(--wrong) / 0) 78%);
+    transform: translateY(35%);
+    transition: opacity 600ms var(--ease-out), transform 1100ms var(--ease-out);
+  }
+  .stage[data-wfx="rise"][data-won] .w-rise { opacity: 1; transform: none; }
+
+  /* 2 · Edges: red creeping in from all four edges */
+  .w-edges {
+    inset: 0;
+    background: radial-gradient(ellipse 78% 72% at 50% 50%,
+      rgb(var(--wrong) / 0) 52%, rgb(var(--wrong) / 0.16) 76%, rgb(var(--wrong) / 0.42) 100%);
+    transform: scale(1.25);
+    transition: opacity 500ms var(--ease-out), transform 900ms var(--ease-out);
+  }
+  .stage[data-wfx="edges"][data-won] .w-edges { opacity: 1; transform: none; }
+
+  /* 3 · Shake: the picture and the caption shake "no" */
+  @keyframes no-shake {
+    0%, 100% { transform: translateX(0); }
+    15% { transform: translateX(calc(-9 * var(--u))); }
+    32% { transform: translateX(calc(8 * var(--u))); }
+    50% { transform: translateX(calc(-6 * var(--u))); }
+    68% { transform: translateX(calc(4 * var(--u))); }
+    84% { transform: translateX(calc(-2 * var(--u))); }
+  }
+  .stage[data-wfx="shake"].won-play .frame,
+  .stage[data-wfx="shake"].won-play .caption { animation: no-shake 560ms ease-out both; }
+  .stage[data-wfx="shake"].won-play .caption { animation-delay: 60ms; }
+
+  /* 4 · Bleed: a red watercolor wash blooming behind the caption */
+  .w-bleed {
+    left: 50%; top: calc(572 * var(--u));
+    width: calc(250 * var(--u)); height: calc(110 * var(--u));
+    translate: -50% -50%;
+    border-radius: 48% 52% 44% 56% / 58% 46% 54% 42%;
+    background: radial-gradient(closest-side, rgb(var(--wrong) / 0.34), rgb(var(--wrong) / 0.16) 62%, rgb(var(--wrong) / 0));
+    filter: blur(calc(9 * var(--u)));
+    mix-blend-mode: multiply;
+    transform: scale(0.25) rotate(-8deg);
+    transition: opacity 500ms var(--ease-out), transform 1300ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .stage[data-wfx="bleed"][data-won] .w-bleed { opacity: 1; transform: none; }
+
+  /* 5 · Ripples: red rings pulsing out of the voice button */
+  .w-ring {
+    left: calc(201 * var(--u)); top: calc(674.5 * var(--u));
+    width: calc(84 * var(--u)); height: calc(70 * var(--u));
+    translate: -50% -50%;
+    border-radius: 50%;
+    border: calc(1.6 * var(--u)) solid rgb(var(--wrong) / 0.55);
+  }
+  @keyframes ripple {
+    0%   { opacity: 0.9; transform: scale(0.85); }
+    100% { opacity: 0;   transform: scale(3.4); }
+  }
+  .stage[data-wfx="ripples"].won-play .w-ring { animation: ripple 1300ms cubic-bezier(0.2, 0.7, 0.3, 1) both; }
+  .stage[data-wfx="ripples"].won-play .w-ring:nth-child(2) { animation-delay: 220ms; }
+  .stage[data-wfx="ripples"].won-play .w-ring:nth-child(3) { animation-delay: 440ms; }
+
+  /* 6 · Scribble: a pencil correction mark drawn across the Spanish word */
+  .w-scribble {
+    left: 50%; top: calc(582 * var(--u));
+    width: calc(170 * var(--u)); height: calc(40 * var(--u));
+    translate: -50% -50%;
+    overflow: visible;
+    z-index: 1;
+  }
+  .w-scribble path { stroke-dasharray: 1; stroke-dashoffset: 1; }
+  .stage[data-wfx="scribble"][data-won] .w-scribble { opacity: 1; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  .stage[data-wfx="scribble"].won-play .w-scribble path { animation: draw 520ms cubic-bezier(0.6, 0, 0.3, 1) 250ms both; }
+  .stage[data-wfx="scribble"].won-play .w-scribble path + path { animation-delay: 620ms; animation-duration: 380ms; }
+  .stage[data-wfx="scribble"][data-won]:not(.won-play) .w-scribble path { stroke-dashoffset: 0; }
+
+  /* 7 · Blush: the voice button flushes pink and shakes "no" */
+  .stage[data-wfx="blush"][data-won] .blob > g { fill: #f2cfc3; }
+  .stage[data-wfx="blush"].won-play .voice { animation: no-shake 520ms ease-out both; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wrong > * { transition-duration: 1ms !important; }
+    .stage[class*="won-play"] .frame, .stage[class*="won-play"] .caption,
+    .stage[class*="won-play"] .voice, .stage .w-ring { animation: none !important; }
+  }
+
   /* Tap fallback when the browser can't listen */
   .say {
     position: absolute;
@@ -560,6 +656,20 @@
         <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
       </button>
 
+      <!-- Wrong-answer treatments (one shows at a time, chosen in Adjust) -->
+      <div class="wrong" aria-hidden="true">
+        <div class="w-rise"></div>
+        <div class="w-edges"></div>
+        <div class="w-bleed"></div>
+        <div class="w-ring"></div><div class="w-ring"></div><div class="w-ring"></div>
+        <svg class="w-scribble" viewBox="-85 -20 170 40" fill="none" stroke="rgb(193 77 31)" stroke-linecap="round" stroke-linejoin="round">
+          <g filter="url(#pencil)">
+            <path pathLength="1" stroke-width="2.4" d="M-74 4C-60 -6 -50 9 -36 -1S-12 8 2 -2S26 7 40 -3S62 6 76 -4" />
+            <path pathLength="1" stroke-width="1.6" opacity="0.8" d="M-70 -6C-48 2 -24 -9 0 1S44 -8 72 3" />
+          </g>
+        </svg>
+      </div>
+
       <p class="caption" id="caption" aria-live="polite"><span class="caption-meaning"></span><span class="caption-word"></span></p>
 
       <div class="say" id="say" hidden>
@@ -600,6 +710,20 @@
   <section class="group">
     <h3>Painting</h3>
     <div class="row"><label for="paintTime">Painting time</label><output for="paintTime"></output><input id="paintTime" type="range" min="0.8" max="6" step="0.1" value="2.2"></div>
+  </section>
+
+  <section class="group">
+    <h3>Wrong answer</h3>
+    <div class="seg" id="wfx">
+      <button type="button" data-wfx="rise" aria-pressed="true">Rise</button>
+      <button type="button" data-wfx="edges" aria-pressed="false">Edges</button>
+      <button type="button" data-wfx="shake" aria-pressed="false">Shake</button>
+      <button type="button" data-wfx="bleed" aria-pressed="false">Bleed</button>
+      <button type="button" data-wfx="ripples" aria-pressed="false">Ripples</button>
+      <button type="button" data-wfx="scribble" aria-pressed="false">Scribble</button>
+      <button type="button" data-wfx="blush" aria-pressed="false">Blush</button>
+    </div>
+    <p class="note">How "el Papa" and "la papa" show they're wrong. Tap one to see it.</p>
   </section>
 
   <section class="group">
@@ -967,6 +1091,7 @@
 
   function setState(s) {
     voice.dataset.state = s;
+    if (s === "listening" && typeof wrongOff === "function") wrongOff();
     kickBlob();
     voice.setAttribute("aria-label", s === "listening" ? "Listening… tap to stop" : s === "processing" ? "Painting" : "Say “Dad” in Spanish");
   }
@@ -1021,10 +1146,37 @@
     else showCaption(null);
   }
 
+  /* ---------------- Wrong answer treatments ---------------- */
+  const stageEl = document.querySelector(".stage");
+  const WFX = ["rise", "edges", "shake", "bleed", "ripples", "scribble", "blush"];
+  let wfx = "rise";
+  try { wfx = localStorage.getItem("papa-wfx") || wfx; } catch (e) {}
+  if (!WFX.includes(wfx)) wfx = "rise";
+  function setWfx(v) {
+    wfx = v; stageEl.dataset.wfx = v;
+    document.querySelectorAll("#wfx button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.wfx === v)));
+    try { localStorage.setItem("papa-wfx", v); } catch (e) {}
+  }
+  function wrongOn() {
+    stageEl.toggleAttribute("data-won", false);
+    stageEl.classList.remove("won-play");
+    void stageEl.offsetWidth;                       // restart one-shot motion
+    stageEl.toggleAttribute("data-won", true);
+    stageEl.classList.add("won-play");
+  }
+  function wrongOff() { stageEl.toggleAttribute("data-won", false); stageEl.classList.remove("won-play"); }
+  setWfx(wfx);
+  document.querySelectorAll("#wfx button").forEach((b) => b.addEventListener("click", () => {
+    setWfx(b.dataset.wfx);
+    if (state.current === "pope" || state.current === "potato") wrongOn();   // replay on the wrong answer showing
+    else simulate("el Papa");
+  }));
+
   async function finish(text) {
     stopWaves();
     const key = classify(text || "");
     showHeard(text, key);
+    if (key === "pope" || key === "potato") wrongOn(); else wrongOff();
     if (!key) { setState("idle"); return; }
     setState("processing");
     await paint(key);
