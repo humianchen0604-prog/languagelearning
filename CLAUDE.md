@@ -55,17 +55,15 @@ cd papa && python3 -m http.server 8000   # mic needs http(s), not file://
   sheet behind an "Adjust" button. It holds Try a word, Paper (tooth size, tooth
   depth, warmth: 0 = `#fafafa` default, 1 = `#f5f2ee`), Painting time, and Voice visual.
 
-## Pictures: stand-ins until the Figma images are downloaded
+## Pictures
 
-`assets/*-cutout.png` are **stand-ins** made from `assets/{pope,potato,dad}.jpg`
-plus the traced `*-mask.png` outlines (with blue/grey backgrounds keyed out).
-The Figma image files couldn't be downloaded because `www.figma.com` was blocked
-by the cloud environment's network policy. When it's reachable, download the
-image fills from the three frames, save them over the cut-outs, and switch
-`PICTURES` boxes to the frames' image boxes: potato [123, 269, 155, 192],
-pope [77, 216, 248, 307], dad [9, 96, 384, 475]. The current boxes are the
-pictures' visible bounds, because the stand-ins are cropped tight. Also use the
-Figma progress-strip image (node 109:268) if wanted.
+`assets/{potato,pope,dad}-cutout.png` are split from the user's
+`assets/pictures-source.webp` (three transparent cut-outs side by side), each
+with a 24px transparent margin and a blur that ramps in over its lower 45%
+(colour and alpha blurred premultiplied, so no dark fringes). `PICTURES` boxes
+are each picture's visible bounds in the Figma frames; `layer()` ignores the
+24px margin when sizing. `assets/{pope,potato,dad}.jpg` and `*-mask.png` are
+the older full watercolors, no longer used by the page.
 
 ## Visual decisions (the user asked for these; keep them)
 
@@ -88,7 +86,7 @@ Figma progress-strip image (node 109:268) if wanted.
     per 30s), Marble, Ripples, Ellipses. Motion is slow.
   - Processing: grey blob with three small pulsing dots.
   - Mic and dots use the **pencil** filter in `--mic-ink #7f7d7a`. The mic
-    capsule is filled with that ink at 48% on white; the icon is about 15 × 20u.
+    capsule is filled with that ink at 48% on white; the icon is about 19 × 25u.
 
 ## Tried and rejected (don't bring back without asking)
 

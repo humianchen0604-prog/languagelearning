@@ -30,6 +30,6 @@ Design notes and decisions for future work: `CLAUDE.md`.
 ## Files
 
 - `index.html`: the whole prototype (paper, icons, voice blob, WebGL watercolor painter, Adjust panel)
-- `assets/*-cutout.png`: the three pictures (stand-ins made from the watercolors below until the Figma images are downloaded)
-- `assets/{pope,potato,dad}.jpg` and `assets/*-mask.png`: source watercolors and their traced outlines
+- `assets/*-cutout.png`: the three pictures, split from `assets/pictures-source.webp` with a soft blur toward the bottom
+- `assets/{pope,potato,dad}.jpg` and `assets/*-mask.png`: older full watercolors (not used by the page)
 - Type is SF Pro (system font), as in the Figma design

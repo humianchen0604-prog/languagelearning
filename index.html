@@ -216,7 +216,7 @@
     justify-content: center;
     transition: opacity 260ms var(--ease-out), transform 260ms var(--ease-out), filter 260ms var(--ease-out);
   }
-  .mic svg { width: calc(15.2 * var(--u)); height: calc(20.2 * var(--u)); overflow: visible; }
+  .mic svg { width: calc(19 * var(--u)); height: calc(25.3 * var(--u)); overflow: visible; }
 
   .waves { gap: calc(4 * var(--u)); opacity: 0; transform: scale(0.6); filter: blur(4px); }
   .wave {
@@ -665,11 +665,10 @@
   const gl = canvas.getContext("webgl", { premultipliedAlpha: true, alpha: true, antialias: false });
   const AREA = { y: 90, w: 402, h: 500 }, SCALE = 2;
   const TEX_W = AREA.w * SCALE, TEX_H = AREA.h * SCALE;
-  // [left, top, width, height] in design px. These are the visible bounds
-  // of each picture in the Figma frames, because the cut-outs here are
-  // stand-ins cropped tight. With the Figma image files (which carry their
-  // own padding), use the frames' image boxes instead:
-  //   potato [123, 269, 155, 192] · pope [77, 216, 248, 307] · dad [9, 96, 384, 475]
+  // box: [left, top, width, height] in design px, the visible bounds of each
+  // picture in the Figma frames. pad: transparent margin (image px) around
+  // each cut-out, left for its bottom blur; it's ignored when sizing.
+  const PAD = 24;
   const PICTURES = {
     potato: { src: "assets/potato-cutout.png", box: [129, 277, 137, 179], label: "Watercolor of a potato" },
     pope:   { src: "assets/pope-cutout.png",   box: [91, 229, 217, 283],  label: "Watercolor of the Pope" },
@@ -724,9 +723,10 @@
   function layer(img, box, blurPx) {
     const c = document.createElement("canvas"); c.width = TEX_W; c.height = TEX_H;
     const x = c.getContext("2d");
-    const [bl, bt, bw, bh] = box, k = Math.min(bw / img.width, bh / img.height);
-    const w = img.width * k, h = img.height * k;
-    const dx = (bl + (bw - w) / 2) * SCALE, dy = (bt - AREA.y + (bh - h) / 2) * SCALE;
+    const [bl, bt, bw, bh] = box;
+    const cw = img.width - 2 * PAD, ch = img.height - 2 * PAD;   // the picture itself
+    const k = Math.min(bw / cw, bh / ch), w = img.width * k, h = img.height * k;
+    const dx = (bl + (bw - cw * k) / 2 - PAD * k) * SCALE, dy = (bt - AREA.y + (bh - ch * k) / 2 - PAD * k) * SCALE;
     if (blurPx && canFilter) x.filter = `blur(${blurPx}px)`;
     x.drawImage(img, dx, dy, w * SCALE, h * SCALE);
     if (blurPx && !canFilter) { // fallback blur: shrink, then let the upscale soften it
