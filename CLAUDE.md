@@ -49,7 +49,7 @@ cd papa && python3 -m http.server 8000   # mic needs http(s), not file://
 - Caption: meaning in SF Pro Light 16px at 80%, y 541; Spanish in Regular 28px,
   y 565; colour per word (table above). A miss shows "No te entendí" and the
   transcript in grey. When Dad is said (correct), the caption turns black and a
-  glare of the blue sweeps across it (`.caption.shine`), repeating about every 3.6s.
+  glare of the blue sweeps across it (`.caption.shine`), repeating about every 1.8s.
   For the Pope and the potato the caption starts black and one red glare sweeps
   across, leaving it red (`.caption.redden`).
 - Voice blob centred at (201, 674.5), 20% smaller than the Figma pebble
