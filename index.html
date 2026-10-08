@@ -252,6 +252,21 @@
     40% { opacity: 1; transform: translateY(calc(-1.2 * var(--u))); }
   }
 
+  /* After Dad (correct): the mic becomes a hand-drawn "next" arrow */
+  .next {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: scale(0.6);
+    filter: blur(4px);
+    transition: opacity 260ms var(--ease-out), transform 260ms var(--ease-out), filter 260ms var(--ease-out);
+  }
+  .next svg { width: calc(25.3 * var(--u)); height: calc(19 * var(--u)); overflow: visible; }
+  .voice[data-next] .mic { opacity: 0; transform: scale(0.6); filter: blur(4px); }
+  .voice[data-next][data-state="idle"] .next { opacity: 1; transform: none; filter: none; transition-delay: 120ms; }
   .voice[data-state="listening"] .mic,
   .voice[data-state="processing"] .mic { opacity: 0; transform: scale(0.6); filter: blur(4px); }
   .voice[data-state="listening"] .waves { opacity: 1; transform: none; filter: none; transition-delay: 120ms; }
@@ -652,6 +667,14 @@
             <path d="M9.6 35C13 34.4 17 34.6 20.6 35.2" stroke-width="1.7" />
           </g></svg>
         </span>
+        <span class="next" aria-hidden="true">
+          <svg viewBox="0 0 40 30" fill="none" stroke="var(--mic-ink)" stroke-linecap="round" stroke-linejoin="round"><g filter="url(#pencil)">
+            <path d="M4.5 15.4C12 14.8 22 15.2 33.6 15" stroke-width="1.8" />
+            <path d="M5.4 16.6C13 16 21.6 16.4 31.4 16.2" stroke-width="0.6" opacity="0.6" />
+            <path d="M24.2 6.4C27.6 9.4 31 12.4 34.4 15.2C31.2 18 27.8 21.2 24.6 24" stroke-width="1.8" />
+            <path d="M25.6 8.2C28.4 10.6 30.8 12.8 33 15" stroke-width="0.6" opacity="0.6" />
+          </g></svg>
+        </span>
         <span class="waves" aria-hidden="true"><i class="wave"></i><i class="wave"></i><i class="wave"></i><i class="wave"></i><i class="wave"></i></span>
         <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
       </button>
@@ -960,6 +983,18 @@
     }, alive);
   }
 
+  /* Fade the picture on the page away (for "next") */
+  async function clearPicture() {
+    const key = state.current;
+    if (!key) return;
+    const token = ++paintToken, alive = () => token === paintToken;
+    if (!glOk) { const ctx = canvas.getContext("2d"); ctx && ctx.clearRect(0, 0, canvas.width, canvas.height); state.current = null; return; }
+    bind("A", await layersFor(key));
+    state.s = [0, 0]; state.out = 0;
+    await tween(600, (t) => { state.out = easeInOut(t); }, alive);
+    if (alive()) { state.current = null; draw(); }
+  }
+
   new ResizeObserver(sizeCanvas).observe(canvas);
   // Warm the cache so the first word paints straight away
   Object.keys(PICTURES).forEach((k) => layersFor(k).catch(() => {}));
@@ -1091,6 +1126,7 @@
 
   function setState(s) {
     voice.dataset.state = s;
+    if (s === "listening") voice.toggleAttribute("data-next", false);
     if (s === "listening" && typeof wrongOff === "function") wrongOff();
     kickBlob();
     voice.setAttribute("aria-label", s === "listening" ? "Listening… tap to stop" : s === "processing" ? "Painting" : "Say “Dad” in Spanish");
@@ -1181,6 +1217,24 @@
     setState("processing");
     await paint(key);
     setState("idle");
+    if (key === "dad") { voice.toggleAttribute("data-next", true); voice.setAttribute("aria-label", "Next word"); }
+  }
+
+  /* "Next" after a correct answer: clear the picture and caption, move the
+     progress dot along, and bring the mic back. (Only "Dad" exists so far,
+     so the next step asks for Dad again.) */
+  const steps = [...document.querySelectorAll(".progress li")];
+  let step = 0;
+  async function goNext() {
+    voice.toggleAttribute("data-next", false);
+    setState("idle");
+    wrongOff();
+    showCaption(null);
+    steps[step].removeAttribute("aria-current");
+    step = (step + 1) % steps.length;
+    steps[step].setAttribute("aria-current", "step");
+    document.querySelector(".progress").setAttribute("aria-label", `Word ${step + 1} of ${steps.length}`);
+    await clearPicture();
   }
 
   /* Simulated take: used by the tap fallback and the Adjust panel */
@@ -1271,6 +1325,7 @@
   voice.addEventListener("click", () => {
     const s = voice.dataset.state;
     if (s === "processing") return;
+    if (voice.hasAttribute("data-next")) { goNext(); return; }
     if (s === "listening") {
       if (rec) { try { rec.stop(); } catch (e) {} }
       else { clearTimeout(simTimer); stopWaves(); setState("idle"); }

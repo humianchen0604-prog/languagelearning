@@ -98,6 +98,9 @@ the older full watercolors, no longer used by the page.
   - Processing: grey blob with three small pulsing dots.
   - Mic and dots use the **pencil** filter in `--mic-ink #7f7d7a`. The mic
     capsule is filled with that ink at 48% on white; the icon is about 19 × 25u.
+  - After Dad (correct) the mic swaps for a pencil "next" arrow (`.next`,
+    `data-next` on the button). Tapping it fades the picture and caption out,
+    moves the progress dot on, and brings the mic back (`goNext()`).
 
 ## Tried and rejected (don't bring back without asking)
 
