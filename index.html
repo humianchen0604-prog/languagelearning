@@ -59,9 +59,9 @@
     -webkit-tap-highlight-color: transparent;
   }
   @media (min-width: 700px) {
-    /* the Figma frame's 60px corners, at whatever size the phone is drawn */
+    /* square corners (the user asked for radius 0) */
     .phone {
-      border-radius: calc(min(100vw, var(--screen-h) * 402 / 874) * 60 / 402);
+      border-radius: 0;
       box-shadow: 0 24px 60px -30px rgb(60 40 20 / 0.35);
     }
   }

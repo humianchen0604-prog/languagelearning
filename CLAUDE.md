@@ -38,7 +38,7 @@ cd papa && python3 -m http.server 8000   # mic needs http(s), not file://
 
 - The phone is a 402 × 874 design. Every size is `calc(N * var(--u))` with
   `--u: calc(100cqw / 402)` on `.stage`, scaled to fit. Background `#f5f2ee`
-  (on the paper texture); 60px corners on wide screens.
+  (on the paper texture); square corners (radius 0, by request).
 - Top: the progress strip (six blob shapes at 20% opacity, centred). The user
   asked for it 40% smaller than in Figma, with tighter gaps: 167 × 7u at y ≈ 72.
   No close button: the main Figma frame has none.
