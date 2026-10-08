@@ -7,7 +7,7 @@
      ones. Warm off-white on heavy cold-press watercolor stock. */
   :root {
     color-scheme: light;
-    --paper: #f5f2ee;          /* Figma background, on cold-press stock */
+    --paper: #fafafa;          /* page colour, under the cold-press texture */
     --surround: #e9e4de;       /* around the phone on wide screens */
     --ink: #302e2a;            /* the word to translate */
     --ink-soft: #7a6c61;       /* panel notes */
@@ -560,7 +560,7 @@
     <h3>Paper</h3>
     <div class="row"><label for="toothSize">Tooth size</label><output for="toothSize"></output><input id="toothSize" type="range" min="-2" max="2" step="0.01" value="0"></div>
     <div class="row"><label for="toothDepth">Tooth depth</label><output for="toothDepth"></output><input id="toothDepth" type="range" min="0" max="1" step="0.005" value="0.3"></div>
-    <div class="row"><label for="warmth">Warmth</label><output for="warmth"></output><input id="warmth" type="range" min="0" max="1" step="0.01" value="0.5"></div>
+    <div class="row"><label for="warmth">Warmth</label><output for="warmth"></output><input id="warmth" type="range" min="0" max="1" step="0.01" value="0"></div>
   </section>
 
   <section class="group">
@@ -586,12 +586,12 @@
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   /* ---------------- Settings (remembered per browser) ---------------- */
-  const KEY = "papa-settings-v6";
+  const KEY = "papa-settings-v7";
   const ids = ["toothSize", "toothDepth", "warmth", "paintTime"];
   let saved = {};
   try {
     saved = JSON.parse(localStorage.getItem(KEY) || "null");
-    if (!saved) { saved = JSON.parse(localStorage.getItem("papa-settings-v5") || "{}"); delete saved.warmth; }
+    if (!saved) { saved = JSON.parse(localStorage.getItem("papa-settings-v6") || "{}"); delete saved.warmth; }
   } catch (e) { saved = {}; }
   const settings = {};
   const fmt = (id, v) => id === "paintTime" ? v.toFixed(1) + " s" : id === "toothSize" ? Math.pow(2, v).toFixed(2) + "×" : Math.round(v * 100) + "%";
@@ -610,7 +610,7 @@
      Cold-press watercolor stock: fractal noise used as a height map and lit
      from the upper left, so the paper's tooth catches light and shadow.
      Rendered once as a full sheet, regenerated when a slider moves. */
-  const WHITE = [250, 248, 245], CREAM = [240, 236, 231];   // halfway = #f5f2ee (Figma)
+  const WHITE = [250, 250, 250], CREAM = [245, 242, 238];   // 0 = #fafafa (default), 1 = #f5f2ee (Figma's warm off-white)
   function applyPaper() {
     const w = settings.warmth;
     const col = WHITE.map((c, i) => Math.round(c + (CREAM[i] - c) * w));

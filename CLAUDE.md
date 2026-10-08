@@ -37,8 +37,8 @@ cd papa && python3 -m http.server 8000   # mic needs http(s), not file://
 ## Layout (matches the Figma frames)
 
 - The phone is a 402 × 874 design. Every size is `calc(N * var(--u))` with
-  `--u: calc(100cqw / 402)` on `.stage`, scaled to fit. Background `#f5f2ee`
-  (on the paper texture); square corners (radius 0, by request).
+  `--u: calc(100cqw / 402)` on `.stage`, scaled to fit. Page colour `#fafafa`
+  (by request; Figma used `#f5f2ee`), under the paper texture; square corners (radius 0, by request).
 - Top: the progress strip (six blob shapes at 20% opacity, centred). The user
   asked for it 40% smaller than in Figma, with tighter gaps: 167 × 7u at y ≈ 72.
   No close button: the main Figma frame has none.
@@ -53,7 +53,7 @@ cd papa && python3 -m http.server 8000   # mic needs http(s), not file://
   (106 × 87); the tap-word chips sit below it.
 - Adjust panel: a column beside the phone at ≥980px wide, otherwise a bottom
   sheet behind an "Adjust" button. It holds Try a word, Paper (tooth size, tooth
-  depth, warmth; 0.5 = `#f5f2ee`), Painting time, and Voice visual.
+  depth, warmth: 0 = `#fafafa` default, 1 = `#f5f2ee`), Painting time, and Voice visual.
 
 ## Pictures: stand-ins until the Figma images are downloaded
 
