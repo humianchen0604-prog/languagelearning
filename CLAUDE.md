@@ -49,8 +49,8 @@ cd papa && python3 -m http.server 8000   # mic needs http(s), not file://
 - Caption: meaning in SF Pro Light 16px at 80%, y 541; Spanish in Regular 28px,
   y 565; colour per word (table above). A miss shows "No te entendí" and the
   transcript in grey.
-- Voice blob centred at (201, 674.5), about the size of the Figma pebble
-  (106 × 87); the tap-word chips sit below it.
+- Voice blob centred at (201, 674.5), 20% smaller than the Figma pebble
+  (about 85 × 70); the tap-word chips sit below it.
 - Adjust panel: a column beside the phone at ≥980px wide, otherwise a bottom
   sheet behind an "Adjust" button. It holds Try a word, Paper (tooth size, tooth
   depth, warmth: 0 = `#fafafa` default, 1 = `#f5f2ee`), Painting time, and Voice visual.
@@ -88,7 +88,7 @@ Figma progress-strip image (node 109:268) if wanted.
     per 30s), Marble, Ripples, Ellipses. Motion is slow.
   - Processing: grey blob with three small pulsing dots.
   - Mic and dots use the **pencil** filter in `--mic-ink #7f7d7a`. The mic
-    capsule is filled with that ink at 48% on white; the icon is about 17 × 23u.
+    capsule is filled with that ink at 48% on white; the icon is about 15 × 20u.
 
 ## Tried and rejected (don't bring back without asking)
 

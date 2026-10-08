@@ -163,9 +163,9 @@
   .voice {
     position: absolute;
     left: 50%;
-    top: calc(629.5 * var(--u));
-    height: calc(90 * var(--u));
-    width: calc(108 * var(--u));
+    top: calc(638.5 * var(--u));
+    height: calc(72 * var(--u));
+    width: calc(86.4 * var(--u));
     translate: -50% 0;
     padding: 0;
     border: 0;
@@ -179,7 +179,7 @@
   }
   .voice:focus-visible { outline: 2px solid var(--focus); outline-offset: 4px; }
   .voice:active { transform: scale(0.96); }
-  .voice[data-state="listening"] { width: calc(218 * var(--u)); }
+  .voice[data-state="listening"] { width: calc(174.4 * var(--u)); }
   .voice[data-state="processing"] { cursor: progress; }
 
   /* The blob: one organic shape of watercolor. While listening, smaller
@@ -189,8 +189,8 @@
     position: absolute;
     left: 50%;
     top: 50%;
-    width: calc(288 * var(--u));
-    height: calc(154 * var(--u));
+    width: calc(230.4 * var(--u));
+    height: calc(123.2 * var(--u));
     translate: -50% -50%;
     overflow: visible;
     pointer-events: none;
@@ -216,7 +216,7 @@
     justify-content: center;
     transition: opacity 260ms var(--ease-out), transform 260ms var(--ease-out), filter 260ms var(--ease-out);
   }
-  .mic svg { width: calc(17.3 * var(--u)); height: calc(23 * var(--u)); overflow: visible; }
+  .mic svg { width: calc(15.2 * var(--u)); height: calc(20.2 * var(--u)); overflow: visible; }
 
   .waves { gap: calc(4 * var(--u)); opacity: 0; transform: scale(0.6); filter: blur(4px); }
   .wave {
@@ -236,10 +236,10 @@
 
   .voice:not([data-look="ellipses"]) .waves { display: none; }
 
-  .dots { gap: calc(2.5 * var(--u)); opacity: 0; transform: scale(0.6); filter: url(#pencil); }
+  .dots { gap: calc(2 * var(--u)); opacity: 0; transform: scale(0.6); filter: url(#pencil); }
   .dots i {
-    width: calc(3.5 * var(--u));
-    height: calc(3.5 * var(--u));
+    width: calc(2.8 * var(--u));
+    height: calc(2.8 * var(--u));
     border-radius: 50%;
     background: var(--mic-ink);
     animation: dot 1.1s ease-in-out infinite both;
