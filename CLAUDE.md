@@ -1,14 +1,17 @@
 # Papá o la Papa: notes for Claude
 
-One-screen phone prototype. The screen says **"Translate: Dad"**; the person
-says it in Spanish and whatever they actually pronounced is painted into the
-frame in watercolor:
+One-screen phone prototype. The screen says **"Translate / Dad"**; the person
+says it in Spanish and whatever they actually pronounced is painted onto the
+page in watercolor, with a caption:
 
-| Heard          | Paints     | Caption        |
-|----------------|------------|----------------|
-| el Papa        | the Pope   | "the Pope"     |
-| la papa / papa | a potato   | "a potato"     |
-| papá           | Dad        | "Dad. ¡Eso!"   |
+| Heard          | Paints     | Caption (meaning / Spanish, from Figma) | Colour   |
+|----------------|------------|------------------------------------------|----------|
+| el Papa        | the Pope   | the Pope / El papa                       | #c14d1f  |
+| la papa / papa | a potato   | the potato / La papá                     | #c14d1f  |
+| papá           | Dad        | the Dad / El papá                        | #2f88a6  |
+
+The design source is Figma file `UAgpMOHbjQMcWBCS4qVhg9` ("Side-project"):
+main screen node `109:254` (potato state), Pope `92:1380`, Dad `92:1399`.
 
 The point is the near-miss: people trying to say "papá" often say "el Papa" or
 "la papa" first. Classification is in `classify()`, which checks every speech
@@ -31,56 +34,57 @@ cd papa && python3 -m http.server 8000   # mic needs http(s), not file://
 - Visual checks were done with Playwright screenshots of the `.frame` and
   `#voice` elements. WebGL needs `--use-gl=swiftshader` in headless Chromium.
 
-## Layout
+## Layout (matches the Figma frames)
 
-- The phone is a 402 × 874 design (Figma units). Every size is
-  `calc(N * var(--u))` with `--u: calc(100cqw / 402)` on `.stage`, scaled to fit.
-- Top: a hand-drawn close X; a progress bar of **6 blob shapes** traced from the
-  user's watercolor strip (neutral grey `#dadada`, first/current `#8c8c8c`, 12u
-  tall); the title "Translate: Dad" in **Gaegu** bold, 26u.
-- Frame (270 × 360u, 3:4): a WebGL canvas with `mix-blend-mode: multiply`, so the
-  paper shows through the paint. Before the first word: a blurred grey placeholder.
-- Voice blob, centered at y≈645, then the "heard" caption, then tap-words.
+- The phone is a 402 × 874 design. Every size is `calc(N * var(--u))` with
+  `--u: calc(100cqw / 402)` on `.stage`, scaled to fit. Background `#f5f2ee`
+  (on the paper texture); 60px corners on wide screens.
+- Top: the progress strip (six blob shapes at 20% opacity, centred, y 67–86).
+  No close button: the main Figma frame has none.
+- Title in SF Pro (system font stack `--sf`): "Translate" Light 20px at 40%
+  black, y 130; "Dad" Regular 28px `#302e2a`, y 158.
+- Pictures: watercolor cut-outs drawn by a WebGL canvas covering y 90–590 at
+  full width (`mix-blend-mode: multiply`), each in its box (`PICTURES` in the script).
+- Caption: meaning in SF Pro Light 16px at 80%, y 541; Spanish in Regular 28px,
+  y 565; colour per word (table above). A miss shows "No te entendí" and the
+  transcript in grey.
+- Voice blob centred at (201, 674.5), about the size of the Figma pebble
+  (106 × 87); the tap-word chips sit below it.
 - Adjust panel: a column beside the phone at ≥980px wide, otherwise a bottom
-  sheet behind an "Adjust" button.
+  sheet behind an "Adjust" button. It holds Try a word, Paper (tooth size, tooth
+  depth, warmth; 0.5 = `#f5f2ee`), Painting time, and Voice visual.
+
+## Pictures: stand-ins until the Figma images are downloaded
+
+`assets/*-cutout.png` are **stand-ins** made from `assets/{pope,potato,dad}.jpg`
+plus the traced `*-mask.png` outlines (with blue/grey backgrounds keyed out).
+The Figma image files couldn't be downloaded because `www.figma.com` was blocked
+by the cloud environment's network policy. When it's reachable, download the
+image fills from the three frames, save them over the cut-outs, and switch
+`PICTURES` boxes to the frames' image boxes: potato [123, 269, 155, 192],
+pope [77, 216, 248, 307], dad [9, 96, 384, 475]. The current boxes are the
+pictures' visible bounds, because the stand-ins are cropped tight. Also use the
+Figma progress-strip image (node 109:268) if wanted.
 
 ## Visual decisions (the user asked for these; keep them)
 
-- **Paper**: heavy cold-press watercolor stock, cream-white leaning white. It's a
-  generated SVG (`feTurbulence` height map + `feDiffuseLighting`) rendered as
-  **one full-screen sheet, not tiles** (tiles showed seams). Sliders: tooth size
-  (log scale 0.25×–4×), tooth depth (0 = perfectly smooth, eased so the low end is
-  fine-grained), warmth.
-- **Font**: Gaegu only (Google Fonts). Ugly Duck was wanted but no font file was
-  ever provided; the font picker was removed once Gaegu was chosen.
-- **Images**: `pope.jpg`, `potato.jpg`, `dad.jpg` (the user's watercolor
-  portraits, 816 × 1088). `*-mask.png` are soft hand-traced subject outlines.
-  The frame edge fades and blurs irregularly (sliders: edge fade, edge blur,
-  overall softness, painting time; default 2.2s).
-- **Painting**:
-  - First picture: the background fades in quickly, soft and slightly off-hue,
-    then sharpens and settles into its own colours. The subject (inside its
-    mask) fades in a beat later and comes into focus. No white areas and no glare.
-  - Switching pictures: the background **never fades out**. Each pixel's
-    hue/lightness/chroma morphs (YIQ, shortest way round the hue wheel) from the
-    old picture to the new. The old subject dissolves into it, then the new
-    subject fades in. Both pictures are bound at once (A = old, B = new) and each
-    mask rides in the alpha channel of its wash texture, to stay within 8 texture units.
-- **Voice blob**:
-  - Single **pebble** shape, near-white grey `#efeeec` with a soft watercolor edge
-    (pale tideline fading inward plus a slight bleed outward). No hard rim.
-  - While listening: four hidden satellite blobs slide out and merge through a
-    gooey SVG filter (`#blob-goo`) into a wide shape that swells with volume.
-    It stays grey (no blue); its edge goes paler while listening.
-  - Inside while listening: five large, heavily blurred pastel drops (`.dab`,
-    lighter blue, sage, sand, rose, lilac) that fill the shape completely (no grey
-    showing), clipped to the blob. Looks: **Swirl** (default; drops travel
-    clockwise round the shape, about one lap per 30s), Marble, Ripples, Ellipses.
-    Motion is deliberately slow.
-  - Processing: the blob returns to grey with three small pulsing dots.
-  - Mic and dots are drawn with the **pencil** filter (`#pencil`: slight wobble
-    plus paper grain) in `--mic-ink #7f7d7a`. The mic capsule is filled with that
-    ink at 48% on white. The mic icon is about 17 × 23u.
+- **Paper**: heavy cold-press watercolor stock, a generated SVG (`feTurbulence`
+  height map + `feDiffuseLighting`) rendered as **one full-screen sheet, not
+  tiles**. Sliders: tooth size (log 0.25×–4×), tooth depth (0 = smooth), warmth.
+- **Painting**: a new picture fades in from a blurred copy and comes into focus.
+  When the word changes, the old picture dissolves while the new one fades in.
+  Painting time is adjustable (default 2.2s).
+- **Voice blob** (kept from before the Figma pass):
+  - Single **pebble**, near-white grey `#efeeec`, soft watercolor edge.
+  - Listening: satellite blobs slide out and merge via a gooey SVG filter
+    (`#blob-goo`) into a wide shape that swells with volume. It stays grey and
+    its edge goes paler.
+  - Inside while listening: five large, blurred, light pastel drops fill the
+    shape (clipped to it). Looks: **Swirl** (default; clockwise, about one lap
+    per 30s), Marble, Ripples, Ellipses. Motion is slow.
+  - Processing: grey blob with three small pulsing dots.
+  - Mic and dots use the **pencil** filter in `--mic-ink #7f7d7a`. The mic
+    capsule is filled with that ink at 48% on white; the icon is about 17 × 23u.
 
 ## Tried and rejected (don't bring back without asking)
 
@@ -90,14 +94,19 @@ cd papa && python3 -m http.server 8000   # mic needs http(s), not file://
 - A blue listening state; a rounded-square or speckled/grainy pad; Bean and Cloud
   blob shapes; a "watercolor smudges" look.
 - Mottled/fibrous paper grain; a tiled paper texture.
+- Earlier, pre-Figma look (now replaced by the Figma design): Gaegu
+  handwriting, the hand-drawn close X, "Translate: Dad" on one line, the
+  rectangular blurred frame with edge-fade/edge-blur/softness sliders, and the
+  background-vs-subject colour-morph painter.
 
 ## Code map (index.html script)
 
 - Settings: `ids` list plus `localStorage` key `papa-settings-vN`. Bump N when
   defaults change; older saved values are migrated where it matters.
 - Paper: `applyPaper()`.
-- Painter: `FRAG` shader, `bind("A"|"B", layers)`, `layersFor(key)`,
-  `paint(key)` (first-picture and switching timelines), `tween(ms, step, alive)`.
+- Painter: `PICTURES`, `layer(img, box, blur)`, `layersFor(key)`,
+  `bind("A"|"B", layers)`, `paint(key)`, `tween(ms, step, alive)`.
+- Caption: `CAPTION`, `showCaption()`, `showHeard()`.
 - Voice: `setState("idle"|"listening"|"processing")`, `renderBlob()` /
-  `renderMix()` (blob shape plus colour drops), `animateWaves()` (volume levels,
-  real mic via `AnalyserNode` or a synthetic envelope), `listen()`, `simulate()`.
+  `renderMix()`, `animateWaves()` (volume levels, real mic via `AnalyserNode`
+  or a synthetic envelope), `listen()`, `simulate()`.

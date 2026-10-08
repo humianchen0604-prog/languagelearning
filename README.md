@@ -1,7 +1,7 @@
 # Papá o la Papa
 
-A one-screen prototype: the screen says **Translate: Dad**, and you say it in Spanish.
-What you actually pronounce gets painted into the frame in watercolor:
+A one-screen prototype (design: Figma "Side-project"): the screen says **Translate / Dad**, and you say it in Spanish.
+What you actually pronounce gets painted onto the page in watercolor, with a caption:
 
 | You say   | It paints  |
 |-----------|------------|
@@ -30,6 +30,6 @@ Design notes and decisions for future work: `CLAUDE.md`.
 ## Files
 
 - `index.html`: the whole prototype (paper, icons, voice blob, WebGL watercolor painter, Adjust panel)
-- `assets/pope.jpg`, `assets/potato.jpg`: watercolor art
-- `assets/dad.jpg`: Dad portrait; `assets/*-mask.png`: soft subject outlines used to paint figure and background separately
-- Handwriting is set in Gaegu (Google Fonts)
+- `assets/*-cutout.png`: the three pictures (stand-ins made from the watercolors below until the Figma images are downloaded)
+- `assets/{pope,potato,dad}.jpg` and `assets/*-mask.png`: source watercolors and their traced outlines
+- Type is SF Pro (system font), as in the Figma design

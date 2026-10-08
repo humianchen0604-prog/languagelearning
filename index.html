@@ -1,23 +1,20 @@
 <meta charset="utf-8">
 <title>Papá o la Papa</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&display=swap">
 <style>
-  /* Layout: one 402 × 874 phone screen (Figma units, 1u = 100cqw / 402),
-     scaled to fit; the Adjust panel sits beside it on wide screens and
-     slides up as a sheet on narrow ones. Single paper look by design: heavy cold-press watercolor stock. */
+  /* Layout: the Figma "Potato" frame (Side-project, node 109:254), a
+     402 × 874 phone screen (1u = 100cqw / 402) scaled to fit; the Adjust
+     panel sits beside it on wide screens and slides up as a sheet on narrow
+     ones. Warm off-white on heavy cold-press watercolor stock. */
   :root {
     color-scheme: light;
-    --paper: #faf8f3;          /* cream-white watercolor stock */
+    --paper: #f5f2ee;          /* Figma background, on cold-press stock */
     --surround: #e9e4de;       /* around the phone on wide screens */
-    --ink: #2b1a10;            /* hand-drawn strokes, title */
-    --ink-soft: #7a6c61;       /* captions */
-    --seg: #dadada;            /* progress blob, upcoming */
-    --seg-now: #8c8c8c;        /* progress blob, current */
-    --wash: #d9d9d9;           /* empty frame placeholder */
-    --pad: rgb(176 210 234 / 0.5);   /* light blue wash (chips) */
-    --pad-rim: #78acd2;
+    --ink: #302e2a;            /* the word to translate */
+    --ink-soft: #7a6c61;       /* panel notes */
+    --seg: #c8c8c8;            /* progress blob, upcoming (shown at 20%) */
+    --seg-now: #5a5a5a;        /* progress blob, current (shown at 20%) */
+    --say-papa: #c14d1f;       /* caption for the Pope and the potato */
+    --say-dad: #2f88a6;        /* caption for Dad */
     --blob-idle: #efeeec;            /* voice blob before speaking: near-white grey */
     --mic-ink: #7f7d7a;              /* mic: soft pencil grey */
     --blob-listen: #e9e8e5;          /* voice blob while listening: a touch deeper grey */
@@ -26,7 +23,7 @@
     --panel-ink: #3a2c22;
     --focus: #2b1a10;
 
-    --hand: "Gaegu", "Bradley Hand", "Segoe Print", "Comic Sans MS", cursive;
+    --sf: "SF Pro Text", "SF Pro Display", "SF Pro", -apple-system, BlinkMacSystemFont, "Helvetica Neue", system-ui, sans-serif;
     --ui: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
 
     --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
@@ -62,7 +59,11 @@
     -webkit-tap-highlight-color: transparent;
   }
   @media (min-width: 700px) {
-    .phone { border-radius: 28px; box-shadow: 0 24px 60px -30px rgb(60 40 20 / 0.35); }
+    /* the Figma frame's 60px corners, at whatever size the phone is drawn */
+    .phone {
+      border-radius: calc(min(100vw, var(--screen-h) * 402 / 874) * 60 / 402);
+      box-shadow: 0 24px 60px -30px rgb(60 40 20 / 0.35);
+    }
   }
 
   .stage {
@@ -83,31 +84,14 @@
     background-size: 100% 100%;
   }
 
-  /* ---------- Top bar ---------- */
-  .close {
-    position: absolute;
-    left: calc(20 * var(--u));
-    top: calc(74 * var(--u));
-    width: calc(28 * var(--u));
-    height: calc(28 * var(--u));
-    padding: calc(4 * var(--u));
-    border: 0;
-    background: none;
-    color: var(--ink);
-    cursor: pointer;
-    z-index: 3;
-    border-radius: calc(6 * var(--u));
-    transition: transform 160ms var(--ease-out);
-  }
-  .close:active { transform: scale(0.92); }
-  .close svg { width: 100%; height: 100%; display: block; overflow: visible; }
-
+  /* ---------- Top ---------- */
   .progress {
     position: absolute;
-    left: calc(96 * var(--u));
-    top: calc(83 * var(--u));
-    width: calc(280 * var(--u));
+    left: calc(62 * var(--u));
+    top: calc(70 * var(--u));
+    width: calc(279 * var(--u));
     height: calc(12 * var(--u));
+    opacity: 0.2;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -125,34 +109,40 @@
     position: absolute;
     left: 0;
     right: 0;
-    top: calc(146 * var(--u));
+    top: calc(130 * var(--u));
     margin: 0;
-    text-align: center;
-    font-family: var(--hand);
-    font-weight: 700;
-    font-size: calc(26 * var(--u));
-    line-height: 1.2;
-    color: var(--ink);
+    display: grid;
+    justify-items: center;
+    font: inherit;
     z-index: 3;
+  }
+  .prompt-label {
+    font-family: var(--sf);
+    font-weight: 300;
+    font-size: calc(20 * var(--u));
+    line-height: calc(24 * var(--u));
+    color: #000;
+    opacity: 0.4;
+  }
+  .prompt-word {
+    margin-top: calc(4 * var(--u));
+    font-family: var(--sf);
+    font-weight: 400;
+    font-size: calc(28 * var(--u));
+    line-height: calc(33 * var(--u));
+    color: var(--ink);
   }
 
   /* ---------- Frame ---------- */
   .frame {
     position: absolute;
-    left: calc(66 * var(--u));
-    top: calc(206 * var(--u));
-    width: calc(270 * var(--u));
-    height: calc(360 * var(--u));
+    left: 0;
+    top: calc(90 * var(--u));
+    width: calc(402 * var(--u));
+    height: calc(500 * var(--u));
     z-index: 1;
+    pointer-events: none;
   }
-  .placeholder {
-    position: absolute;
-    inset: calc(22 * var(--u)) calc(24 * var(--u));
-    background: var(--wash);
-    filter: blur(calc(12 * var(--u)));
-    transition: opacity 900ms var(--ease-out);
-  }
-  .frame[data-painted] .placeholder { opacity: 0; }
   .frame canvas {
     position: absolute;
     inset: 0;
@@ -165,9 +155,9 @@
   .voice {
     position: absolute;
     left: 50%;
-    top: calc(612 * var(--u));
-    height: calc(66 * var(--u));
-    width: calc(66 * var(--u));
+    top: calc(629.5 * var(--u));
+    height: calc(90 * var(--u));
+    width: calc(108 * var(--u));
     translate: -50% 0;
     padding: 0;
     border: 0;
@@ -181,7 +171,7 @@
   }
   .voice:focus-visible { outline: 2px solid var(--focus); outline-offset: 4px; }
   .voice:active { transform: scale(0.96); }
-  .voice[data-state="listening"] { width: calc(134 * var(--u)); }
+  .voice[data-state="listening"] { width: calc(218 * var(--u)); }
   .voice[data-state="processing"] { cursor: progress; }
 
   /* The blob: one organic shape of watercolor. While listening, smaller
@@ -191,8 +181,8 @@
     position: absolute;
     left: 50%;
     top: 50%;
-    width: calc(180 * var(--u));
-    height: calc(96 * var(--u));
+    width: calc(288 * var(--u));
+    height: calc(154 * var(--u));
     translate: -50% -50%;
     overflow: visible;
     pointer-events: none;
@@ -260,30 +250,47 @@
   .voice[data-state="processing"] .dots { opacity: 1; transform: none; transition-delay: 160ms; }
   .voice[data-state="processing"] .dots i { animation-play-state: running; }
 
-  /* What was heard, in handwriting under the pad */
-  .heard {
+  /* What was heard: the meaning, then the Spanish as said, in the word's colour */
+  .caption {
     position: absolute;
-    left: calc(24 * var(--u));
-    right: calc(24 * var(--u));
-    top: calc(690 * var(--u));
+    left: 0;
+    right: 0;
+    top: calc(541 * var(--u));
     margin: 0;
-    text-align: center;
-    font-family: var(--hand);
-    color: var(--ink-soft);
-    font-size: calc(20 * var(--u));
-    line-height: 1.3;
-    min-height: 1.35em;
+    display: grid;
+    justify-items: center;
+    color: var(--cap, var(--ink));
     z-index: 3;
-    transition: opacity 300ms var(--ease-out);
+    opacity: 0;
+    transition: opacity 400ms var(--ease-out);
   }
-  .heard small { display: block; font-size: calc(16 * var(--u)); opacity: 0.8; }
+  .caption[data-show] { opacity: 1; }
+  .caption[data-key="pope"], .caption[data-key="potato"] { --cap: var(--say-papa); }
+  .caption[data-key="dad"] { --cap: var(--say-dad); }
+  .caption[data-key="none"] { --cap: color-mix(in srgb, var(--ink) 55%, transparent); }
+  .caption-meaning {
+    font-family: var(--sf);
+    font-weight: 300;
+    font-size: calc(16 * var(--u));
+    line-height: calc(19 * var(--u));
+    opacity: 0.8;
+    min-height: calc(19 * var(--u));
+  }
+  .caption-word {
+    margin-top: calc(5 * var(--u));
+    font-family: var(--sf);
+    font-weight: 400;
+    font-size: calc(28 * var(--u));
+    line-height: calc(33 * var(--u));
+    min-height: calc(33 * var(--u));
+  }
 
   /* Tap fallback when the browser can't listen */
   .say {
     position: absolute;
     left: 0;
     right: 0;
-    top: calc(764 * var(--u));
+    top: calc(770 * var(--u));
     display: flex;
     justify-content: center;
     gap: calc(8 * var(--u));
@@ -291,11 +298,11 @@
   }
   .say[hidden] { display: none; }
   .say button {
-    font-family: var(--hand);
-    font-size: calc(18 * var(--u));
+    font-family: var(--sf);
+    font-size: calc(15 * var(--u));
     color: var(--ink);
-    background: color-mix(in srgb, var(--pad) 70%, transparent);
-    border: 1px solid color-mix(in srgb, var(--pad-rim) 45%, transparent);
+    background: color-mix(in srgb, #fff 55%, transparent);
+    border: 1px solid #e2ded8;
     border-radius: 999px;
     padding: calc(4 * var(--u)) calc(12 * var(--u));
     cursor: pointer;
@@ -366,7 +373,7 @@
 
   .panel h2 {
     margin: 0;
-    font: 700 26px/1.1 var(--hand);
+    font: 600 20px/1.1 var(--sf);
     color: var(--ink);
   }
   .group { display: grid; gap: 10px; }
@@ -394,7 +401,7 @@
   .seg button[aria-pressed="true"] { background: var(--panel-ink); color: var(--panel); border-color: var(--panel-ink); }
   .seg button:focus-visible, .file-btn:focus-within, .try button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
   .try { display: flex; gap: 6px; flex-wrap: wrap; }
-  .try button { font-family: var(--hand); font-size: 17px; font-weight: 700; }
+  .try button { font-family: var(--sf); font-size: 13px; }
   .file-btn { display: inline-flex; align-items: center; gap: 6px; width: max-content; }
   .file-btn input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
   .note { margin: 0; color: var(--ink-soft); font-size: 12px; }
@@ -466,15 +473,6 @@
     <div class="stage">
       <!-- Paper: a lit, bumpy surface like heavy cold-press stock (generated, adjustable) -->
       <div class="paper" id="paper" aria-hidden="true"></div>
-      <button class="close" type="button" aria-label="Close">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" aria-hidden="true"><g filter="url(#rough)">
-          <path d="M3.5 3C8.5 8.6 14 15 20.8 21.6" stroke-width="1.7" />
-          <path d="M20.6 2.6C15.2 8.4 9.4 14.6 3.2 21.4" stroke-width="1.7" />
-          <path d="M4.6 2.4C9.4 8.2 15.4 14.2 21.4 20.4" stroke-width="0.7" opacity="0.7" />
-          <path d="M21.2 3.8C15 9.6 9.6 15.8 2.6 20.6" stroke-width="0.7" opacity="0.7" />
-        </g></svg>
-      </button>
-
       <!-- Six blobs traced from the watercolor strip; the first is the current word -->
       <ol class="progress" aria-label="Word 1 of 6">
         <li aria-current="step"><svg viewBox="0 0 37 26" aria-hidden="true"><path d="M1.0 11.8C1.0 9.8 2.6 7.4 3.9 5.7C5.2 4.0 7.1 2.5 8.9 1.8C10.6 1.0 12.9 1.0 14.6 1.0C16.4 1.0 17.9 1.6 19.4 1.9C21.0 2.1 22.1 2.3 23.9 2.5C25.6 2.7 28.1 2.2 30.0 3.0C32.0 3.8 34.4 5.5 35.4 7.3C36.3 9.2 35.9 11.8 35.8 14.1C35.7 16.4 36.1 19.4 34.9 21.0C33.6 22.6 30.4 23.8 28.2 23.8C25.9 23.8 23.1 21.3 21.4 20.9C19.7 20.6 19.6 21.0 18.1 21.7C16.7 22.4 14.8 24.6 12.7 25.1C10.7 25.5 7.3 25.4 5.9 24.3C4.4 23.1 4.7 20.1 3.9 18.0C3.1 15.9 1.0 13.9 1.0 11.8Z" /></svg></li>
@@ -485,11 +483,10 @@
         <li><svg viewBox="0 0 40 28" aria-hidden="true"><path d="M1.0 13.1C1.6 10.8 3.3 8.7 4.8 6.9C6.2 5.2 8.0 3.8 9.7 2.9C11.5 1.9 13.4 1.2 15.3 1.0C17.1 0.8 19.0 1.0 20.7 1.4C22.3 1.8 23.4 2.9 25.2 3.4C27.1 3.8 29.7 3.1 31.6 4.0C33.6 4.8 35.8 6.6 37.0 8.5C38.3 10.4 39.2 13.3 38.9 15.6C38.7 17.9 37.1 20.4 35.6 22.1C34.1 23.9 31.8 25.1 29.9 25.9C28.0 26.7 25.8 26.5 24.0 26.7C22.2 26.9 20.6 27.2 19.0 27.1C17.3 27.0 15.7 26.6 14.0 26.1C12.3 25.7 10.6 25.2 8.5 24.3C6.4 23.4 2.6 22.5 1.3 20.6C0.1 18.8 0.4 15.4 1.0 13.1Z" /></svg></li>
       </ol>
 
-      <h1 class="prompt">Translate: Dad</h1>
+      <h1 class="prompt"><span class="prompt-label">Translate</span><span class="prompt-word">Dad</span></h1>
 
       <div class="frame" id="frame">
-        <div class="placeholder" aria-hidden="true"></div>
-        <canvas id="paint" role="img" aria-label="Painting area"></canvas>
+        <canvas id="paint" role="img" aria-label="Picture of what was said"></canvas>
       </div>
 
       <button class="voice" id="voice" type="button" data-state="idle" data-look="swirl" aria-label="Say “Dad” in Spanish">
@@ -521,7 +518,7 @@
         <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
       </button>
 
-      <p class="heard" id="heard" aria-live="polite"></p>
+      <p class="caption" id="caption" aria-live="polite"><span class="caption-meaning"></span><span class="caption-word"></span></p>
 
       <div class="say" id="say" hidden>
         <button type="button" data-say="el Papa">el Papa</button>
@@ -551,14 +548,11 @@
     <h3>Paper</h3>
     <div class="row"><label for="toothSize">Tooth size</label><output for="toothSize"></output><input id="toothSize" type="range" min="-2" max="2" step="0.01" value="0"></div>
     <div class="row"><label for="toothDepth">Tooth depth</label><output for="toothDepth"></output><input id="toothDepth" type="range" min="0" max="1" step="0.005" value="0.3"></div>
-    <div class="row"><label for="warmth">Warmth</label><output for="warmth"></output><input id="warmth" type="range" min="0" max="1" step="0.01" value="0.3"></div>
+    <div class="row"><label for="warmth">Warmth</label><output for="warmth"></output><input id="warmth" type="range" min="0" max="1" step="0.01" value="0.5"></div>
   </section>
 
   <section class="group">
-    <h3>Image</h3>
-    <div class="row"><label for="edgeFade">Edge fade</label><output for="edgeFade"></output><input id="edgeFade" type="range" min="0" max="0.35" step="0.005" value="0.21"></div>
-    <div class="row"><label for="edgeBlur">Edge blur</label><output for="edgeBlur"></output><input id="edgeBlur" type="range" min="0" max="1" step="0.01" value="0.95"></div>
-    <div class="row"><label for="softness">Overall softness</label><output for="softness"></output><input id="softness" type="range" min="0" max="1" step="0.01" value="0.15"></div>
+    <h3>Painting</h3>
     <div class="row"><label for="paintTime">Painting time</label><output for="paintTime"></output><input id="paintTime" type="range" min="0.8" max="6" step="0.1" value="2.2"></div>
   </section>
 
@@ -572,11 +566,6 @@
     </div>
   </section>
 
-  <section class="group">
-    <h3>Dad photo</h3>
-    <label class="file-btn">Replace photo…<input id="dadFile" type="file" accept="image/*"></label>
-    <p class="note" id="dadNote">Try a different portrait in this browser.</p>
-  </section>
 </aside>
 
 <script>
@@ -585,15 +574,15 @@
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   /* ---------------- Settings (remembered per browser) ---------------- */
-  const KEY = "papa-settings-v5";
-  const ids = ["toothSize", "toothDepth", "warmth", "edgeFade", "edgeBlur", "softness", "paintTime"];
+  const KEY = "papa-settings-v6";
+  const ids = ["toothSize", "toothDepth", "warmth", "paintTime"];
   let saved = {};
   try {
     saved = JSON.parse(localStorage.getItem(KEY) || "null");
-    if (!saved) { saved = JSON.parse(localStorage.getItem("papa-settings-v4") || "{}"); delete saved.paintTime; }
+    if (!saved) { saved = JSON.parse(localStorage.getItem("papa-settings-v5") || "{}"); delete saved.warmth; }
   } catch (e) { saved = {}; }
   const settings = {};
-  const fmt = (id, v) => id === "paintTime" ? v.toFixed(1) + " s" : id === "toothSize" ? Math.pow(2, v).toFixed(2) + "×" : Math.round(v * (id === "edgeFade" ? 1000 : 100)) / (id === "edgeFade" ? 10 : 1) + "%";
+  const fmt = (id, v) => id === "paintTime" ? v.toFixed(1) + " s" : id === "toothSize" ? Math.pow(2, v).toFixed(2) + "×" : Math.round(v * 100) + "%";
   function persist() { try { localStorage.setItem(KEY, JSON.stringify(settings)); } catch (e) {} }
 
   ids.forEach((id) => {
@@ -609,7 +598,7 @@
      Cold-press watercolor stock: fractal noise used as a height map and lit
      from the upper left, so the paper's tooth catches light and shadow.
      Rendered once as a full sheet, regenerated when a slider moves. */
-  const WHITE = [253, 252, 249], CREAM = [246, 239, 225];
+  const WHITE = [250, 248, 245], CREAM = [240, 236, 231];   // halfway = #f5f2ee (Figma)
   function applyPaper() {
     const w = settings.warmth;
     const col = WHITE.map((c, i) => Math.round(c + (CREAM[i] - c) * w));
@@ -639,91 +628,45 @@
     document.querySelector(".phone").style.background = hex;
   }
 
-  /* ---------------- Watercolor painter (WebGL) ----------------
-     The background and the subject are handled separately.
-     First picture: the background fades in, soft and slightly off-hue,
-     and comes into focus; the subject fades in a beat later inside a soft
-     outline of the figure (assets/*-mask.png).
-     Switching pictures: the background never leaves. Each point of it
-     shifts hue, lightness and strength from the old picture's colour to
-     the new one's, while the old subject dissolves into it and the new
-     subject fades in. Both pictures are on the GPU at once (A = old,
-     B = new); each one's outline rides in the alpha of its wash layer. */
+  /* ---------------- Picture painter (WebGL) ----------------
+     Each picture is a watercolor cut-out placed in its box from the Figma
+     frames. A new picture fades in from a soft, blurred version of itself
+     and comes into focus. When the word changes, the old picture dissolves
+     while the new one fades in over it. Both are on the GPU at once
+     (A = old, B = new); textures are premultiplied so the soft cut-out
+     edges blend cleanly. The painting area is the full phone width from
+     y 90 to 590 (design px), drawn at 2x. */
   const canvas = $("#paint");
   const gl = canvas.getContext("webgl", { premultipliedAlpha: true, alpha: true, antialias: false });
-  const TEX_W = 540, TEX_H = 720;
+  const AREA = { y: 90, w: 402, h: 500 }, SCALE = 2;
+  const TEX_W = AREA.w * SCALE, TEX_H = AREA.h * SCALE;
+  // [left, top, width, height] in design px. These are the visible bounds
+  // of each picture in the Figma frames, because the cut-outs here are
+  // stand-ins cropped tight. With the Figma image files (which carry their
+  // own padding), use the frames' image boxes instead:
+  //   potato [123, 269, 155, 192] · pope [77, 216, 248, 307] · dad [9, 96, 384, 475]
+  const PICTURES = {
+    potato: { src: "assets/potato-cutout.png", box: [129, 277, 137, 179], label: "Watercolor of a potato" },
+    pope:   { src: "assets/pope-cutout.png",   box: [91, 229, 217, 283],  label: "Watercolor of the Pope" },
+    dad:    { src: "assets/dad-cutout.png",    box: [74, 241, 243, 285],  label: "Watercolor portrait of Dad" },
+  };
 
   const VERT = `attribute vec2 p; varying vec2 v; void main(){ v = vec2(p.x*.5+.5, .5-p.y*.5); gl_Position = vec4(p,0.,1.); }`;
   const FRAG = `
-    #ifdef GL_FRAGMENT_PRECISION_HIGH
-    precision highp float;
-    #else
     precision mediump float;
-    #endif
     varying vec2 v;
-    uniform sampler2D tSharpA, tSoftA, tWashA, tSharpB, tSoftB, tWashB, tNoise;
-    uniform vec2 uB;           // first picture only: background fade, focus
-    uniform vec2 uS;           // new subject: fade, focus
-    uniform float uX, uOut;    // background colour morph A to B; old subject leaving
-    uniform float uHue, uEnd, uFade, uFeather, uEdgeBlur, uSoft;
-    const mat3 toYIQ = mat3(.299,.596,.211, .587,-.274,-.523, .114,-.322,.312);
-    const mat3 toRGB = mat3(1.,1.,1., .956,-.272,-1.106, .621,-.647,1.703);
-    float n(vec2 p){ return texture2D(tNoise, p).r; }
-    float fbm(vec2 p){ return n(p)*.5 + n(p*2.03+.17)*.3 + n(p*4.07+.31)*.2; }
-    // first picture: hue turned and chroma reduced at first, settling
-    vec3 settle(vec3 c){
-      vec3 y = toYIQ * c;
-      float h = atan(y.z, y.y + 1e-5) + (1. - uHue) * .6;
-      float ch = length(y.yz) * mix(.6, 1., uHue);
-      return toRGB * vec3(y.x, ch*cos(h), ch*sin(h));
-    }
-    // colour change between two pictures: walk the hue round the colour
-    // wheel the short way while lightness and strength ease across
-    vec3 morph(vec3 a, vec3 b, float t){
-      vec3 ya = toYIQ * a, yb = toYIQ * b;
-      float ca = length(ya.yz), cb = length(yb.yz);
-      float ha = atan(ya.z, ya.y + 1e-5), hb = atan(yb.z, yb.y + 1e-5);
-      float dh = mod(hb - ha + 3.14159265, 6.2831853) - 3.14159265;
-      float h = ha + dh * t, ch = mix(ca, cb, t);
-      vec3 turned = vec3(mix(ya.x, yb.x, t), ch*cos(h), ch*sin(h));
-      // near-grey colours have no real hue: blend those straight across
-      float w = smoothstep(.015, .06, min(ca, cb));
-      return toRGB * mix(mix(ya, yb, t), turned, w);
-    }
+    uniform sampler2D tSharpA, tSoftA, tSharpB, tSoftB;
+    uniform vec2 uS;       // new picture: fade, focus
+    uniform float uOut;    // old picture leaving
     void main(){
-      vec2 uv = v;
-      vec4 wA = texture2D(tWashA, uv), wB = texture2D(tWashB, uv);
-      float mA = wA.a, mB = wB.a;
-
-      // Frame: irregular feathered edge, blurrier toward the rim
-      float ed = min(min(uv.x, 1.-uv.x), min(uv.y, 1.-uv.y));
-      float en = (fbm(uv*1.6 + 3.1) - .5) * uFeather * 1.2;
-      float frameA = smoothstep(0., uFeather + .0001, ed + en);
-      float rim = (1. - smoothstep(0., uFeather*2.6 + .0001, ed + en)) * uEdgeBlur;
-
-      vec3 softA = texture2D(tSoftA, uv).rgb, softB = texture2D(tSoftB, uv).rgb;
-      vec3 finA = mix(mix(texture2D(tSharpA, uv).rgb, softA, uSoft), wA.rgb, rim);
-      vec3 finB = mix(mix(texture2D(tSharpB, uv).rgb, softB, uSoft), wB.rgb, rim);
-
-      // Each picture's background, with its subject area held as a soft
-      // underpainting
-      vec3 bgA = mix(finA, mix(wA.rgb, vec3(1.), .32), mA);
-      vec3 bgB = mix(settle(mix(wB.rgb, finB, uB.y)), mix(wB.rgb, vec3(1.), .32), mB);
-
-      // the old subject's soft underpainting changes faster, so no ghost of it lingers
-      vec3 c = morph(bgA, bgB, clamp(uX * (1. + 1.4 * mA), 0., 1.));
-      c = mix(c, finA, mA * (1. - uOut));                    // old subject dissolving
-      c = mix(c, mix(softB, finB, uS.y), uS.x * mB);         // new subject fading in
-      c = mix(c, finB, uEnd);                                // settle exactly on the picture
-
-      float a = frameA * uFade * max(uB.x, uS.x * mB);
-      gl_FragColor = vec4(c * a, a);
+      vec4 a = texture2D(tSharpA, v) * (1. - uOut);
+      vec4 b = mix(texture2D(tSoftB, v), texture2D(tSharpB, v), uS.y) * uS.x;
+      gl_FragColor = b + a * (1. - b.a);
     }`;
 
-  const TEX_UNITS = ["tSharpA", "tSoftA", "tWashA", "tSharpB", "tSoftB", "tWashB", "tNoise"];
-  const UNIFORMS = ["uB", "uS", "uX", "uOut", "uHue", "uEnd", "uFade", "uFeather", "uEdgeBlur", "uSoft"];
+  const TEX_UNITS = ["tSharpA", "tSoftA", "tSharpB", "tSoftB"];
   let prog, uni = {}, tex = {};
-  const glOk = !!gl && gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS) >= TEX_UNITS.length && (() => {
+  const glOk = !!gl && (() => {
     const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { console.warn(gl.getShaderInfoLog(s)); return null; } return s; };
     const vs = sh(gl.VERTEX_SHADER, VERT), fs = sh(gl.FRAGMENT_SHADER, FRAG);
     if (!vs || !fs) return false;
@@ -733,97 +676,52 @@
     const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
     const loc = gl.getAttribLocation(prog, "p"); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-    [...TEX_UNITS, ...UNIFORMS].forEach((k) => uni[k] = gl.getUniformLocation(prog, k));
+    [...TEX_UNITS, "uS", "uOut"].forEach((k) => uni[k] = gl.getUniformLocation(prog, k));
     TEX_UNITS.forEach((k, i) => { gl.uniform1i(uni[k], i); tex[k] = gl.createTexture(); });
     return true;
   })();
 
-  /* source: a canvas, or {data, w, h} raw RGBA (keeps alpha un-premultiplied) */
-  function upload(name, source, repeat) {
+  function upload(name, source) {
     gl.activeTexture(gl.TEXTURE0 + TEX_UNITS.indexOf(name));
     gl.bindTexture(gl.TEXTURE_2D, tex[name]);
-    gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
-    if (source.data) gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, source.w, source.h, 0, gl.RGBA, gl.UNSIGNED_BYTE, source.data);
-    else gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
-    const wrap = repeat ? gl.REPEAT : gl.CLAMP_TO_EDGE;
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, wrap);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, wrap);
+    gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
   }
-  function bind(slot, layers) {
-    upload("tSharp" + slot, layers.sharp);
-    upload("tSoft" + slot, layers.soft);
-    upload("tWash" + slot, layers.washMask);
-  }
-
-  /* Tileable value-noise texture for wet fronts, frame edge and granulation */
-  function noiseCanvas() {
-    const S = 256, c = document.createElement("canvas"); c.width = c.height = S;
-    const x = c.getContext("2d"), img = x.createImageData(S, S);
-    const grid = (g) => { const a = []; for (let i = 0; i < g * g; i++) a.push(Math.random()); return a; };
-    const octs = [[8, 0.5], [16, 0.3], [32, 0.2]].map(([g, w]) => ({ g, w, a: grid(g) }));
-    const sm = (t) => t * t * (3 - 2 * t);
-    for (let y = 0; y < S; y++) for (let X = 0; X < S; X++) {
-      let v = 0;
-      for (const o of octs) {
-        const fx = X / S * o.g, fy = y / S * o.g, ix = Math.floor(fx), iy = Math.floor(fy), tx = sm(fx - ix), ty = sm(fy - iy);
-        const at = (i, j) => o.a[((j % o.g) * o.g) + (i % o.g)];
-        const top = at(ix, iy) * (1 - tx) + at(ix + 1, iy) * tx, bot = at(ix, iy + 1) * (1 - tx) + at(ix + 1, iy + 1) * tx;
-        v += (top * (1 - ty) + bot * ty) * o.w;
-      }
-      const k = (y * S + X) * 4; img.data[k] = img.data[k + 1] = img.data[k + 2] = v * 255; img.data[k + 3] = 255;
-    }
-    x.putImageData(img, 0, 0); return c;
-  }
+  function bind(slot, layers) { upload("tSharp" + slot, layers.sharp); upload("tSoft" + slot, layers.soft); }
 
   const canFilter = (() => { const x = document.createElement("canvas").getContext("2d"); if (!("filter" in x)) return false; x.filter = "blur(2px)"; return x.filter === "blur(2px)"; })();
-  function layer(img, blurPx) {
+  /* The picture drawn into its box (fitted, centred) on a transparent sheet
+     the size of the painting area, optionally blurred */
+  function layer(img, box, blurPx) {
     const c = document.createElement("canvas"); c.width = TEX_W; c.height = TEX_H;
     const x = c.getContext("2d");
-    x.fillStyle = "#fff"; x.fillRect(0, 0, TEX_W, TEX_H);
-    if (!blurPx) { x.drawImage(img, 0, 0, TEX_W, TEX_H); return c; }
-    if (canFilter) { x.filter = `blur(${blurPx}px)`; x.drawImage(img, -blurPx, -blurPx, TEX_W + blurPx * 2, TEX_H + blurPx * 2); return c; }
-    // Fallback blur: shrink, then let the GPU-smooth upscale soften it
-    const s = Math.max(4, Math.round(blurPx / 1.5)), small = document.createElement("canvas");
-    small.width = Math.ceil(TEX_W / s); small.height = Math.ceil(TEX_H / s);
-    small.getContext("2d").drawImage(img, 0, 0, small.width, small.height);
-    x.imageSmoothingQuality = "high"; x.drawImage(small, 0, 0, TEX_W, TEX_H); return c;
-  }
-
-  const sources = { pope: "assets/pope.jpg", potato: "assets/potato.jpg", dad: "assets/dad.jpg" };
-  const masks = { pope: "assets/pope-mask.png", potato: "assets/potato-mask.png", dad: "assets/dad-mask.png" };
-  /* Soft oval outline, for an uploaded photo that has no traced mask */
-  function ovalMask() {
-    const c = document.createElement("canvas"); c.width = 272; c.height = 363;
-    const x = c.getContext("2d"); x.fillStyle = "#000"; x.fillRect(0, 0, 272, 363);
-    if (canFilter) x.filter = "blur(14px)";
-    x.fillStyle = "#fff"; x.beginPath(); x.ellipse(136, 215, 92, 130, 0, 0, 7); x.fill();
+    const [bl, bt, bw, bh] = box, k = Math.min(bw / img.width, bh / img.height);
+    const w = img.width * k, h = img.height * k;
+    const dx = (bl + (bw - w) / 2) * SCALE, dy = (bt - AREA.y + (bh - h) / 2) * SCALE;
+    if (blurPx && canFilter) x.filter = `blur(${blurPx}px)`;
+    x.drawImage(img, dx, dy, w * SCALE, h * SCALE);
+    if (blurPx && !canFilter) { // fallback blur: shrink, then let the upscale soften it
+      const small = document.createElement("canvas"); small.width = TEX_W / 8; small.height = TEX_H / 8;
+      small.getContext("2d").drawImage(c, 0, 0, small.width, small.height);
+      x.clearRect(0, 0, TEX_W, TEX_H); x.imageSmoothingQuality = "high"; x.drawImage(small, 0, 0, TEX_W, TEX_H);
+    }
     return c;
   }
   function loadImage(src) {
     return new Promise((res, rej) => { const i = new Image(); i.decoding = "async"; i.onload = () => res(i); i.onerror = rej; i.src = src; });
   }
-  /* The wash layer's colour with the subject outline packed into its alpha */
-  function washWithMask(wash, mask) {
-    const m = document.createElement("canvas"); m.width = TEX_W; m.height = TEX_H;
-    m.getContext("2d").drawImage(mask, 0, 0, TEX_W, TEX_H);
-    const wd = wash.getContext("2d").getImageData(0, 0, TEX_W, TEX_H).data;
-    const md = m.getContext("2d").getImageData(0, 0, TEX_W, TEX_H).data;
-    const data = new Uint8Array(wd.length);
-    for (let i = 0; i < wd.length; i += 4) { data[i] = wd[i]; data[i + 1] = wd[i + 1]; data[i + 2] = wd[i + 2]; data[i + 3] = md[i]; }
-    return { data, w: TEX_W, h: TEX_H };
-  }
   const cache = {};
-  async function layersFor(key) {
-    if (!cache[key]) cache[key] = Promise.all([
-      loadImage(sources[key]),
-      masks[key] ? loadImage(masks[key]).catch(() => ovalMask()) : Promise.resolve(ovalMask()),
-    ]).then(([img, mask]) => ({ sharp: layer(img, 0), soft: layer(img, 3), washMask: washWithMask(layer(img, 26), mask) }));
+  function layersFor(key) {
+    const pic = PICTURES[key];
+    if (!cache[key]) cache[key] = loadImage(pic.src).then((img) => ({ sharp: layer(img, pic.box, 0), soft: layer(img, pic.box, 14) }));
     return cache[key];
   }
 
-  const state = { b: [0, 0], s: [0, 0], x: 1, out: 1, hue: 0, end: 0, fade: 1, current: null };
+  const state = { s: [0, 0], out: 1, current: null };
   function sizeCanvas() {
     const r = canvas.getBoundingClientRect(), dpr = Math.min(devicePixelRatio || 1, 2);
     canvas.width = Math.max(2, Math.round(r.width * dpr)); canvas.height = Math.max(2, Math.round(r.height * dpr));
@@ -834,16 +732,8 @@
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
     if (!state.current) return;
-    gl.uniform2f(uni.uB, ...state.b);
     gl.uniform2f(uni.uS, ...state.s);
-    gl.uniform1f(uni.uX, state.x);
     gl.uniform1f(uni.uOut, state.out);
-    gl.uniform1f(uni.uHue, state.hue);
-    gl.uniform1f(uni.uEnd, state.end);
-    gl.uniform1f(uni.uFade, state.fade);
-    gl.uniform1f(uni.uFeather, settings.edgeFade);
-    gl.uniform1f(uni.uEdgeBlur, settings.edgeBlur);
-    gl.uniform1f(uni.uSoft, settings.softness);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
 
@@ -865,56 +755,44 @@
   let paintToken = 0;
   async function paint(key) {
     const token = ++paintToken, alive = () => token === paintToken;
-    const frame = $("#frame");
     const prev = state.current;
     const [layers, before] = await Promise.all([layersFor(key), prev ? layersFor(prev) : null]);
     if (!alive()) return;
-    if (!glOk) { // no WebGL: show the image plainly
-      const ctx = canvas.getContext("2d"); ctx && ctx.drawImage(layers.sharp, 0, 0, canvas.width, canvas.height);
-      frame.setAttribute("data-painted", ""); return;
+    canvas.setAttribute("aria-label", PICTURES[key].label);
+    if (!glOk) { // no WebGL: show the picture plainly
+      const ctx = canvas.getContext("2d");
+      if (ctx) { ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.drawImage(layers.sharp, 0, 0, canvas.width, canvas.height); }
+      state.current = key; return;
     }
     bind("A", before || layers);
     bind("B", layers);
-    state.current = key; state.fade = 1; state.end = 0;
-    frame.setAttribute("data-painted", "");
-    canvas.setAttribute("aria-label", { pope: "Watercolor of the Pope", potato: "Watercolor of a potato", dad: "Watercolor portrait of Dad" }[key]);
+    state.current = key;
     const stage = (t, start, len) => Math.min(1, Math.max(0, (t - start) / len));
-
-    if (!before) {
-      // First picture: background fades in and focuses; subject follows
-      state.x = 1; state.out = 1;
-      await tween(settings.paintTime * 1000, (t) => {
-        state.b = [easeOut(stage(t, 0, 0.28)), easeInOut(stage(t, 0.06, 0.5))];
-        state.hue = easeInOut(stage(t, 0, 0.55));
-        state.s = [easeOut(stage(t, 0.14, 0.4)), easeInOut(stage(t, 0.22, 0.6))];
-        state.end = easeInOut(stage(t, 0.9, 0.1));
-      }, alive);
-      return;
-    }
-    // Switching: background stays and changes colour; old subject
-    // dissolves into it, then the new subject fades in
-    state.b = [1, 1]; state.hue = 1; state.x = 0; state.out = 0; state.s = [0, 0];
+    const first = !before;
+    state.out = first ? 1 : 0; state.s = [0, 0];
     await tween(settings.paintTime * 1000, (t) => {
-      state.out = easeInOut(stage(t, 0, 0.32));
-      state.x = easeInOut(stage(t, 0.04, 0.6));
-      state.s = [easeOut(stage(t, 0.4, 0.42)), easeInOut(stage(t, 0.44, 0.5))];
-      state.end = easeInOut(stage(t, 0.9, 0.1));
+      if (!first) state.out = easeInOut(stage(t, 0, 0.4));
+      const o = first ? 0 : 0.28;
+      state.s = [easeOut(stage(t, o, 0.5)), easeInOut(stage(t, o + 0.06, 0.62))];
     }, alive);
   }
 
-  if (glOk) { upload("tNoise", noiseCanvas(), true); }
   new ResizeObserver(sizeCanvas).observe(canvas);
   // Warm the cache so the first word paints straight away
-  Object.keys(sources).forEach((k) => layersFor(k).catch(() => {}));
+  Object.keys(PICTURES).forEach((k) => layersFor(k).catch(() => {}));
 
   function apply(id) {
     if (["toothSize", "toothDepth", "warmth"].includes(id)) applyPaper();
-    else draw();
   }
   applyPaper();
 
   /* ---------------- Words ---------------- */
-  const MEANING = { pope: "the Pope", potato: "a potato", dad: "Dad. ¡Eso!" };
+  // Captions as written in the Figma frames: meaning, then the Spanish
+  const CAPTION = {
+    potato: ["the potato", "La papá"],
+    pope:   ["the Pope", "El papa"],
+    dad:    ["the Dad", "El papá"],
+  };
   function classify(raw) {
     const text = raw.normalize("NFC").trim();
     const t = text.toLowerCase();
@@ -925,7 +803,8 @@
   }
 
   /* ---------------- Voice pad ---------------- */
-  const voice = $("#voice"), heard = $("#heard"), say = $("#say");
+  const voice = $("#voice"), say = $("#say");
+  const caption = $("#caption"), capMeaning = caption.querySelector(".caption-meaning"), capWord = caption.querySelector(".caption-word");
   const waves = [...voice.querySelectorAll(".wave")];
   const LOOKS = ["swirl", "marble", "ripples", "ellipses"];
   let look = "swirl";
@@ -1066,11 +945,17 @@
     };
   }
 
+  /* Caption under the picture. key: a word, "none" for a miss, or null to hide */
+  function showCaption(key, meaning, word) {
+    caption.dataset.key = key || "none";
+    capMeaning.textContent = meaning || "";
+    capWord.textContent = word || "";
+    caption.toggleAttribute("data-show", !!(meaning || word));
+  }
   function showHeard(text, key) {
-    heard.innerHTML = "";
-    if (!text) return;
-    const q = document.createElement("span"); q.textContent = `“${text}”`; heard.append(q);
-    const m = document.createElement("small"); m.textContent = key ? MEANING[key] : "No te entendí. Try again."; heard.append(m);
+    if (key) showCaption(key, ...CAPTION[key]);
+    else if (text) showCaption("none", "No te entendí. Try again.", text);
+    else showCaption(null);
   }
 
   async function finish(text) {
@@ -1090,7 +975,6 @@
     clearTimeout(simTimer);
     stopListening(true);
     say.hidden = true;
-    heard.innerHTML = "";
     setState("listening");
     startWaves(syntheticVoice(phrase, performance.now() / 1000));
     simTimer = setTimeout(() => finish(phrase), 1500);
@@ -1137,7 +1021,6 @@
 
   async function listen() {
     gotResult = false;
-    heard.innerHTML = "";
     setState("listening");
     rec = new SR();
     rec.lang = "es-MX"; rec.interimResults = true; rec.maxAlternatives = 5; rec.continuous = false;
@@ -1148,7 +1031,7 @@
     rec.onspeechend = () => { speaking = false; };
     rec.onresult = (e) => {
       const r = e.results[e.results.length - 1];
-      if (!r.isFinal) { heard.textContent = r[0].transcript; return; }
+      if (!r.isFinal) { showCaption("none", "", r[0].transcript); return; }
       gotResult = true;
       let pick = r[0].transcript;
       for (let j = 0; j < r.length; j++) if (classify(r[j].transcript)) { pick = r[j].transcript; break; }
@@ -1163,7 +1046,7 @@
         say.hidden = false;
       }
     };
-    rec.onend = () => { if (!gotResult) { stopListening(); showHeard(""); heard.textContent = "No te escuché. Tap the mic and try again."; } };
+    rec.onend = () => { if (!gotResult) { stopListening(); showCaption("none", "No te escuché. Tap the mic and try again.", ""); } };
     try { rec.start(); } catch (e) { stopListening(); say.hidden = false; return; }
     // Drive the ellipses from the real volume when the mic level is available
     const real = await micLevel();
@@ -1180,17 +1063,6 @@
     }
     if (speechWorks) listen();
     else say.hidden = !say.hidden;
-  });
-
-  /* ---------------- Dad photo ---------------- */
-  $("#dadFile").addEventListener("change", (e) => {
-    const f = e.target.files && e.target.files[0];
-    if (!f) return;
-    sources.dad = URL.createObjectURL(f);
-    masks.dad = null; // no traced outline for a new photo: use a soft oval
-    delete cache.dad;
-    $("#dadNote").textContent = `Using “${f.name}” in this browser. To keep it, save it as assets/dad.jpg.`;
-    simulate("papá");
   });
 
   /* ---------------- Panel toggle (narrow screens) ---------------- */
