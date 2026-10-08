@@ -40,7 +40,7 @@ cd papa && python3 -m http.server 8000   # mic needs http(s), not file://
   `--u: calc(100cqw / 402)` on `.stage`, scaled to fit. Page colour `#fafafa`
   (by request; Figma used `#f5f2ee`), under the paper texture; square corners (radius 0, by request).
 - Top: the progress strip (six blob shapes at 20% opacity, centred). The user
-  asked for it 40% smaller than in Figma, with tighter gaps: 167 × 7u at y ≈ 72.
+  asked for it 40% smaller than in Figma, then 10% wider gaps: 178 × 7u at y ≈ 72.
   No close button: the main Figma frame has none.
 - Title in SF Pro (system font stack `--sf`): "Translate" Light 20px at 40%
   black, y 130; "Dad" Regular 28px `#302e2a`, y 158.
