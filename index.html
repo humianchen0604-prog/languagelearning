@@ -299,12 +299,33 @@
     animation: shine 3.6s ease-in-out 0.35s infinite;
   }
   .caption.shine .caption-meaning { animation-delay: 0.25s; }
+  /* The Pope and the potato: black first, then one glare of the red sweeps
+     across and leaves the text red */
+  .caption.redden .caption-meaning,
+  .caption.redden .caption-word {
+    color: transparent;
+    background-image: linear-gradient(105deg,
+      var(--say-papa) 0%, var(--say-papa) 38%,
+      #e8875c 47%, #f6b893 50%, #d9663a 53%,
+      #1a1a1a 62%, #1a1a1a 100%);
+    background-size: 300% 100%;
+    background-position: 100% 0;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: redden 1.5s ease-in-out 0.45s 1 both;
+  }
+  .caption.redden .caption-meaning { animation-delay: 0.35s; }
+  @keyframes redden {
+    from { background-position: 100% 0; }
+    to   { background-position: 0 0; }
+  }
   @keyframes shine {
     0%        { background-position: 100% 0; }
     45%, 100% { background-position: 0 0; }
   }
   @media (prefers-reduced-motion: reduce) {
     .caption.shine .caption-meaning, .caption.shine .caption-word { animation: none; background-position: 50% 0; }
+    .caption.redden .caption-meaning, .caption.redden .caption-word { animation: none; background-position: 0 0; }
   }
   .caption-word {
     margin-top: calc(5 * var(--u));
@@ -996,8 +1017,9 @@
   function showCaption(key, meaning, word) {
     caption.dataset.key = key || "none";
     // restart the glare each time Dad is said
-    caption.classList.remove("shine"); void caption.offsetWidth;
+    caption.classList.remove("shine", "redden"); void caption.offsetWidth;
     if (key === "dad") caption.classList.add("shine");
+    if (key === "pope" || key === "potato") caption.classList.add("redden");
     capMeaning.textContent = meaning || "";
     capWord.textContent = word || "";
     caption.toggleAttribute("data-show", !!(meaning || word));
