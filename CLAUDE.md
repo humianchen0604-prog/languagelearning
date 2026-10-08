@@ -50,8 +50,8 @@ cd papa && python3 -m http.server 8000   # mic needs http(s), not file://
   y 565; colour per word (table above). A miss shows "No te entendí" and the
   transcript in grey. When Dad is said (correct), the caption turns black and a
   glare of the blue sweeps across it (`.caption.shine`), repeating about every 1.8s.
-  For the Pope and the potato the caption starts black and one red glare sweeps
-  across quickly (about 0.55s, a "wrong answer" flash), leaving it red (`.caption.redden`).
+  For the Pope and the potato (wrong answers) there is no glare: the caption
+  starts black and quickly changes to the red, which stays (`.caption.redden`).
 - Voice blob centred at (201, 674.5), 20% smaller than the Figma pebble
   (about 85 × 70); the tap-word chips sit below it.
 - Adjust panel: a column beside the phone at ≥980px wide, otherwise a bottom

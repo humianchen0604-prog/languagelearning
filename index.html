@@ -299,34 +299,19 @@
     animation: shine 1.8s ease-in-out 0.35s infinite;
   }
   .caption.shine .caption-meaning { animation-delay: 0.25s; }
-  /* The Pope and the potato: black first, then one glare of the red sweeps
-     across and leaves the text red */
+  /* The Pope and the potato (wrong answers): black first, then a quick plain
+     change to the red, which stays. No glare. */
   .caption.redden .caption-meaning,
   .caption.redden .caption-word {
-    color: transparent;
-    background-image: linear-gradient(105deg,
-      var(--say-papa) 0%, var(--say-papa) 38%,
-      #e8875c 47%, #f6b893 50%, #d9663a 53%,
-      #1a1a1a 62%, #1a1a1a 100%);
-    background-size: 300% 100%;
-    background-position: 100% 0;
-    -webkit-background-clip: text;
-    background-clip: text;
-    animation: redden 0.55s ease-out 0.1s 1 both;   /* quick: a wrong answer */
+    animation: redden 0.35s ease-out 0.1s 1 both;
   }
-  .caption.redden .caption-meaning { animation-delay: 0.05s; }
   @keyframes redden {
-    from { background-position: 100% 0; }
-    to   { background-position: 0 0; }
-  }
-  /* same 1.6s sweep as before, with the pause between sweeps cut by 2s */
-  @keyframes shine {
-    0%        { background-position: 100% 0; }
-    90%, 100% { background-position: 0 0; }
+    from { color: #1a1a1a; }
+    to   { color: var(--say-papa); }
   }
   @media (prefers-reduced-motion: reduce) {
     .caption.shine .caption-meaning, .caption.shine .caption-word { animation: none; background-position: 50% 0; }
-    .caption.redden .caption-meaning, .caption.redden .caption-word { animation: none; background-position: 0 0; }
+    .caption.redden .caption-meaning, .caption.redden .caption-word { animation: none; }
   }
   .caption-word {
     margin-top: calc(5 * var(--u));
