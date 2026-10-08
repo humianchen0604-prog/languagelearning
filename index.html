@@ -284,6 +284,28 @@
     opacity: 0.8;
     min-height: calc(19 * var(--u));
   }
+  /* Correct answer (Dad): black text with a glare of the blue sweeping across */
+  .caption.shine .caption-meaning,
+  .caption.shine .caption-word {
+    color: transparent;
+    background-image: linear-gradient(105deg,
+      #1a1a1a 0%, #1a1a1a 38%,
+      var(--say-dad) 46%, #a9dbed 50%, var(--say-dad) 54%,
+      #1a1a1a 62%, #1a1a1a 100%);
+    background-size: 300% 100%;
+    background-position: 100% 0;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: shine 3.6s ease-in-out 0.35s infinite;
+  }
+  .caption.shine .caption-meaning { animation-delay: 0.25s; }
+  @keyframes shine {
+    0%        { background-position: 100% 0; }
+    45%, 100% { background-position: 0 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .caption.shine .caption-meaning, .caption.shine .caption-word { animation: none; background-position: 50% 0; }
+  }
   .caption-word {
     margin-top: calc(5 * var(--u));
     font-family: var(--sf);
@@ -973,6 +995,9 @@
   /* Caption under the picture. key: a word, "none" for a miss, or null to hide */
   function showCaption(key, meaning, word) {
     caption.dataset.key = key || "none";
+    // restart the glare each time Dad is said
+    caption.classList.remove("shine"); void caption.offsetWidth;
+    if (key === "dad") caption.classList.add("shine");
     capMeaning.textContent = meaning || "";
     capWord.textContent = word || "";
     caption.toggleAttribute("data-show", !!(meaning || word));
