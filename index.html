@@ -296,9 +296,14 @@
     background-position: 100% 0;
     -webkit-background-clip: text;
     background-clip: text;
-    animation: shine 1.8s ease-in-out 0.35s infinite;
+    animation: shine 1.3s ease-in-out 0.05s 1 both;   /* once, right away */
   }
-  .caption.shine .caption-meaning { animation-delay: 0.25s; }
+  .caption.shine .caption-meaning { animation-delay: 0s; }
+  /* starts with the glare already at the text's edge, so it shows at once */
+  @keyframes shine {
+    from { background-position: 82% 0; }
+    to   { background-position: 0 0; }
+  }
   /* The Pope and the potato (wrong answers): black first, then a quick plain
      change to the red, which stays. No glare. */
   .caption.redden .caption-meaning,
