@@ -80,17 +80,25 @@
     z-index: 0;
     pointer-events: none;
     background-color: var(--paper);
-    background-image: var(--paper-tex, none);
+  }
+  /* The paper's tooth, laid over everything on the page */
+  .grain {
+    position: absolute;
+    inset: 0;
+    z-index: 30;
+    pointer-events: none;
     background-size: 100% 100%;
   }
+  .grain-shade { mix-blend-mode: multiply; }
+  .grain-light { mix-blend-mode: screen; }
 
   /* ---------- Top ---------- */
   .progress {
     position: absolute;
-    left: calc(62 * var(--u));
-    top: calc(70 * var(--u));
-    width: calc(279 * var(--u));
-    height: calc(12 * var(--u));
+    left: calc(117.3 * var(--u));      /* 40% smaller than the Figma strip, still centred */
+    top: calc(72.4 * var(--u));
+    width: calc(167.4 * var(--u));
+    height: calc(7.2 * var(--u));
     opacity: 0.2;
     display: flex;
     justify-content: space-between;
@@ -471,7 +479,7 @@
 <div class="shell">
   <main class="phone" aria-label="Say “Dad” in Spanish">
     <div class="stage">
-      <!-- Paper: a lit, bumpy surface like heavy cold-press stock (generated, adjustable) -->
+      <!-- Page colour; the paper's texture is laid over everything at the end -->
       <div class="paper" id="paper" aria-hidden="true"></div>
       <!-- Six blobs traced from the watercolor strip; the first is the current word -->
       <ol class="progress" aria-label="Word 1 of 6">
@@ -525,6 +533,10 @@
         <button type="button" data-say="la papa">la papa</button>
         <button type="button" data-say="papá">papá</button>
       </div>
+
+      <!-- Paper texture over everything (shadows, then highlights) -->
+      <div class="grain grain-shade" id="grainShade" aria-hidden="true"></div>
+      <div class="grain grain-light" id="grainLight" aria-hidden="true"></div>
     </div>
   </main>
 </div>
@@ -613,18 +625,31 @@
     const mixLit = (d * 0.8).toFixed(3);
     // One sheet the size of the screen (no tiles, so no seams); the rect
     // overhangs the edges so blur and lighting have no border to catch.
-    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='402' height='874' viewBox='0 0 402 874'>` +
+    // The texture lies over everything on the page as two neutral layers:
+    // the tooth's shadows (multiplied) and its highlights (screened), so
+    // pictures, type and the voice blob all sit "in" the same paper.
+    const sheet = (lightK, tail) =>
+      `<svg xmlns='http://www.w3.org/2000/svg' width='402' height='874' viewBox='0 0 402 874'>` +
       `<filter id='p' filterUnits='userSpaceOnUse' x='-30' y='-30' width='462' height='934' color-interpolation-filters='sRGB'>` +
       `<feTurbulence type='fractalNoise' baseFrequency='${bf}' numOctaves='3' seed='3' result='n'/>` +
       `<feGaussianBlur in='n' stdDeviation='${soften}' result='h'/>` +
-      `<feDiffuseLighting in='h' surfaceScale='${depth}' diffuseConstant='1.155' lighting-color='${hex}' result='lit'>` +
-      `<feDistantLight azimuth='225' elevation='60'/></feDiffuseLighting>` +
-      `<feFlood flood-color='${hex}' result='base'/>` +
-      `<feComposite in='lit' in2='base' operator='arithmetic' k1='0' k2='${mixLit}' k3='${(1 - mixLit).toFixed(3)}' k4='0'/></filter>` +
+      `<feDiffuseLighting in='h' surfaceScale='${depth}' diffuseConstant='${lightK}' lighting-color='#fff' result='lit'>` +
+      `<feDistantLight azimuth='225' elevation='60'/></feDiffuseLighting>` + tail + `</filter>` +
       `<rect x='-30' y='-30' width='462' height='934' filter='url(#p)'/></svg>`;
-    const paper = $("#paper");
-    paper.style.setProperty("--paper-tex", `url("data:image/svg+xml,${encodeURIComponent(svg)}")`);
-    paper.style.backgroundColor = hex;
+    // shadows: flat paper = white (no change), tooth in shadow darker
+    const shade = sheet("1.155",
+      `<feFlood flood-color='#fff' result='w'/>` +
+      `<feComposite in='lit' in2='w' operator='arithmetic' k1='0' k2='${mixLit}' k3='${(1 - mixLit).toFixed(3)}' k4='0'/>`);
+    // highlights: flat paper = black (no change), tooth facing the light lighter
+    const hiK = (2 * mixLit * 0.6).toFixed(3);
+    const light = sheet("0.577",
+      `<feComponentTransfer in='lit'><feFuncR type='linear' slope='${hiK}' intercept='${(-mixLit * 0.6).toFixed(3)}'/>` +
+      `<feFuncG type='linear' slope='${hiK}' intercept='${(-mixLit * 0.6).toFixed(3)}'/>` +
+      `<feFuncB type='linear' slope='${hiK}' intercept='${(-mixLit * 0.6).toFixed(3)}'/></feComponentTransfer>`);
+    const url = (svg) => `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+    $("#grainShade").style.backgroundImage = url(shade);
+    $("#grainLight").style.backgroundImage = url(light);
+    $("#paper").style.backgroundColor = hex;
     document.querySelector(".phone").style.background = hex;
   }
 

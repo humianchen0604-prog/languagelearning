@@ -39,7 +39,8 @@ cd papa && python3 -m http.server 8000   # mic needs http(s), not file://
 - The phone is a 402 × 874 design. Every size is `calc(N * var(--u))` with
   `--u: calc(100cqw / 402)` on `.stage`, scaled to fit. Background `#f5f2ee`
   (on the paper texture); 60px corners on wide screens.
-- Top: the progress strip (six blob shapes at 20% opacity, centred, y 67–86).
+- Top: the progress strip (six blob shapes at 20% opacity, centred). The user
+  asked for it 40% smaller than in Figma, with tighter gaps: 167 × 7u at y ≈ 72.
   No close button: the main Figma frame has none.
 - Title in SF Pro (system font stack `--sf`): "Translate" Light 20px at 40%
   black, y 130; "Dad" Regular 28px `#302e2a`, y 158.
@@ -70,7 +71,10 @@ Figma progress-strip image (node 109:268) if wanted.
 
 - **Paper**: heavy cold-press watercolor stock, a generated SVG (`feTurbulence`
   height map + `feDiffuseLighting`) rendered as **one full-screen sheet, not
-  tiles**. Sliders: tooth size (log 0.25×–4×), tooth depth (0 = smooth), warmth.
+  tiles**. It lies **over everything on the page** (pictures, type, voice blob)
+  as two neutral layers, `.grain-shade` (multiply) and `.grain-light` (screen),
+  above a plain page colour. Sliders: tooth size (log 0.25×–4×), tooth depth
+  (0 = smooth), warmth.
 - **Painting**: a new picture fades in from a blurred copy and comes into focus.
   When the word changes, the old picture dissolves while the new one fades in.
   Painting time is adjustable (default 2.2s).
