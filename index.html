@@ -103,13 +103,17 @@
      (up to 60u each) run off the screen. A shorter screen scales it down a
      little instead (754u = the design without those margins). */
   @media (max-width: 600px) {
-    html, body { background: var(--paper); }
+    html, body { background: var(--paper-now, var(--paper)); }
     .shell { height: 100dvh; display: block; }
+    /* the paper covers the largest viewport (100lvh: Safari's bars retracted
+       or floating over the page), so no strip at the bottom is left bare;
+       the design itself is centred in the visible part (100dvh) */
     .phone {
       position: fixed;
-      inset: 0;
+      top: 0;
+      left: 0;
       width: 100vw;
-      height: 100dvh;
+      height: max(100lvh, 100dvh);
       max-width: none;
       aspect-ratio: auto;
       --sa-t: env(safe-area-inset-top, 0px);
@@ -131,7 +135,7 @@
       top: calc(-1 * var(--st));
       left: calc(-1 * var(--sl));
       width: 100vw;
-      height: 100dvh;
+      height: max(100lvh, 100dvh);
       right: auto;
       bottom: auto;
     }
@@ -1123,6 +1127,9 @@
     $("#grainLight").style.backgroundImage = url(light);
     $("#paper").style.backgroundColor = hex;
     document.querySelector(".phone").style.background = hex;
+    // phones: whatever shows around the page (and Safari's bars) is the same paper colour
+    document.documentElement.style.setProperty("--paper-now", hex);
+    const tc = document.querySelector('meta[name="theme-color"]'); if (tc) tc.content = hex;
   }
 
   /* ---------------- Picture painter (WebGL) ----------------
