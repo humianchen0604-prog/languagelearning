@@ -1130,11 +1130,11 @@
         vec2 d = q - c;
         float wav = sin(d.x * 9. + sin(d.y * 7.) * 1.6) * sin(d.y * 8. + sin(d.x * 6.) * 1.4) + .5 * sin(d.x * 4. - d.y * 5. + 1.);
         float f = length(d) * 2.6 + .2 + wav * .12;
-        // the grey fades out first (by t .35); the colour starts soaking in a little after (from t .2)
-        float ti = clamp((t - .2) / .8, 0., 1.);
+        // the grey fades out first (by t .3); the colour starts soaking in a little after (from t .17)
+        float ti = clamp((t - .17) / .83, 0., 1.);
         float r = max(smoothstep(f - .35, f, ti * 2.2), smoothstep(.85, 1., ti));
         vec4 im = pic(v, smoothstep(.35, 1., ti)) * r;
-        o = over(im, g * (1. - smoothstep(0., .35, t)));
+        o = over(im, g * (1. - smoothstep(0., .3, t)));
       } else if (uMode < 2.5) {     // 2 wet-into-wet bloom from the centre, pushing the grey out
         float f = length(q - c) * 2.4 + (fbm(q * 6. + 3.) - .45) * .9;
         float front = t * 2. - .1;
@@ -1955,7 +1955,7 @@
     // and the result follows a moment later
     const said = 250 + (syl.length - 1) * 300 + 180;
     liveTimers.push(setTimeout(exitWash, said));
-    simTimer = setTimeout(() => finish(phrase), said + 250);
+    simTimer = setTimeout(() => finish(phrase), said + 212);
   }
   document.querySelectorAll("[data-say]").forEach((b) => b.addEventListener("click", (e) => { e.stopPropagation(); simulate(b.dataset.say); }));
 

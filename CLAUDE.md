@@ -99,7 +99,8 @@ user double-clicks it on their Mac.
   the real mic, when its volume shows the speaker has spoken and then been
   quiet for 220ms (`watchSpeechEnd()`, by request: follow the speaker's
   input), or the recogniser's speech end, whichever comes first; or 180ms after the demo voice's last syllable;
-  the demo result follows 250ms later), so the picture follows the word closely.
+  the demo result follows 212ms later; the picture's entry was
+  moved 15% earlier by request), so the picture follows the word closely.
   Adjust → First-picture wash: fade-in time, grey lightness, strength,
   fade-out time, blur (defaults are the user's tuned values, below).
   **Reveal style** (Adjust → First-picture wash; remembered in
@@ -112,7 +113,7 @@ user double-clicks it on their Mac.
   texture `tWash`, colour, box `uBox`) in the shader, hides the SVG wash in the
   same frame (`washHandoff()`; pixel-checked: within 1–2 levels), then plays
   `uMode` 1–10 over Reveal time (default 1.35s, 25% faster than the first 1.8s): 1 Underpainting (the grey fades out first, by
-  35% of the reveal, and the colour soaks in from the inside starting at 20%; its front is a smooth sine warp, as noise
+  30% of the reveal, and the colour soaks in from the inside starting at 17%; its front is a smooth sine warp, as noise
   showed grid lines), 2 Bloom (wet-into-wet from the centre with a
   grey rim pushed out), 3 Brush pass (second diagonal stroke wipes grey,
   reveals picture), 4 Glazing (four even glazes deepen the colour, lights
