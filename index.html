@@ -128,7 +128,7 @@
      the page (block ~61u tall, centred on y 437); it glides up to its place
      at the top when the first picture appears. */
   .prompt { transition: translate 750ms var(--ease-in-out); }
-  .stage[data-intro] .prompt { translate: 0 calc(276 * var(--u)); }
+  .stage[data-intro] .prompt { translate: 0 calc(216 * var(--u)); }   /* centred, then 60u higher by request */
   @media (prefers-reduced-motion: reduce) { .prompt { transition: none; } }
   .prompt-label {
     font-family: var(--sf);

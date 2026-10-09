@@ -47,8 +47,8 @@ cd papa && python3 -m http.server 8000   # mic needs http(s), not file://
   No close button: the main Figma frame has none.
 - Title in SF Pro (system font stack `--sf`): "Translate" Light 20px at 40%
   black, y 130; "Dad" Regular 28px `#302e2a`, y 158.
-  Before the first word (and after "next") the title sits in the vertical centre
-  of the page (`.stage[data-intro]`); it glides up to y 130 when a picture appears.
+  Before the first word (and after "next") the title sits 60u above the vertical
+  centre of the page (`.stage[data-intro]`); it glides up to y 130 when a picture appears.
 - Pictures: watercolor cut-outs drawn by a WebGL canvas covering y 90–590 at
   full width (normal blending, so the Bleed layer stays behind it), each in its box (`PICTURES` in the script).
 - Caption: meaning in SF Pro Light 16px at 80%, y 541; Spanish in Regular 28px,
