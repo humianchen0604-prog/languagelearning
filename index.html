@@ -468,14 +468,21 @@
   /* order: the Spanish word shows (turning red), then the English meaning
      fades in above it, then both shake "no" together */
   .stage.won-play .caption.enter .caption-word {
-    animation: fade-in 120ms ease-out both, redden 0.35s ease-out both, no-shake 560ms ease-out 480ms both;
+    animation: fade-in 120ms ease-out both, redden 0.35s ease-out both, no-shake 560ms ease-out 300ms both;
   }
   .stage.won-play .caption.enter .caption-meaning {
-    animation: fade-in 320ms ease-out 120ms both, redden 0.35s ease-out both, no-shake 560ms ease-out 480ms both;
+    animation: fade-in 200ms ease-out 40ms both, redden 0.35s ease-out both, no-shake 560ms ease-out 300ms both;
   }
   /* typed out live already: it just turns red, then shakes with the meaning */
   .stage.won-play .caption.enter.from-live .caption-word {
-    animation: redden 0.35s ease-out both, no-shake 560ms ease-out 480ms both;
+    animation: redden 0.35s ease-out both, no-shake 560ms ease-out 300ms both;
+  }
+  /* the English meaning fades in as soon as speaking ends (black, before the red) */
+  .caption.pre-meaning .caption-meaning { animation: fade-in 200ms ease-out both; }
+  /* ...so when the picture comes, both lines just turn red and shake */
+  .stage.won-play .caption.enter.pre-shown .caption-meaning,
+  .stage.won-play .caption.enter.pre-shown .caption-word {
+    animation: redden 0.35s ease-out both, no-shake 560ms ease-out 120ms both;
   }
 
   /* with a wrong answer the voice button turns a little see-through,
@@ -1534,7 +1541,7 @@
   let liveText = "", wasLive = false;
   function showLive(text) {
     text = (text || "").trimStart();
-    if (caption.dataset.key !== "live") { liveText = ""; caption.classList.remove("shine", "redden", "enter", "from-live"); capMeaning.textContent = ""; capWord.textContent = ""; }
+    if (caption.dataset.key !== "live") { liveText = ""; caption.classList.remove("shine", "redden", "enter", "from-live", "pre-meaning", "pre-shown"); capMeaning.textContent = ""; capWord.textContent = ""; }
     caption.dataset.key = "live";
     let keep = 0;
     while (keep < liveText.length && keep < text.length && liveText[keep] === text[keep]) keep++;
@@ -1551,7 +1558,7 @@
     wasLive = false; liveText = "";
     caption.dataset.key = key || "none";
     // restart the glare each time Dad is said
-    caption.classList.remove("shine", "redden", "enter", "from-live"); void caption.offsetWidth;
+    caption.classList.remove("shine", "redden", "enter", "from-live", "pre-meaning", "pre-shown"); void caption.offsetWidth;
     if (CAPTION[key]) caption.classList.add("enter");   // results animate in; live transcripts don't
     if (fromLive) caption.classList.add("from-live");
     if (key === "dad") caption.classList.add("shine");
@@ -1588,6 +1595,14 @@
     // a wrong answer's red (edges, red shaking caption) waits for its picture
     // to start painting in; everything else shows straight away
     if (!wrong) showHeard(text, key);
+    // wrong answer: the English meaning fades in straight away (in black);
+    // the red, the edges and the shake wait for the picture below
+    let preShown = false;
+    if (wrong && caption.dataset.key === "live" && capWord.textContent) {
+      capMeaning.textContent = CAPTION[key][0];
+      caption.classList.add("pre-meaning");
+      preShown = true;
+    }
     wrongOff();
     if (!key) { endTakeEmpty(); setState("idle"); return; }
     // correct answer: the button goes straight from listening to the "next" arrow
@@ -1600,7 +1615,11 @@
       washOff(ms);
       await new Promise((r) => setTimeout(r, reduceMotion ? 0 : ms * 0.5));
     }
-    if (wrong) { showHeard(text, key); wrongOn(); }
+    if (wrong) {
+      showHeard(text, key);
+      if (preShown) caption.classList.add("pre-shown");   // already showing: just turn red and shake
+      wrongOn();
+    }
     await paint(key);
     setState("idle");
     if (key === "dad") voice.setAttribute("aria-label", "Next word");
