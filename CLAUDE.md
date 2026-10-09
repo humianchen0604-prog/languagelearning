@@ -94,7 +94,7 @@ the older full watercolors, no longer used by the page.
   When the word changes, the old picture dissolves while the new one fades in.
   Painting time is adjustable (default 1s).
 - **Voice blob** (kept from before the Figma pass):
-  - Single **pebble** (outline tilted 22° clockwise; the mic stays upright), near-white grey `#efeeec`, soft watercolor edge.
+  - Single **pebble** (outline tilted 12° clockwise; the icons stay upright), near-white grey `#efeeec`, soft watercolor edge.
   - Listening: satellite blobs slide out and merge via a gooey SVG filter
     (`#blob-goo`) into a wide shape that swells with volume. It stays grey and
     its edge goes paler.
