@@ -74,11 +74,12 @@ user double-clicks it on their Mac.
   backwards fill only so the elements' own styles take over afterwards).
 - First-picture wash: only when the page has no picture yet (first word,
   after "next", after a miss), a soft grey watercolor paints itself in where
-  the picture will appear, from the top left to the bottom right, as soon as
+  the picture will appear, spreading from the centre outward (it went from the
+  top left to the bottom right until the user asked for centre-out), as soon as
   the mic is pressed. It is the user's watercolor (`assets/loading-wash-source.png`,
   turned into a pigment mask `assets/loading-wash.png`, white = paint) filling
-  a grey rect (`#washFill`, hsl 30 5% L), revealed by a diagonal gradient with
-  a brushy, displaced front (`#revealMask`, `revA`/`revB` stop offsets driven
+  a grey rect (`#washFill`, hsl 30 5% L), revealed by a radial gradient (centre
+  out) with a brushy, displaced front (`#revealMask`, `revA`/`revB` stop offsets driven
   in `renderWash()`). Box 300 × 284u centred on (199, 370).
   When speaking ends it first finishes painting, then loosens, blurs and fades
   out; the picture starts painting in when the fade is halfway through, so the
