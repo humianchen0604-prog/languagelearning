@@ -18,7 +18,7 @@
     --blob-idle: #efeeec;            /* voice blob before speaking: near-white grey */
     --mic-ink: #7f7d7a;              /* mic: soft pencil grey */
     --blob-listen: #e9e8e5;          /* voice blob while listening: a touch deeper grey */
-    --blob-grey: #dcdbd9;            /* Grey look while listening: the resting #efeeec, 8% darker */
+    --blob-grey: #e7e6e4;            /* Grey look while listening: the resting #efeeec, 3.5% darker (Adjust) */
     --panel: #fbf9f6;
     --panel-line: #e2dbd2;
     --panel-ink: #3a2c22;
@@ -921,6 +921,7 @@
       <button type="button" data-look="ripples" aria-pressed="false">Ripples</button>
       <button type="button" data-look="ellipses" aria-pressed="false">Ellipses</button>
     </div>
+    <div class="row"><label for="listenGrey">Grey while listening (darker by)</label><output for="listenGrey"></output><input id="listenGrey" type="range" min="0" max="0.15" step="0.005" value="0.035"></div>
     <div class="row"><label for="listenBlur">Edge blur while listening</label><output for="listenBlur"></output><input id="listenBlur" type="range" min="0" max="10" step="0.1" value="3.5"></div>
   </section>
 
@@ -940,7 +941,7 @@
 
   /* ---------------- Settings (remembered per browser) ---------------- */
   const KEY = "papa-settings-v18";
-  const ids = ["toothSize", "toothDepth", "warmth", "paintTime", "edgeHue", "edgeAlpha", "edgeTime", "washHue", "washSat", "washLight", "washAlpha", "listenBlur", "loadLight", "loadAlpha", "loadFade", "msmSoft", "loadBlur", "loadPaint", "edgeTex"];
+  const ids = ["toothSize", "toothDepth", "warmth", "paintTime", "edgeHue", "edgeAlpha", "edgeTime", "washHue", "washSat", "washLight", "washAlpha", "listenBlur", "loadLight", "loadAlpha", "loadFade", "msmSoft", "loadBlur", "loadPaint", "edgeTex", "listenGrey"];
   let saved = {};
   try {
     saved = JSON.parse(localStorage.getItem(KEY) || "null");
@@ -1212,6 +1213,7 @@
     if (id.startsWith("wash") || id === "msmSoft") { if (id.startsWith("wash")) markWashPreset(); previewMic(); }
     if (id.startsWith("load")) previewWash();
     if (id === "listenBlur") applyListenBlur();
+    if (id === "listenGrey") applyListenGrey();
     if (id === "msmSoft") applyMsmSoft();
   }
   // distance (0 inside .. 1 at the screen's edge) → wash: the colour fades
@@ -1241,6 +1243,13 @@
     col.setAttribute("flood-color", `hsl(${settings.edgeHue} 70% 62%)`);
     col.setAttribute("flood-opacity", Math.min(1, a).toFixed(3));
   }
+  // Grey look: the resting #efeeec made darker by this fraction while listening
+  function applyListenGrey() {
+    const k = 1 - settings.listenGrey;
+    const hex = "#" + [239, 238, 236].map((c) => Math.round(c * k).toString(16).padStart(2, "0")).join("");
+    document.querySelector(".stage").style.setProperty("--blob-grey", hex);
+  }
+  applyListenGrey();
   function applyListenBlur() { document.querySelector(".stage").style.setProperty("--listen-blur", settings.listenBlur); }
   applyEdges();
   applyPaper();

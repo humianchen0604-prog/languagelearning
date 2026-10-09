@@ -161,8 +161,9 @@ the older full watercolors, no longer used by the page.
     its edge goes paler and blurs out into the paper (CSS blur on `.blob`,
     `--listen-blur`, default 3.5u; Adjust → Voice visual → Edge blur while listening).
   - While listening, Looks: **Grey** (default, by request): the button keeps
-    its resting pebble shape and size and just turns 8% darker grey
-    (`--blob-grey: #dcdbd9`, from `#efeeec`), contained in the pebble's own
+    its resting pebble shape and size and just turns a little darker grey
+    (`--blob-grey`, `#efeeec` darkened by Adjust → Voice visual → Grey while
+    listening, default 3.5%; 8% was too dark for the user), contained in the pebble's own
     edge (no listening blur), no icon; the shape wiggles (wobblier outline)
     and twirls back and forth a little (±~15°) so it reads as listening.
     Saved look key `papa-look-v4`.
