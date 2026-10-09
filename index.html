@@ -1656,7 +1656,8 @@
     // appears by fading in while it scales from 95% to 100% (Adjust → Fade-in time),
     // quickly; the centre-out paint front this replaced is left fully open
     const p = reduceMotion ? 1 : Math.min(1, Math.max(0, (nowMs - washOnAt) / washInMs()));
-    const e = easeOut(p);
+    const e = washShown ? easeOut(p) : 1;   // once leaving, it fades from wherever it had got to
+    washE = e;
     revA.setAttribute("offset", "1"); revB.setAttribute("offset", "1");
     washFill.setAttribute("fill", `hsl(30 5% ${(settings.loadLight * 100).toFixed(1)}%)`);   // a faintly warm grey
     washFill.setAttribute("fill-opacity", Math.min(1, 0.7 * settings.loadAlpha).toFixed(3));
@@ -1685,9 +1686,10 @@
     washShown = false; washVis = 0; cancelAnimationFrame(washRaf); washRaf = 0;
     smudge.style.opacity = "0"; smudge.style.filter = "";
   }
+  let washE = 1;   // how far the fade-in had got (last frame)
   function washOff(ms) {
     if (!washShown) return;
-    washShown = false; washFrom = washVis; washOffAt = performance.now(); washOffMs = Math.max(1, ms);
+    washShown = false; washFrom = washVis * washE; washOffAt = performance.now(); washOffMs = Math.max(1, ms);
   }
   // Adjust: preview the wash for a moment while its sliders move (only on an empty page)
   let washPreview = 0;
@@ -1718,7 +1720,7 @@
   function beginTake() {
     const gliding = stageEl.hasAttribute("data-intro");
     stageEl.removeAttribute("data-intro");
-    clearTimeout(washPreview); clearTimeout(washDelay); washExit = null;
+    clearTimeout(washPreview); clearTimeout(washDelay); washExit = null; washHurry = false;
     // a picture from the last take (e.g. a wrong answer) fades out and the grey
     // wash comes back, so every new picture is generated the same way. When the
     // title is gliding up, the wash waits until it is 90% of the way there.
@@ -1739,13 +1741,17 @@
      finish() waits on the same promise. */
   let washExit = null;
   const sleep = (ms) => new Promise((r) => setTimeout(r, reduceMotion ? 0 : ms));
-  function exitWash() {
+  // hurry (a wrong answer): leave at once, even mid fade-in, or skip a wash not yet shown
+  let washHurry = false;
+  function exitWash(hurry = false) {
+    if (hurry) washHurry = true;
     if (washExit) return washExit;
     if (reveal !== "fade") return Promise.resolve();
+    if (hurry && washDelay) { clearTimeout(washDelay); washDelay = 0; return Promise.resolve(); }
     washNow();
     if (!washShown) return Promise.resolve();
     washExit = (async () => {
-      await sleep(washPainted() - performance.now());
+      while (!washHurry && performance.now() < washPainted()) await sleep(30);
       const ms = settings.loadFade * 1000;
       washOff(ms);
       await sleep(ms * settings.loadStart);
@@ -1834,25 +1840,23 @@
     stopWaves();
     const key = classify(text || "");
     const wrong = key === "pope" || key === "potato";
-    // a wrong answer's red (edges, red shaking caption) waits for its picture
-    // to start painting in; everything else shows straight away
-    if (!wrong) showHeard(text, key);
-    // wrong answer: the English meaning fades in straight away (in black);
-    // the red, the edges and the shake wait for the picture below
-    let preShown = false;
-    if (wrong && caption.dataset.key === "live" && capWord.textContent) {
-      capMeaning.textContent = CAPTION[key][0];
-      caption.classList.add("pre-meaning");
-      preShown = true;
-    }
+    showHeard(text, key);
     wrongOff();
     if (!key) { endTakeEmpty(); setState("idle"); return; }
     // correct answer: the button goes straight from listening to the "next" arrow
     if (key === "dad") voice.toggleAttribute("data-next", true);
     setState("processing");
     let handoff = false;
+    // A wrong answer responds at once (by request): the caption turns red and
+    // shakes, the red edges start creeping in, and the grey leaves straight
+    // away (even mid fade-in) so the picture follows quickly. The edges take
+    // until the picture has finished fading in.
+    if (wrong) {
+      const greyLeft = reveal === "fade" && (washShown || washExit) ? settings.loadFade * settings.loadStart : 0;
+      wrongOn(greyLeft + (reveal === "fade" ? settings.paintTime : settings.revealTime));
+    }
     if (reveal === "fade") {
-      if (washShown || washExit) await exitWash();   // the grey is gone (it may have started leaving as the word was ~95% said)
+      if (washShown || washExit || washDelay) await exitWash(wrong);   // the grey is gone (it may have started leaving as the word was ~95% said)
     } else {
       washNow();
       if (washShown) {   // the other styles turn the finished wash itself into the picture
@@ -1861,13 +1865,7 @@
         handoff = true;
       }
     }
-    // a wrong answer's red and shake start on the picture's first frame, in step with it
-    const onStart = wrong ? () => {
-      showHeard(text, key);
-      if (preShown) caption.classList.add("pre-shown");   // already showing: just turn red and shake
-      wrongOn(handoff ? settings.revealTime : settings.paintTime);
-    } : null;
-    await (handoff ? revealPaint(key, REVEALS.indexOf(reveal), onStart) : paint(key, onStart));
+    await (handoff ? revealPaint(key, REVEALS.indexOf(reveal)) : paint(key));
     setState("idle");
     if (key === "dad") voice.setAttribute("aria-label", "Next word");
   }
