@@ -312,9 +312,8 @@
      (fast start, soft landing); the Spanish word follows 70ms after the
      meaning. Uses the `translate` property so the "no" shakes (transform)
      add on top instead of fighting it. */
-  @keyframes rise-in {
+  @keyframes rise-in {   /* ends at each line's own opacity (the meaning stays at 80%) */
     from { opacity: 0; translate: 0 calc(10 * var(--u)); filter: blur(2px); }
-    to   { opacity: 1; translate: 0 0; filter: blur(0); }
   }
   .caption.enter .caption-meaning { animation: rise-in 450ms var(--ease-out) both; }
   .caption.enter .caption-word    { animation: rise-in 450ms var(--ease-out) 70ms both; }
@@ -337,44 +336,29 @@
     min-height: calc(33 * var(--u));
   }
 
-  /* ---------- Wrong answer (the Pope or the potato) ----------
-     One of seven treatments, picked in Adjust. The stage carries
-     data-wfx (which one) and data-won (a wrong answer is showing); the
-     .won-play class is re-added each time so one-shot motion replays. */
+  /* ---------- Wrong answer (the Pope or the potato): Edges ----------
+     A soft colour creeps in evenly along every side of the screen while
+     both caption lines shake "no". Hue and strength are set in Adjust
+     (--edge-h, --edge-a on the stage). The stage carries data-won while a
+     wrong answer shows; .won-play is re-added so the shake replays. */
   .wrong { position: absolute; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; }
-  .wrong-under { z-index: 1; }   /* same level as the picture, earlier in the page: behind it */
   .wrong > * { position: absolute; opacity: 0; }
-  .stage { --wrong: 193 77 31; --wrong-soft: 226 128 92; }   /* the caption red #c14d1f, and a lighter red for Edges */
-
-  /* 1 · Rise: a red glow rising from the bottom of the screen */
-  .w-rise {
-    /* wide and tall: the glow spans the whole bottom edge and fades up in eased steps */
-    left: -45%; right: -45%; bottom: -10%; height: 78%;
-    background: radial-gradient(ellipse 72% 92% at 50% 100%, rgb(var(--wrong) / 0.468) 0%, rgb(var(--wrong) / 0.384) 10%, rgb(var(--wrong) / 0.299) 20%, rgb(var(--wrong) / 0.225) 30%, rgb(var(--wrong) / 0.159) 40%, rgb(var(--wrong) / 0.108) 50%, rgb(var(--wrong) / 0.068) 60%, rgb(var(--wrong) / 0.040) 70%, rgb(var(--wrong) / 0.019) 80%, rgb(var(--wrong) / 0.007) 90%, rgb(var(--wrong) / 0.000) 100%);
-    transform: translateY(30%);
-    transition: opacity 600ms var(--ease-out), transform 1100ms var(--ease-out);
-  }
-  .stage[data-wfx="rise"][data-won] .w-rise { opacity: 1; transform: none; }
-
-  /* 2 · Edges: red creeping in from all four edges */
+  .stage { --edge-h: 16; --edge-a: 1; }   /* hsl(16 70% 62%) = the lighter red; strength 1 = 100% */
   .w-edges {
     inset: 0;
     /* the same depth (~135u) in from every side (15.5% of the height, 33% of
-       the width), easing out through many small steps in a lighter red */
+       the width), easing out through many small steps */
     background:
-      linear-gradient(to bottom, rgb(var(--wrong-soft) / 0.260) 0.00%, rgb(var(--wrong-soft) / 0.208) 1.24%, rgb(var(--wrong-soft) / 0.156) 2.64%, rgb(var(--wrong-soft) / 0.112) 4.19%, rgb(var(--wrong-soft) / 0.078) 5.74%, rgb(var(--wrong-soft) / 0.052) 7.28%, rgb(var(--wrong-soft) / 0.033) 8.83%, rgb(var(--wrong-soft) / 0.018) 10.38%, rgb(var(--wrong-soft) / 0.009) 11.94%, rgb(var(--wrong-soft) / 0.003) 13.48%, rgb(var(--wrong-soft) / 0.000) 15.50%),
-      linear-gradient(to top, rgb(var(--wrong-soft) / 0.260) 0.00%, rgb(var(--wrong-soft) / 0.208) 1.24%, rgb(var(--wrong-soft) / 0.156) 2.64%, rgb(var(--wrong-soft) / 0.112) 4.19%, rgb(var(--wrong-soft) / 0.078) 5.74%, rgb(var(--wrong-soft) / 0.052) 7.28%, rgb(var(--wrong-soft) / 0.033) 8.83%, rgb(var(--wrong-soft) / 0.018) 10.38%, rgb(var(--wrong-soft) / 0.009) 11.94%, rgb(var(--wrong-soft) / 0.003) 13.48%, rgb(var(--wrong-soft) / 0.000) 15.50%),
-      linear-gradient(to right, rgb(var(--wrong-soft) / 0.260) 0.00%, rgb(var(--wrong-soft) / 0.208) 2.64%, rgb(var(--wrong-soft) / 0.156) 5.61%, rgb(var(--wrong-soft) / 0.112) 8.91%, rgb(var(--wrong-soft) / 0.078) 12.21%, rgb(var(--wrong-soft) / 0.052) 15.51%, rgb(var(--wrong-soft) / 0.033) 18.81%, rgb(var(--wrong-soft) / 0.018) 22.11%, rgb(var(--wrong-soft) / 0.009) 25.41%, rgb(var(--wrong-soft) / 0.003) 28.71%, rgb(var(--wrong-soft) / 0.000) 33.00%),
-      linear-gradient(to left, rgb(var(--wrong-soft) / 0.260) 0.00%, rgb(var(--wrong-soft) / 0.208) 2.64%, rgb(var(--wrong-soft) / 0.156) 5.61%, rgb(var(--wrong-soft) / 0.112) 8.91%, rgb(var(--wrong-soft) / 0.078) 12.21%, rgb(var(--wrong-soft) / 0.052) 15.51%, rgb(var(--wrong-soft) / 0.033) 18.81%, rgb(var(--wrong-soft) / 0.018) 22.11%, rgb(var(--wrong-soft) / 0.009) 25.41%, rgb(var(--wrong-soft) / 0.003) 28.71%, rgb(var(--wrong-soft) / 0.000) 33.00%);
+      linear-gradient(to bottom, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.260)) 0.00%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.208)) 1.24%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.156)) 2.64%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.112)) 4.19%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.078)) 5.74%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.052)) 7.28%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.033)) 8.83%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.018)) 10.38%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.009)) 11.94%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.003)) 13.48%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.000)) 15.50%),
+      linear-gradient(to top, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.260)) 0.00%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.208)) 1.24%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.156)) 2.64%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.112)) 4.19%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.078)) 5.74%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.052)) 7.28%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.033)) 8.83%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.018)) 10.38%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.009)) 11.94%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.003)) 13.48%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.000)) 15.50%),
+      linear-gradient(to right, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.260)) 0.00%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.208)) 2.64%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.156)) 5.61%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.112)) 8.91%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.078)) 12.21%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.052)) 15.51%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.033)) 18.81%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.018)) 22.11%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.009)) 25.41%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.003)) 28.71%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.000)) 33.00%),
+      linear-gradient(to left, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.260)) 0.00%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.208)) 2.64%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.156)) 5.61%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.112)) 8.91%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.078)) 12.21%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.052)) 15.51%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.033)) 18.81%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.018)) 22.11%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.009)) 25.41%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.003)) 28.71%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.000)) 33.00%);
     transform: scale(1.25);
     transition: opacity 500ms var(--ease-out), transform 900ms var(--ease-out);
   }
-  .stage[data-wfx="edges"][data-won] .w-edges { opacity: 1; transform: none; }
-  .stage[data-wfx="edges"].won-play .caption.enter .caption-word {
-    animation: rise-in 450ms var(--ease-out) 70ms both, redden 0.35s ease-out 0.1s both, no-shake 560ms ease-out 120ms both;
-  }
+  .stage[data-won] .w-edges { opacity: 1; transform: none; }
 
-  /* 3 · Shake: the picture and the caption shake "no" */
+  /* both caption lines shake "no" (on top of their rise-in and red) */
   @keyframes no-shake {
     0%, 100% { transform: translateX(0); }
     15% { transform: translateX(calc(-9 * var(--u))); }
@@ -383,69 +367,22 @@
     68% { transform: translateX(calc(4 * var(--u))); }
     84% { transform: translateX(calc(-2 * var(--u))); }
   }
-  .stage[data-wfx="shake"].won-play .frame,
-  .stage[data-wfx="shake"].won-play .caption { animation: no-shake 560ms ease-out both; }
-  .stage[data-wfx="shake"].won-play .caption { animation-delay: 60ms; }
-
-  /* 4 · Bleed: a red watercolor wash bleeding out from behind the picture
-     (on its own layer under the picture) */
-  .w-bleed {
-    left: 50%; top: calc(375 * var(--u));
-    width: calc(320 * var(--u)); height: calc(340 * var(--u));
-    translate: -50% -50%;
-    border-radius: 46% 54% 42% 58% / 55% 45% 57% 43%;
-    background: radial-gradient(closest-side, rgb(var(--wrong) / 0.36), rgb(var(--wrong) / 0.2) 55%, rgb(var(--wrong) / 0));
-    filter: blur(calc(18 * var(--u)));
-    mix-blend-mode: multiply;
-    transform: scale(0.35) rotate(-8deg);
-    transition: opacity 500ms var(--ease-out), transform 1500ms cubic-bezier(0.16, 1, 0.3, 1);
+  .stage.won-play .caption.enter .caption-meaning {
+    animation: rise-in 450ms var(--ease-out) both, redden 0.35s ease-out 0.05s both, no-shake 560ms ease-out 100ms both;
   }
-  .stage[data-wfx="bleed"][data-won] .w-bleed { opacity: 1; transform: none; }
-
-  /* 5 · Ripples: red rings pulsing out of the voice button */
-  .w-ring {
-    left: calc(201 * var(--u)); top: calc(674.5 * var(--u));
-    width: calc(84 * var(--u)); height: calc(70 * var(--u));
-    translate: -50% -50%;
-    border-radius: 50%;
-    border: calc(1.6 * var(--u)) solid rgb(var(--wrong) / 0.55);
+  .stage.won-play .caption.enter .caption-word {
+    animation: rise-in 450ms var(--ease-out) 70ms both, redden 0.35s ease-out 0.1s both, no-shake 560ms ease-out 120ms both;
   }
-  @keyframes ripple {
-    0%   { opacity: 0.9; transform: scale(0.85); }
-    100% { opacity: 0;   transform: scale(3.4); }
-  }
-  .stage[data-wfx="ripples"].won-play .w-ring { animation: ripple 1300ms cubic-bezier(0.2, 0.7, 0.3, 1) both; }
-  .stage[data-wfx="ripples"].won-play .w-ring:nth-child(2) { animation-delay: 220ms; }
-  .stage[data-wfx="ripples"].won-play .w-ring:nth-child(3) { animation-delay: 440ms; }
 
-  /* 6 · Scribble: a pencil correction mark drawn across the Spanish word */
-  .w-scribble {
-    left: 50%; top: calc(582 * var(--u));
-    width: calc(170 * var(--u)); height: calc(40 * var(--u));
-    translate: -50% -50%;
-    overflow: visible;
-    z-index: 1;
-  }
-  .w-scribble path { stroke-dasharray: 1; stroke-dashoffset: 1; }
-  .stage[data-wfx="scribble"][data-won] .w-scribble { opacity: 1; }
-  @keyframes draw { to { stroke-dashoffset: 0; } }
-  .stage[data-wfx="scribble"].won-play .w-scribble path { animation: draw 520ms cubic-bezier(0.6, 0, 0.3, 1) 250ms both; }
-  .stage[data-wfx="scribble"].won-play .w-scribble path + path { animation-delay: 620ms; animation-duration: 380ms; }
-  .stage[data-wfx="scribble"][data-won]:not(.won-play) .w-scribble path { stroke-dashoffset: 0; }
-
-  /* With any wrong answer the voice button turns a little see-through,
-     so the red shows through it */
+  /* with a wrong answer the voice button turns a little see-through,
+     so the colour shows through it */
   .voice { transition: width 520ms var(--ease-out), transform 160ms var(--ease-out), opacity 500ms var(--ease-out); }
   .stage[data-won] .voice { opacity: 0.7; }
 
-  /* 7 · Blush: the voice button flushes pink and shakes "no" */
-  .stage[data-wfx="blush"][data-won] .blob > g { fill: #f2cfc3; }
-  .stage[data-wfx="blush"].won-play .voice { animation: no-shake 520ms ease-out both; }
-
   @media (prefers-reduced-motion: reduce) {
     .wrong > * { transition-duration: 1ms !important; }
-    .stage[class*="won-play"] .frame, .stage[class*="won-play"] .caption,
-    .stage[class*="won-play"] .voice, .stage .w-ring { animation: none !important; }
+    .stage.won-play .caption.enter .caption-meaning,
+    .stage.won-play .caption.enter .caption-word { animation: fade-in 200ms ease both !important; }
   }
 
   /* Tap fallback when the browser can't listen */
@@ -568,6 +505,12 @@
   .file-btn { display: inline-flex; align-items: center; gap: 6px; width: max-content; }
   .file-btn input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
   .note { margin: 0; color: var(--ink-soft); font-size: 12px; }
+  .hue-strip {
+    height: 6px;
+    border-radius: 3px;
+    margin-top: -4px;
+    background: linear-gradient(to right, hsl(0 70% 62%), hsl(60 70% 62%), hsl(120 70% 62%), hsl(180 70% 62%), hsl(240 70% 62%), hsl(300 70% 62%), hsl(360 70% 62%));
+  }
   @media (prefers-reduced-motion: reduce) {
     .voice, .mic, .waves, .panel { transition-duration: 1ms !important; }
   }
@@ -647,9 +590,6 @@
 
       <h1 class="prompt"><span class="prompt-label">Translate</span><span class="prompt-word">Dad</span></h1>
 
-      <!-- Wrong answer · Bleed: sits under the picture -->
-      <div class="wrong wrong-under" aria-hidden="true"><div class="w-bleed"></div></div>
-
       <div class="frame" id="frame">
         <canvas id="paint" role="img" aria-label="Picture of what was said"></canvas>
       </div>
@@ -690,18 +630,8 @@
         <span class="waves" aria-hidden="true"><i class="wave"></i><i class="wave"></i><i class="wave"></i><i class="wave"></i><i class="wave"></i></span>
       </button>
 
-      <!-- Wrong-answer treatments (one shows at a time, chosen in Adjust) -->
-      <div class="wrong" aria-hidden="true">
-        <div class="w-rise"></div>
-        <div class="w-edges"></div>
-        <div class="w-ring"></div><div class="w-ring"></div><div class="w-ring"></div>
-        <svg class="w-scribble" viewBox="-85 -20 170 40" fill="none" stroke="rgb(193 77 31)" stroke-linecap="round" stroke-linejoin="round">
-          <g filter="url(#pencil)">
-            <path pathLength="1" stroke-width="2.4" d="M-74 4C-60 -6 -50 9 -36 -1S-12 8 2 -2S26 7 40 -3S62 6 76 -4" />
-            <path pathLength="1" stroke-width="1.6" opacity="0.8" d="M-70 -6C-48 2 -24 -9 0 1S44 -8 72 3" />
-          </g>
-        </svg>
-      </div>
+      <!-- Wrong answer: colour creeping in from every edge -->
+      <div class="wrong" aria-hidden="true"><div class="w-edges"></div></div>
 
       <p class="caption" id="caption" aria-live="polite"><span class="caption-meaning"></span><span class="caption-word"></span></p>
 
@@ -747,16 +677,10 @@
 
   <section class="group">
     <h3>Wrong answer</h3>
-    <div class="seg" id="wfx">
-      <button type="button" data-wfx="rise" aria-pressed="true">Rise</button>
-      <button type="button" data-wfx="edges" aria-pressed="false">Edges</button>
-      <button type="button" data-wfx="shake" aria-pressed="false">Shake</button>
-      <button type="button" data-wfx="bleed" aria-pressed="false">Bleed</button>
-      <button type="button" data-wfx="ripples" aria-pressed="false">Ripples</button>
-      <button type="button" data-wfx="scribble" aria-pressed="false">Scribble</button>
-      <button type="button" data-wfx="blush" aria-pressed="false">Blush</button>
-    </div>
-    <p class="note">How "el Papa" and "la papa" show they're wrong. Tap one to see it.</p>
+    <div class="row"><label for="edgeHue">Edge hue</label><output for="edgeHue"></output><input id="edgeHue" type="range" min="0" max="360" step="1" value="16"></div>
+    <div class="hue-strip" aria-hidden="true"></div>
+    <div class="row"><label for="edgeAlpha">Edge strength</label><output for="edgeAlpha"></output><input id="edgeAlpha" type="range" min="0" max="2.5" step="0.01" value="1"></div>
+    <div class="seg"><button type="button" id="wrongReplay">Show wrong answer</button></div>
   </section>
 
   <section class="group">
@@ -778,14 +702,14 @@
 
   /* ---------------- Settings (remembered per browser) ---------------- */
   const KEY = "papa-settings-v7";
-  const ids = ["toothSize", "toothDepth", "warmth", "paintTime"];
+  const ids = ["toothSize", "toothDepth", "warmth", "paintTime", "edgeHue", "edgeAlpha"];
   let saved = {};
   try {
     saved = JSON.parse(localStorage.getItem(KEY) || "null");
     if (!saved) { saved = JSON.parse(localStorage.getItem("papa-settings-v6") || "{}"); delete saved.warmth; }
   } catch (e) { saved = {}; }
   const settings = {};
-  const fmt = (id, v) => id === "paintTime" ? v.toFixed(1) + " s" : id === "toothSize" ? Math.pow(2, v).toFixed(2) + "×" : Math.round(v * 100) + "%";
+  const fmt = (id, v) => id === "paintTime" ? v.toFixed(1) + " s" : id === "edgeHue" ? Math.round(v) + "°" : id === "toothSize" ? Math.pow(2, v).toFixed(2) + "×" : Math.round(v * 100) + "%";
   function persist() { try { localStorage.setItem(KEY, JSON.stringify(settings)); } catch (e) {} }
 
   ids.forEach((id) => {
@@ -1011,7 +935,14 @@
 
   function apply(id) {
     if (["toothSize", "toothDepth", "warmth"].includes(id)) applyPaper();
+    if (id === "edgeHue" || id === "edgeAlpha") applyEdges();
   }
+  function applyEdges() {
+    const st = document.querySelector(".stage");
+    st.style.setProperty("--edge-h", settings.edgeHue);
+    st.style.setProperty("--edge-a", settings.edgeAlpha);
+  }
+  applyEdges();
   applyPaper();
 
   /* ---------------- Words ---------------- */
@@ -1057,7 +988,7 @@
        marble  - drops drift on looping paths and stretch, folding together
        ripples - drops bloom from the centre and spread out, fading
        ellipses- the row of ellipses (drawn outside the blob) */
-  const PEBBLE = { radii: [1.04, 1, 0.94, 0.92, 0.97, 1.03, 1.07, 1.02], rot: -18,
+  const PEBBLE = { radii: [1.04, 1, 0.94, 0.92, 0.97, 1.03, 1.07, 1.02], rot: 22,   // degrees, clockwise (was -18)
     sats: [[-46, 4, 22, 19], [46, -2, 23, 20], [-24, -15, 14, 12], [26, 15, 15, 13]] };
   const blobRim = $("#blobRim");
   const blobMain = $("#blobMain"), sats = [...voice.querySelectorAll(".sat")], dabs = [...voice.querySelectorAll(".dab")];
@@ -1193,31 +1124,20 @@
     else showCaption(null);
   }
 
-  /* ---------------- Wrong answer treatments ---------------- */
+  /* ---------------- Wrong answer: Edges ---------------- */
   const stageEl = document.querySelector(".stage");
-  const WFX = ["rise", "edges", "shake", "bleed", "ripples", "scribble", "blush"];
-  let wfx = "rise";
-  try { wfx = localStorage.getItem("papa-wfx") || wfx; } catch (e) {}
-  if (!WFX.includes(wfx)) wfx = "rise";
-  function setWfx(v) {
-    wfx = v; stageEl.dataset.wfx = v;
-    document.querySelectorAll("#wfx button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.wfx === v)));
-    try { localStorage.setItem("papa-wfx", v); } catch (e) {}
-  }
   function wrongOn() {
     stageEl.toggleAttribute("data-won", false);
     stageEl.classList.remove("won-play");
-    void stageEl.offsetWidth;                       // restart one-shot motion
+    void stageEl.offsetWidth;                       // restart the shake
     stageEl.toggleAttribute("data-won", true);
     stageEl.classList.add("won-play");
   }
   function wrongOff() { stageEl.toggleAttribute("data-won", false); stageEl.classList.remove("won-play"); }
-  setWfx(wfx);
-  document.querySelectorAll("#wfx button").forEach((b) => b.addEventListener("click", () => {
-    setWfx(b.dataset.wfx);
+  $("#wrongReplay").addEventListener("click", () => {
     if (state.current === "pope" || state.current === "potato") wrongOn();   // replay on the wrong answer showing
     else simulate("el Papa");
-  }));
+  });
 
   async function finish(text) {
     stopWaves();

@@ -54,15 +54,14 @@ cd papa && python3 -m http.server 8000   # mic needs http(s), not file://
   glare of the blue sweeps across it once, straight away (`.caption.shine`).
   For the Pope and the potato (wrong answers) there is no glare: the caption
   starts black and quickly changes to the red, which stays (`.caption.redden`).
-- Wrong-answer treatments (the Pope or the potato), picked in Adjust → "Wrong
-  answer" (saved as `papa-wfx`): Rise (a wide red glow across the whole bottom
-  edge, rising, the user's own idea), Edges (a lighter red gradient creeping in evenly along every side, eased out in small steps, while the Spanish word shakes), Shake (picture
-  and caption shake "no"), Bleed (red wash on a layer under the picture, bleeding out around it), Ripples
-  (red rings out of the voice button), Scribble (pencil correction mark across
-  the word), Blush (voice button flushes pink and shakes). The stage carries
-  `data-wfx` and `data-won`; `.won-play` replays one-shot motion. They clear when
-  listening starts again or Dad is said. While a wrong answer shows, the voice button
-  is 70% opaque so the red shows through it.
+- Wrong answer (the Pope or the potato): **Edges** only. A soft colour creeps
+  in evenly along every side (eased in many small steps) while both caption
+  lines shake "no"; the voice button turns 70% opaque so the colour shows
+  through. Adjust → Wrong answer: Edge hue (0–360°, default 16° = soft red
+  hsl(16 70% 62%)), Edge strength (0–250%), and a Show wrong answer button.
+  The stage carries `data-won`; `.won-play` replays the shake. It clears when
+  listening starts again or Dad is said. (Rise, Shake, Bleed, Ripples,
+  Scribble and Blush were tried and dropped; they're in git history.)
 - Voice blob centred at (201, 674.5), 20% smaller than the Figma pebble
   (about 85 × 70); the tap-word chips sit below it.
 - Adjust panel: a column beside the phone at ≥980px wide, otherwise a bottom
@@ -91,7 +90,7 @@ the older full watercolors, no longer used by the page.
   When the word changes, the old picture dissolves while the new one fades in.
   Painting time is adjustable (default 2.2s).
 - **Voice blob** (kept from before the Figma pass):
-  - Single **pebble**, near-white grey `#efeeec`, soft watercolor edge.
+  - Single **pebble** (outline tilted 22° clockwise; the mic stays upright), near-white grey `#efeeec`, soft watercolor edge.
   - Listening: satellite blobs slide out and merge via a gooey SVG filter
     (`#blob-goo`) into a wide shape that swells with volume. It stays grey and
     its edge goes paler.
