@@ -434,6 +434,8 @@
   .wrong { position: absolute; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; }
   .wrong > * { position: absolute; opacity: 0; }
   .stage { --edge-h: 354; --edge-a: 1; }   /* hsl(354 70% 62%) = a soft strawberry red; strength 1 = 100% */
+  /* the wrong answer's caption takes the same hue as the edges (Edge hue), deep enough to read */
+  .stage { --say-papa: hsl(var(--edge-h) 62% 46%); }
   .w-edges {
     inset: 0;
     /* the same depth (~135u) in from every side (15.5% of the height, 33% of

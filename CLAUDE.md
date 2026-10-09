@@ -9,9 +9,13 @@ page in watercolor, with a caption:
 
 | Heard          | Paints     | Caption (meaning / Spanish)             | Colour   |
 |----------------|------------|------------------------------------------|----------|
-| el papa        | the Pope   | the Pope / El papa                       | #c14d1f  |
-| la papa / papa | a potato   | the potato / La papa                     | #c14d1f  |
+| el papa        | the Pope   | the Pope / El papa                       | edge hue |
+| la papa / papa | a potato   | the potato / La papa                     | edge hue |
 | papá           | Dad        | the dad / El papá                        | #2f88a6  |
+
+Wrong-answer captions use the same hue as the wrong-answer edges
+(`--say-papa: hsl(var(--edge-h) 62% 46%)` on `.stage`, strawberry red by
+default; it was the tomato `#c14d1f` until the user asked them to match).
 
 Spanish spelling: "papa" (Pope, potato) is lowercase, as Spanish writes titles;
 "papá" with the accent is dad. Figma's "La papá" for the potato was a typo.
