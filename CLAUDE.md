@@ -100,8 +100,8 @@ user double-clicks it on their Mac.
 - Wrong answer (the Pope or the potato): **Edges** only. A soft colour creeps
   in evenly along every side (eased in many small steps) while both caption
   lines appear (no rise) and shake straight away "no"; the voice button turns 70% opaque so the colour shows
-  through. Adjust → Wrong answer: Edge hue (0–360°, default 16° = soft red
-  hsl(16 70% 62%)), Edge strength (0–250%), and a Show wrong answer button.
+  through. Adjust → Wrong answer: Edge hue (0–360°, default 354° = soft strawberry
+  red hsl(354 70% 62%); it was 16°, a tomato red, until the user asked for strawberry), Edge strength (0–250%), and a Show wrong answer button.
   The colour fades out SOFTLY and gradually on all four sides, right into the
   page colour, with no defined edge line and no denser band inside (final
   call from the user, with a side-by-side screenshot: "like this photo left
@@ -172,7 +172,7 @@ the older full watercolors, no longer used by the page.
     these sliders previews the smudges on the button for ~2s (`previewMic()`).
     While listening with Smudges, the grey button itself fades out (no grey
     under the smudges, by request): only the blue layers of different sizes,
-    blurred, adding up (Edge softness default 5, plus half the listening blur). Settings key `papa-settings-v17` (older
+    blurred, adding up (Edge softness default 5, plus half the listening blur). Settings key `papa-settings-v18` (older
     wash and smudge values are dropped on migration so new defaults show). The other looks
     fill the shape with five blurred pastel drops (clipped to it): Swirl
     (clockwise, about one lap per 30s), Marble, Ripples; or Ellipses. Motion is
