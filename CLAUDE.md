@@ -27,6 +27,8 @@ Everything lives in `index.html` (no build step). Assets are in `assets/`.
 ```sh
 cd papa && python3 -m http.server 8000   # mic needs http(s), not file://
 ```
+`start.command` does the same (first free port from 8000) and opens Chrome; the
+user double-clicks it on their Mac.
 
 - Real speech: Chrome or Safari via `localhost`, using `webkitSpeechRecognition` with `es-MX`.
 - No speech API, or the mic is refused: tapping the mic shows three tap-words.

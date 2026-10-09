@@ -9,9 +9,15 @@ What you actually pronounce gets painted onto the page in watercolor, with a cap
 | la papa   | a potato   |
 | papá      | Dad        |
 
-## Run it
+## Run it on your computer (localhost)
 
-The microphone needs a real web address (not a double-clicked file):
+The microphone needs a real web address (not a double-clicked `index.html`).
+
+**One click (Mac):** double-click `papa/start.command` in Finder. It serves the
+folder on `http://localhost:8000` (or the next free port) and opens it in Chrome.
+Close the Terminal window to stop it.
+
+**By hand:**
 
 ```sh
 cd papa
@@ -29,6 +35,7 @@ Design notes and decisions for future work: `CLAUDE.md`.
 
 ## Files
 
+- `start.command`: serves the folder on localhost and opens it in Chrome
 - `index.html`: the whole prototype (paper, icons, voice blob, WebGL watercolor painter, Adjust panel)
 - `assets/*-cutout.png`: the three pictures, split from `assets/pictures-source.webp` with a soft blur toward the bottom
 - `assets/{pope,potato,dad}.jpg` and `assets/*-mask.png`: older full watercolors (not used by the page)
