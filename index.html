@@ -1318,7 +1318,7 @@
   }
 
   let paintToken = 0;
-  const DAD_SPEED = 0.5;   // Dad's picture takes half the painting / reveal time
+  const DAD_SEC = 0.7;   // Dad's picture comes in over 0.7s, whatever the painting / reveal time
   async function paint(key, onStart, onAlmost, speed = 1) {
     const token = ++paintToken, alive = () => token === paintToken;
     const prev = state.current;
@@ -1895,8 +1895,8 @@
     }
     // a wrong answer's caption turns red and shakes "no" once its picture is 50% in
     const almost = wrong ? () => { redNow(); shakeNo(); } : null;
-    // the correct answer's picture comes in twice as fast (by request: it felt too slow)
-    const speed = key === "dad" ? DAD_SPEED : 1;
+    // the correct answer's picture comes in over about 0.7s (by request: it felt too slow)
+    const speed = key === "dad" ? DAD_SEC / (handoff ? settings.revealTime : settings.paintTime) : 1;
     await (handoff ? revealPaint(key, REVEALS.indexOf(reveal), null, almost, speed) : paint(key, null, almost, speed));
     setState("idle");
     if (key === "dad") voice.setAttribute("aria-label", "Next word");
