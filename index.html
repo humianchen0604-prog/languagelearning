@@ -857,17 +857,18 @@
     <div class="row"><label for="washHue">Hue</label><output for="washHue"></output><input id="washHue" type="range" min="0" max="360" step="1" value="30"></div>
     <div class="hue-strip" aria-hidden="true"></div>
     <div class="row"><label for="washSat">Saturation</label><output for="washSat"></output><input id="washSat" type="range" min="0" max="1" step="0.01" value="0.05"></div>
-    <div class="row"><label for="washLight">Lightness</label><output for="washLight"></output><input id="washLight" type="range" min="0.2" max="0.95" step="0.01" value="0.82"></div>
+    <div class="row"><label for="washLight">Lightness</label><output for="washLight"></output><input id="washLight" type="range" min="0.2" max="0.97" step="0.01" value="0.88"></div>
     <div class="row"><label for="washAlpha">Strength</label><output for="washAlpha"></output><input id="washAlpha" type="range" min="0" max="2" step="0.01" value="1"></div>
-    <div class="row"><label for="msmSoft">Edge softness</label><output for="msmSoft"></output><input id="msmSoft" type="range" min="0" max="6" step="0.1" value="2.4"></div>
+    <div class="row"><label for="msmSoft">Edge softness</label><output for="msmSoft"></output><input id="msmSoft" type="range" min="0" max="8" step="0.1" value="3.5"></div>
     <p class="note">Shown with Voice visual → Smudges.</p>
   </section>
 
   <section class="group">
     <h3>First-picture wash</h3>
-    <div class="row"><label for="loadLight">Grey lightness</label><output for="loadLight"></output><input id="loadLight" type="range" min="0.4" max="0.95" step="0.01" value="0.76"></div>
+    <div class="row"><label for="loadLight">Grey lightness</label><output for="loadLight"></output><input id="loadLight" type="range" min="0.4" max="0.98" step="0.01" value="0.9"></div>
     <div class="row"><label for="loadAlpha">Strength</label><output for="loadAlpha"></output><input id="loadAlpha" type="range" min="0" max="2" step="0.01" value="1"></div>
-    <div class="row"><label for="loadFade">Fade out</label><output for="loadFade"></output><input id="loadFade" type="range" min="0.4" max="4" step="0.1" value="1.6"></div>
+    <div class="row"><label for="loadFade">Fade out</label><output for="loadFade"></output><input id="loadFade" type="range" min="0.3" max="4" step="0.1" value="1"></div>
+    <div class="row"><label for="loadBlur">Blur</label><output for="loadBlur"></output><input id="loadBlur" type="range" min="0" max="20" step="0.5" value="9"></div>
   </section>
 
   <section class="group">
@@ -890,18 +891,22 @@
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   /* ---------------- Settings (remembered per browser) ---------------- */
-  const KEY = "papa-settings-v10";
-  const ids = ["toothSize", "toothDepth", "warmth", "paintTime", "edgeHue", "edgeAlpha", "edgeTime", "washHue", "washSat", "washLight", "washAlpha", "listenBlur", "loadLight", "loadAlpha", "loadFade", "msmSoft"];
+  const KEY = "papa-settings-v11";
+  const ids = ["toothSize", "toothDepth", "warmth", "paintTime", "edgeHue", "edgeAlpha", "edgeTime", "washHue", "washSat", "washLight", "washAlpha", "listenBlur", "loadLight", "loadAlpha", "loadFade", "msmSoft", "loadBlur"];
   let saved = {};
   try {
     saved = JSON.parse(localStorage.getItem(KEY) || "null");
-    if (!saved) {   // older versions had other mic smudge colours; v10 is a lighter grey
+    if (!saved) {   // v11: a much lighter, blurrier first-picture wash with a shorter fade
+      saved = JSON.parse(localStorage.getItem("papa-settings-v10") || "null");
+      if (saved) ["loadLight", "loadAlpha", "loadFade", "washHue", "washSat", "washLight", "washAlpha", "msmSoft"].forEach((k) => delete saved[k]);
+    }
+    if (!saved) {   // older versions had other mic smudge colours
       saved = JSON.parse(localStorage.getItem("papa-settings-v9") || localStorage.getItem("papa-settings-v8") || "{}");
-      ["washHue", "washSat", "washLight", "washAlpha"].forEach((k) => delete saved[k]);
+      ["washHue", "washSat", "washLight", "washAlpha", "loadLight", "loadAlpha", "loadFade"].forEach((k) => delete saved[k]);
     }
   } catch (e) { saved = {}; }
   const settings = {};
-  const fmt = (id, v) => id === "paintTime" || id === "edgeTime" || id === "loadFade" ? v.toFixed(1) + " s" : id === "edgeHue" || id === "washHue" ? Math.round(v) + "°" : id === "listenBlur" || id === "msmSoft" ? v.toFixed(1) + " px" : id === "toothSize" ? Math.pow(2, v).toFixed(2) + "×" : Math.round(v * 100) + "%";
+  const fmt = (id, v) => id === "paintTime" || id === "edgeTime" || id === "loadFade" ? v.toFixed(1) + " s" : id === "edgeHue" || id === "washHue" ? Math.round(v) + "°" : id === "listenBlur" || id === "msmSoft" || id === "loadBlur" ? v.toFixed(1) + " px" : id === "toothSize" ? Math.pow(2, v).toFixed(2) + "×" : Math.round(v * 100) + "%";
   function persist() { try { localStorage.setItem(KEY, JSON.stringify(settings)); } catch (e) {} }
 
   ids.forEach((id) => {
@@ -1355,7 +1360,7 @@
     [42, -58, 28, 34, 10, 6, -16, 0.3],
   ];
   const washRadii = WASH.map((_, i) => Array.from({ length: 9 }, (_, k) => 0.88 + 0.24 * hash(i * 12.9898 + k * 78.233)));
-  const WASH_PRESETS = { gray: [30, 0.05, 0.82], sky: [205, 0.75, 0.68], aqua: [180, 0.6, 0.56], perplexity: [186, 0.63, 0.4], indigo: [230, 0.75, 0.66] };
+  const WASH_PRESETS = { gray: [30, 0.05, 0.88], sky: [205, 0.75, 0.68], aqua: [180, 0.6, 0.56], perplexity: [186, 0.63, 0.4], indigo: [230, 0.75, 0.66] };
   let washShown = false, washVis = 0, washFrom = 0, washOnAt = 0, washOffAt = 0, washOffMs = 1, washRaf = 0, washLv = 0;
 
   function renderWash(nowMs) {
@@ -1372,10 +1377,12 @@
       el.setAttribute("d", blobPath(washRadii[i], rx * k, ry * k, rot + Math.sin(t * 0.3 + i) * 8, 0.035, t * 0.3 + i * 2));
       el.setAttribute("transform", `translate(${cx.toFixed(2)} ${cy.toFixed(2)})`);
       el.setAttribute("fill", `hsl(${(h + dh * 0.3).toFixed(1)} ${(s * 100).toFixed(1)}% ${(Math.min(0.97, Math.max(0.05, l + dl * 0.6 / 100)) * 100).toFixed(1)}%)`);
-      el.setAttribute("fill-opacity", Math.min(1, al * 0.85 * a * bloom).toFixed(3));
+      el.setAttribute("fill-opacity", Math.min(1, al * 0.7 * a * bloom).toFixed(3));
     });
     smudge.style.opacity = washVis.toFixed(3);
-    smudge.style.filter = washShown || reduceMotion ? "" : `blur(${((1 - washVis) * 10).toFixed(2)}px)`;   // softens as it goes
+    // blurred out as a whole (Adjust → Blur), and more as it fades
+    const blur = settings.loadBlur + (washShown || reduceMotion ? 0 : (1 - washVis) * 8);
+    smudge.style.filter = blur > 0 ? `blur(calc(${blur.toFixed(2)} * var(--u)))` : "";
   }
   function washTick(nowMs) {
     if (!washShown) {
@@ -1384,7 +1391,7 @@
     }
     renderWash(nowMs);
     if (washShown || washVis > 0.001) washRaf = requestAnimationFrame(washTick);
-    else { washRaf = 0; washVis = 0; smudge.style.opacity = "0"; smudge.style.filter = ""; }
+    else { washRaf = 0; washVis = 0; smudge.style.opacity = "0"; }
   }
   function washOn() {
     if (!washShown) washOnAt = performance.now();   // bloom in (again)
@@ -1503,10 +1510,14 @@
     showHeard(text, key);
     if (key === "pope" || key === "potato") wrongOn(); else wrongOff();
     if (!key) { endTakeEmpty(); setState("idle"); return; }
-    washOff(settings.loadFade * 1000);                   // the wash fades away as the picture paints in
     // correct answer: the button goes straight from listening to the "next" arrow
     if (key === "dad") voice.toggleAttribute("data-next", true);
     setState("processing");
+    if (washShown) {   // first picture: the grey wash fades away completely, then the picture paints in
+      const ms = settings.loadFade * 1000;
+      washOff(ms);
+      await new Promise((r) => setTimeout(r, reduceMotion ? 0 : ms));
+    }
     await paint(key);
     setState("idle");
     if (key === "dad") voice.setAttribute("aria-label", "Next word");
