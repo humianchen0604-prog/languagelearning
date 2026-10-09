@@ -149,7 +149,8 @@ user double-clicks it on their Mac.
   red edges start creeping in (over the grey's exit plus the painting time, so
   they finish with the picture), and the grey wash leaves straight away, even
   mid fade-in (`exitWash(true)`, `washHurry`), so the picture follows quickly.
-  The sideways shake starts a quarter of the way into the red edges'
+  The caption turns red 15% of the way into the red edges' animation
+  (`--red-delay`, by request), and the sideways shake starts a quarter of the way into the red edges'
   animation (`shakeNo()`, a WAAPI animation; by request; before that it waited
   for the picture to be 80% in).
   A soft colour creeps

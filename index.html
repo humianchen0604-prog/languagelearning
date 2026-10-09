@@ -426,7 +426,7 @@
      the glare plays as soon as speaking ends */
   .caption.enter.shine.from-live .caption-word { animation: shine 1.1s var(--ease-out) 500ms forwards; }
   .caption.enter.redden .caption-meaning,
-  .caption.enter.redden .caption-word    { animation: fade-in 120ms ease-out both, redden 0.35s ease-out both; }
+  .caption.enter.redden .caption-word    { animation: fade-in 120ms ease-out both, redden 0.35s ease-out var(--red-delay, 0ms) both; }
   @keyframes fade-in { from { opacity: 0; } }
   @media (prefers-reduced-motion: reduce) {
     /* reduced motion: keep a short fade, drop the rise, blur and sweep */
@@ -482,21 +482,21 @@
      meaning fades in at once; both shake "no" (shakeNo(), keyframes above)
      only once the picture is at least 80% painted in */
   .stage.won-play .caption.enter .caption-word {
-    animation: fade-in 120ms ease-out both, redden 0.35s ease-out both;
+    animation: fade-in 120ms ease-out both, redden 0.35s ease-out var(--red-delay, 0ms) both;
   }
   .stage.won-play .caption.enter .caption-meaning {
-    animation: fade-in 200ms ease-out 260ms both, redden 0.35s ease-out both;   /* translation a moment after the word */
+    animation: fade-in 200ms ease-out 260ms both, redden 0.35s ease-out var(--red-delay, 0ms) both;   /* translation a moment after the word */
   }
   /* typed out live already: it just turns red, then shakes with the meaning */
   .stage.won-play .caption.enter.from-live .caption-word {
-    animation: redden 0.35s ease-out both;
+    animation: redden 0.35s ease-out var(--red-delay, 0ms) both;
   }
   /* the English meaning fades in as soon as speaking ends (black, before the red) */
   .caption.pre-meaning .caption-meaning { animation: fade-in 200ms ease-out both; }
   /* ...so when the picture comes, both lines just turn red and shake */
   .stage.won-play .caption.enter.pre-shown .caption-meaning,
   .stage.won-play .caption.enter.pre-shown .caption-word {
-    animation: redden 0.35s ease-out both;
+    animation: redden 0.35s ease-out var(--red-delay, 0ms) both;
   }
 
   /* with a wrong answer the voice button turns a little see-through,
@@ -1851,6 +1851,12 @@
     stopWaves();
     const key = classify(text || "");
     const wrong = key === "pope" || key === "potato";
+    // a wrong answer's red edges run 1.1x faster than the picture (they finish a little before it)
+    const greyLeft = reveal === "fade" && (washShown || washExit) ? settings.loadFade * settings.loadStart : 0;
+    const painted = reveal !== "fade" && washShown ? Math.max(0, washPainted() - performance.now()) / 1000 : 0;
+    const edgeSec = (greyLeft + painted + (reveal === "fade" ? settings.paintTime : settings.revealTime)) / 1.1;
+    // its caption turns red 15% of the way into the edges' animation (by request)
+    stageEl.style.setProperty("--red-delay", wrong && !reduceMotion ? Math.round(edgeSec * 150) + "ms" : "0ms");
     showHeard(text, key);
     wrongOff();
     if (!key) { endTakeEmpty(); setState("idle"); return; }
@@ -1863,10 +1869,6 @@
     // away (even mid fade-in) so the picture follows quickly. The edges take
     // until the picture has finished fading in.
     if (wrong) {
-      // the edges run 1.1x faster than the picture: they finish a little before it does
-      const greyLeft = reveal === "fade" && (washShown || washExit) ? settings.loadFade * settings.loadStart : 0;
-      const painted = reveal !== "fade" && washShown ? Math.max(0, washPainted() - performance.now()) / 1000 : 0;
-      const edgeSec = (greyLeft + painted + (reveal === "fade" ? settings.paintTime : settings.revealTime)) / 1.1;
       wrongOn(edgeSec);
       // the caption shakes "no" a quarter of the way into the red edges' animation
       const won = stageEl;
