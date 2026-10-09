@@ -1696,16 +1696,25 @@
 
   /* A take starts: the title moves up straight away, any picture showing
      fades out, and the grey wash appears where the new picture will go. */
+  // the title's glide up (750ms, --ease-in-out) is 90% done at ~495ms
+  const TITLE_90 = 495;
+  let washDelay = 0;
   function beginTake() {
+    const gliding = stageEl.hasAttribute("data-intro");
     stageEl.removeAttribute("data-intro");
-    clearTimeout(washPreview);
+    clearTimeout(washPreview); clearTimeout(washDelay);
     // a picture from the last take (e.g. a wrong answer) fades out and the grey
-    // wash comes back, so every new picture is generated the same way
+    // wash comes back, so every new picture is generated the same way. When the
+    // title is gliding up, the wash waits until it is 90% of the way there.
     if (state.current) clearPicture();
-    washOn();
+    if (gliding && !reduceMotion) washDelay = setTimeout(() => { washDelay = 0; washOn(); }, TITLE_90);
+    else washOn();
   }
+  // speaking ended before the delayed wash came in: bring it in now
+  function washNow() { if (washDelay) { clearTimeout(washDelay); washDelay = 0; washOn(); } }
   /* A take ends without a picture: the wash goes and the title returns. */
   function endTakeEmpty() {
+    clearTimeout(washDelay); washDelay = 0;
     washOff(600);
     if (!state.current) stageEl.setAttribute("data-intro", "");
   }
@@ -1798,7 +1807,8 @@
     if (key === "dad") voice.toggleAttribute("data-next", true);
     setState("processing");
     let handoff = false;
-    if (washShown) {   // first picture: the grey wash finishes painting first
+    washNow();
+    if (washShown) {   // first picture: the grey wash finishes appearing first
       const left = washPainted() - performance.now();
       if (left > 0 && !reduceMotion) await new Promise((r) => setTimeout(r, left));
       if (reveal === "fade") {   // Fade: the wash fades away; the picture starts near the end of that, so they barely overlap

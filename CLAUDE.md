@@ -75,7 +75,10 @@ user double-clicks it on their Mac.
 - First-picture wash: for every take (by request; it used to be only when
   the page had no picture yet). When a picture is showing, e.g. a wrong
   answer, pressing the mic fades it out (`clearPicture()`) as the wash appears,
-  so each new picture is generated the same way. A soft grey watercolor appears where the
+  so each new picture is generated the same way. When the title is gliding up
+  (first take, after "next" or a miss), the wash waits until the glide is 90%
+  done (~495ms, `TITLE_90`) before fading in; everything after follows from
+  then (`washOnAt`). A soft grey watercolor appears where the
   picture will appear as soon as the mic is pressed, quickly fading in while it
   scales from 95% to 100% (Fade-in time, default 0.45s). History: it first
   painted in from the top left to the bottom right, then from the centre
