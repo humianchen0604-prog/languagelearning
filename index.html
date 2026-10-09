@@ -848,7 +848,7 @@
     <div class="hue-strip" aria-hidden="true"></div>
     <div class="row"><label for="edgeAlpha">Edge strength</label><output for="edgeAlpha"></output><input id="edgeAlpha" type="range" min="0" max="2.5" step="0.01" value="1"></div>
     <div class="row"><label for="edgeTime">Edge time</label><output for="edgeTime"></output><input id="edgeTime" type="range" min="0.2" max="6" step="0.1" value="1"></div>
-    <div class="row"><label for="edgeTex">Edge rim</label><output for="edgeTex"></output><input id="edgeTex" type="range" min="0" max="2.5" step="0.01" value="1"></div>
+    <div class="row"><label for="edgeTex">Edge rim</label><output for="edgeTex"></output><input id="edgeTex" type="range" min="0" max="2.5" step="0.01" value="0"></div>
     <div class="seg"><button type="button" id="wrongReplay">Show wrong answer</button></div>
   </section>
 
@@ -907,11 +907,15 @@
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   /* ---------------- Settings (remembered per browser) ---------------- */
-  const KEY = "papa-settings-v15";
+  const KEY = "papa-settings-v16";
   const ids = ["toothSize", "toothDepth", "warmth", "paintTime", "edgeHue", "edgeAlpha", "edgeTime", "washHue", "washSat", "washLight", "washAlpha", "listenBlur", "loadLight", "loadAlpha", "loadFade", "msmSoft", "loadBlur", "loadPaint", "edgeTex"];
   let saved = {};
   try {
     saved = JSON.parse(localStorage.getItem(KEY) || "null");
+    if (!saved) {   // v16: the edge colour fades out softly on all four sides again (Edge rim 0)
+      saved = JSON.parse(localStorage.getItem("papa-settings-v15") || "null");
+      if (saved) delete saved.edgeTex;
+    }
     if (!saved) {   // v15: mic smudges are Dad's blue by default
       saved = JSON.parse(localStorage.getItem("papa-settings-v14") || "null");
       if (saved) ["washHue", "washSat", "washLight"].forEach((k) => delete saved[k]);
@@ -1170,16 +1174,17 @@
     if (id === "listenBlur") applyListenBlur();
     if (id === "msmSoft") applyMsmSoft();
   }
-  // distance (0 inside .. 1 at the screen's edge) → wash: nothing inside the
-  // edge line, a dense rim right at it fading into sheer colour, then the
-  // colour slowly deepening toward the screen's edge
+  // distance (0 inside .. 1 at the screen's edge) → wash: the colour fades
+  // out gradually toward the inside (no hard edge line), deepening toward
+  // the screen's edge, with a soft, slightly denser band (Edge rim) where it
+  // thins out. The warp and uneven pigment still make it read as watercolor.
   function edgeTable(rim) {
-    const E = 0.09, out = [];
+    const out = [];
     for (let k = 0; k <= 40; k++) {
       const n = k / 40;
-      if (n < E) { out.push(0); continue; }
-      const body = 0.08 + 0.92 * Math.pow((n - E) / (1 - E), 1.4);
-      out.push(Math.min(1, body + rim * 0.75 * Math.exp(-(n - E) / 0.05)).toFixed(3));
+      const fade = n * n * (3 - 2 * n);                        // smooth start from nothing
+      const band = rim * 0.14 * Math.exp(-Math.pow((n - 0.22) / 0.1, 2)) * Math.min(1, n / 0.12);
+      out.push(Math.min(1, Math.pow(fade, 1.5) + band).toFixed(3));   // eases right down to the page colour
     }
     return out.join(" ");
   }
@@ -1705,6 +1710,8 @@
      Downloads every Adjust setting (plus the voice look) as JSON and copies
      it, and shows it in the panel as a fallback, so the user can send their
      tuned version to Claude to become the defaults. */
+  // the artifact viewer offers files through its downloads capability; elsewhere it's null
+  const downloadsP = window.claude && window.claude.use ? window.claude.use("downloads").catch(() => null) : Promise.resolve(null);
   $("#saveSettings").addEventListener("click", async () => {
     const text = JSON.stringify({ prototype: "Papá o la papa", savedAt: new Date().toISOString(), look, settings: { ...settings } }, null, 2);
     const ta = $("#saveText");
@@ -1713,14 +1720,19 @@
     try { await navigator.clipboard.writeText(text); copied = true; } catch (e) {
       try { ta.select(); copied = document.execCommand("copy"); } catch (e2) {}
     }
-    try {
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(new Blob([text], { type: "application/json" }));
-      a.download = "papa-settings.json";
-      document.body.append(a); a.click(); a.remove();
-      setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-      downloaded = true;
-    } catch (e) {}
+    const dl = await downloadsP;
+    if (dl) {   // inside the claude.ai artifact viewer: it asks the viewer before saving
+      try { await dl.save({ filename: "papa-settings.json", data: text }); downloaded = true; } catch (e) {}
+    } else {    // a normal browser (localhost)
+      try {
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(new Blob([text], { type: "application/json" }));
+        a.download = "papa-settings.json";
+        document.body.append(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+        downloaded = true;
+      } catch (e) {}
+    }
     $("#saveNote").textContent = (downloaded ? "Saved papa-settings.json" : "Saved") + (copied ? " and copied it." : ".") +
       " Send the file (or paste the text below) to Claude to make these the defaults.";
   });

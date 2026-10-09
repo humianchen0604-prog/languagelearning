@@ -99,16 +99,17 @@ user double-clicks it on their Mac.
   lines appear (no rise) and shake straight away "no"; the voice button turns 70% opaque so the colour shows
   through. Adjust → Wrong answer: Edge hue (0–360°, default 16° = soft red
   hsl(16 70% 62%)), Edge strength (0–250%), and a Show wrong answer button.
-  It is painted like a watercolor wash that dried (the user's reference: a
-  pink wash with a denser rim): the colour is sheer and uneven, deepening
-  toward the screen's edge, and ends in a gently wavy, DEFINED edge with a
-  denser rim of pigment along it; inside that edge is plain page colour.
-  CSS `filter: url(#edge-bloom)` on `.w-edges` uses the gradient as a
-  distance map (smoothed, warped), and `edgeTable()` turns distance into the
-  wash (`#ebTable`). Edge rim slider (0–250%, default 100%) sets how dense
-  the rim is. The user confirmed this look ("make this not fade out!!!")
-  after a version that faded out gradually toward the inside; don't make it
-  fade out again. Zig-zag fibres along the edge were also tried and rejected. Edge time
+  The colour fades out SOFTLY and gradually on all four sides, right into the
+  page colour, with no defined edge line and no denser band inside (final
+  call from the user, with a side-by-side screenshot: "like this photo left
+  side how it fades out on all four edges softly"). It still reads as
+  watercolor: sheer, uneven pigment, deepening toward the screen's edge,
+  gently wavy. CSS `filter: url(#edge-bloom)` on `.w-edges` uses the gradient
+  as a distance map (smoothed, warped), and `edgeTable()` turns distance into
+  the wash (`#ebTable`). Edge rim slider (0–250%, default 0%) can add a soft,
+  slightly denser band. Tried and rejected: zig-zag fibres along the edge; a
+  defined wavy edge with a dense rim (the user went back and forth once, then
+  settled on the soft fade). Edge time
   (0.2–6s, default 1s) sets how long the edges take to creep in.
   The stage carries `data-won`; `.won-play` replays the shake. It clears when
   listening starts again or Dad is said. (Rise, Shake, Bleed, Ripples,
@@ -165,7 +166,7 @@ the older full watercolors, no longer used by the page.
     softness, default 3.5). Adjust → Mic smudges: Dad blue (default), Light
     gray, Light blue, Aqua, Perplexity, Indigo, or hue/saturation/lightness,
     Colour density (0–300%, default 100%) and Edge softness. Moving one of
-    these sliders previews the smudges on the button for ~2s (`previewMic()`). Settings key `papa-settings-v15` (older
+    these sliders previews the smudges on the button for ~2s (`previewMic()`). Settings key `papa-settings-v16` (older
     wash and smudge values are dropped on migration so new defaults show). The other looks
     fill the shape with five blurred pastel drops (clipped to it): Swirl
     (clockwise, about one lap per 30s), Marble, Ripples; or Ellipses. Motion is
