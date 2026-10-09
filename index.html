@@ -462,13 +462,17 @@
     84% { transform: translateX(calc(-2 * var(--u))); }
   }
   /* wrong answers don't rise: they appear and shake straight away */
-  .stage.won-play .caption.enter .caption-meaning,
+  /* order: the Spanish word shows (turning red), then the English meaning
+     fades in above it, then both shake "no" together */
   .stage.won-play .caption.enter .caption-word {
-    animation: fade-in 120ms ease-out both, redden 0.35s ease-out both, no-shake 560ms ease-out both;
+    animation: fade-in 120ms ease-out both, redden 0.35s ease-out both, no-shake 560ms ease-out 480ms both;
   }
-  /* typed out live already: it just turns red and shakes */
+  .stage.won-play .caption.enter .caption-meaning {
+    animation: fade-in 320ms ease-out 120ms both, redden 0.35s ease-out both, no-shake 560ms ease-out 480ms both;
+  }
+  /* typed out live already: it just turns red, then shakes with the meaning */
   .stage.won-play .caption.enter.from-live .caption-word {
-    animation: redden 0.35s ease-out both, no-shake 560ms ease-out both;
+    animation: redden 0.35s ease-out both, no-shake 560ms ease-out 480ms both;
   }
 
   /* with a wrong answer the voice button turns a little see-through,

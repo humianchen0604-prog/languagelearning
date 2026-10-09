@@ -107,7 +107,8 @@ user double-clicks it on their Mac.
   painting in (after the first-picture wash's half fade), never over the grey
   wash (by request); until then the live transcript stays in black. A soft colour creeps
   in evenly along every side (eased in many small steps) while both caption
-  lines appear (no rise) and shake straight away "no"; the voice button turns 70% opaque so the colour shows
+  caption plays in order: the Spanish word shows (turning red), the English
+  meaning fades in above it (120ms, over 320ms), then both shake "no" at 480ms; the voice button turns 70% opaque so the colour shows
   through. Adjust → Wrong answer: Edge hue (0–360°, default 354° = soft strawberry
   red hsl(354 70% 62%); it was 16°, a tomato red, until the user asked for strawberry), Edge strength (0–250%), and a Show wrong answer button.
   The colour fades out SOFTLY and gradually on all four sides, right into the
