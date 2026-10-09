@@ -227,7 +227,9 @@ the older full watercolors, no longer used by the page.
   When the word changes, the old picture dissolves while the new one fades in.
   Painting time is adjustable (default 1.5s: 1s, then 1.5s, then 2s, then
   25% faster again by request). A first picture fades in over the whole painting time
-  (ease-in-out), in step with the wrong-answer edges. `tween()` starts its
+  (ease-in-out), in step with the wrong-answer edges. The correct answer
+  (Dad) comes in twice as fast: half the painting / reveal time (`DAD_SPEED`
+  0.5, passed to `paint()` / `revealPaint()`; by request, it felt too slow). `tween()` starts its
   clock on the first drawn frame (a first-time texture upload used to stall
   it, so a wrong answer's picture, usually the first of a session, jumped in
   partway and felt harsher than Dad's); the red and the shake start on that
