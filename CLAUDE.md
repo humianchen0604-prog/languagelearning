@@ -99,7 +99,9 @@ user double-clicks it on their Mac.
   and shake in place, Dad's glare plays (`.from-live`). The Dad caption's lines fade in rising 10u with a
   2px blur that clears (450ms, strong ease-out), the Spanish word 70ms after
   the meaning (`.caption.enter`, `rise-in`); live transcripts don't animate. When Dad is said (correct), the caption turns black and a
-  glare of the blue sweeps across it once, starting 0.5s after the word appears (`.caption.shine`).
+  glare sweeps across it once in the light blue of the "next" button, a little
+  darker (`--shine: #9fcfe2`, middle `--shine-hi: #c2e2ee`; it was the deep
+  `#2f88a6` until the user asked to match the button), starting 0.5s after the word appears (`.caption.shine`).
   For the Pope and the potato (wrong answers) there is no glare: the caption
   starts black and quickly changes to the red, which stays (`.caption.redden`).
 - Wrong answer (the Pope or the potato): **Edges** only. It waits for the picture: the
@@ -179,13 +181,14 @@ the older full watercolors, no longer used by the page.
     (`#blob-goo`) into a wide shape that swells with volume. It stays grey and
     its edge goes paler and blurs out into the paper (CSS blur on `.blob`,
     `--listen-blur`, default 3.5u; Adjust → Voice visual → Edge blur while listening).
-  - While listening, Looks: **Grey** (default, by request): the button keeps
-    its resting pebble shape and size and just turns a little darker grey
-    (`--blob-grey`, `#efeeec` darkened by Adjust → Voice visual → Grey while
-    listening, default 3.5%; 8% was too dark for the user), contained in the pebble's own
-    edge (no listening blur), no icon; the shape wiggles (wobblier outline)
-    and twirls back and forth a little (±~15°) so it reads as listening.
-    Saved look key `papa-look-v4`.
+  - While listening, Looks: **Pebble** (default; `grey` in code and the saved
+    look key `papa-look-v4`): the button keeps its resting pebble shape and
+    size, contained in its own edge (no listening blur), no icon, and turns
+    the light blue of the correct answer (`--blob-next: #d5edf6`, rim
+    `#8fc3d8`) while it wiggles (wobblier outline) and twirls back and forth a
+    little (±~15°). A correct answer keeps the blue behind the "next" arrow; a
+    wrong answer or a miss eases back to grey and the mic returns. (Before
+    that it was a darker grey while listening, 8% then 3.5%.)
   - **Smudges** (was the default before Grey): the button keeps its
     resting pebble shape and size (no satellites, no widening; the user
     dropped the wide "snake" shape for this look). Eight pebble-shaped
@@ -205,11 +208,16 @@ the older full watercolors, no longer used by the page.
     fill the shape with five blurred pastel drops (clipped to it): Swirl
     (clockwise, about one lap per 30s), Marble, Ripples; or Ellipses. Motion is
     slow. 
+  - Back from listening (e.g. after a wrong answer) it morphs, not switches:
+    the wiggle/twirl settles slowly (`spread` eases back at 0.035/frame, about
+    a second), the grey eases back over 900ms, and the mic grows back into
+    focus 300ms later (500–650ms).
   - Processing (while the picture paints): no loading indicator; the mic stays.
   - The mic uses the **pencil** filter in `--mic-ink #7f7d7a`. The mic
     capsule is filled with that ink at 48% on white; the icon is about 19 × 25u.
   - After Dad (correct) the button's grey fades to a light blue from Dad's
-    glare (`--blob-next: #d5edf6`, 700ms) as the arrow appears.
+    glare (`--blob-next: #d5edf6`, 700ms) as the arrow appears, and its rim turns
+    blue (`#blobRim` flood `#8fc3d8`) instead of grey.
   - After Dad (correct) the mic swaps straight from listening to a pencil "next" arrow that nudges right once (`.next`,
     `data-next` on the button). Tapping it fades the picture and caption out,
     moves the progress dot on, and brings the mic back (`goNext()`).

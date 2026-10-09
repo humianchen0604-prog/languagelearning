@@ -15,11 +15,12 @@
     --seg-now: #5a5a5a;        /* progress blob, current (shown at 20%) */
     --say-papa: #c14d1f;       /* caption for the Pope and the potato */
     --say-dad: #2f88a6;        /* caption for Dad */
+    --shine: #9fcfe2;          /* Dad's glare: the light blue of the "next" button, a little darker */
+    --shine-hi: #c2e2ee;       /* the glare's bright middle */
     --blob-idle: #efeeec;            /* voice blob before speaking: near-white grey */
     --mic-ink: #7f7d7a;              /* mic: soft pencil grey */
     --blob-listen: #e9e8e5;          /* voice blob while listening: a touch deeper grey */
     --blob-next: #d5edf6;            /* after Dad (correct): a light blue from Dad's glare, behind the "next" arrow */
-    --blob-grey: #e7e6e4;            /* Grey look while listening: the resting #efeeec, 3.5% darker (Adjust) */
     --panel: #fbf9f6;
     --panel-line: #e2dbd2;
     --panel-ink: #3a2c22;
@@ -255,11 +256,19 @@
     transition: fill 450ms var(--ease-out), fill-opacity 450ms var(--ease-out);
   }
   .voice[data-state="listening"] .blob > g { fill: var(--blob-listen); fill-opacity: 0.85; }
-  /* Grey look: while listening the whole button just turns 8% darker grey (no icon) */
-  .voice[data-look="grey"][data-state="listening"] .blob > g { fill: var(--blob-grey); fill-opacity: 1; }
-  .voice[data-look="grey"][data-state="listening"] .blob { filter: none; }
+  /* back from listening (e.g. after a wrong answer) the colour eases back slowly, with the shape */
+  .voice:not([data-state="listening"]) .blob > g { transition-duration: 900ms; }
+  /* Pebble look ("grey" in code): while listening the whole button turns the
+     light blue of the correct answer (no icon); a correct answer keeps it,
+     a wrong one or a miss eases back to grey with the mic */
+  .voice[data-look="grey"][data-state="listening"] .blob > g { fill: var(--blob-next); fill-opacity: 1; }
+  .voice[data-look="grey"][data-state="listening"] .blob { filter: none; }   /* stays inside the pebble's own edge, no blur */
   /* correct answer: the grey fades to light blue as the "next" arrow appears */
-  .voice[data-next]:not([data-state="listening"]) .blob > g { fill: var(--blob-next); fill-opacity: 1; transition-duration: 700ms; }   /* stays inside the pebble's own edge, no blur */
+  .voice[data-next]:not([data-state="listening"]) .blob > g { fill: var(--blob-next); fill-opacity: 1; transition-duration: 700ms; }
+  /* ...and its soft watercolor rim turns blue too, instead of grey */
+  #blobRim { transition: flood-color 700ms var(--ease-out); }
+  body:has(.voice[data-next]:not([data-state="listening"])) #blobRim,
+  body:has(.voice[data-look="grey"][data-state="listening"]) #blobRim { flood-color: #8fc3d8; }
 
   .mic, .waves {
     position: absolute;
@@ -268,6 +277,10 @@
     align-items: center;
     justify-content: center;
     transition: opacity 260ms var(--ease-out), transform 260ms var(--ease-out), filter 260ms var(--ease-out);
+  }
+  /* the mic comes back as the shape settles: it grows and comes into focus a moment later */
+  .voice:not([data-state="listening"]):not([data-next]) .mic {
+    transition: opacity 500ms var(--ease-out) 300ms, transform 650ms var(--ease-out) 300ms, filter 500ms var(--ease-out) 300ms;
   }
   .mic svg { width: calc(19 * var(--u)); height: calc(25.3 * var(--u)); overflow: visible; }
 
@@ -352,7 +365,7 @@
     color: transparent;
     background-image: linear-gradient(105deg,
       #1a1a1a 0%, #1a1a1a 38%,
-      var(--say-dad) 46%, #a9dbed 50%, var(--say-dad) 54%,
+      var(--shine) 46%, var(--shine-hi) 50%, var(--shine) 54%,
       #1a1a1a 62%, #1a1a1a 100%);
     background-size: 300% 100%;
     background-position: 100% 0;
@@ -930,14 +943,13 @@
   <section class="group">
     <h3>Voice visual</h3>
     <div class="seg" id="look">
-      <button type="button" data-look="grey" aria-pressed="true">Grey</button>
+      <button type="button" data-look="grey" aria-pressed="true">Pebble</button>
       <button type="button" data-look="smudges" aria-pressed="false">Smudges</button>
       <button type="button" data-look="swirl" aria-pressed="false">Swirl</button>
       <button type="button" data-look="marble" aria-pressed="false">Marble</button>
       <button type="button" data-look="ripples" aria-pressed="false">Ripples</button>
       <button type="button" data-look="ellipses" aria-pressed="false">Ellipses</button>
     </div>
-    <div class="row"><label for="listenGrey">Grey while listening (darker by)</label><output for="listenGrey"></output><input id="listenGrey" type="range" min="0" max="0.15" step="0.005" value="0.035"></div>
     <div class="row"><label for="listenBlur">Edge blur while listening</label><output for="listenBlur"></output><input id="listenBlur" type="range" min="0" max="10" step="0.1" value="3.5"></div>
   </section>
 
@@ -957,7 +969,7 @@
 
   /* ---------------- Settings (remembered per browser) ---------------- */
   const KEY = "papa-settings-v19";
-  const ids = ["toothSize", "toothDepth", "warmth", "paintTime", "edgeHue", "edgeAlpha", "edgeTime", "washHue", "washSat", "washLight", "washAlpha", "listenBlur", "loadLight", "loadAlpha", "loadFade", "msmSoft", "loadBlur", "loadPaint", "edgeTex", "listenGrey"];
+  const ids = ["toothSize", "toothDepth", "warmth", "paintTime", "edgeHue", "edgeAlpha", "edgeTime", "washHue", "washSat", "washLight", "washAlpha", "listenBlur", "loadLight", "loadAlpha", "loadFade", "msmSoft", "loadBlur", "loadPaint", "edgeTex"];
   // v19: the user's tuned settings (their Save settings file, 2026-10-09) are
   // the defaults, so values saved under older keys are dropped
   let saved = {};
@@ -1195,7 +1207,6 @@
     if (id.startsWith("wash") || id === "msmSoft") { if (id.startsWith("wash")) markWashPreset(); previewMic(); }
     if (id.startsWith("load")) previewWash();
     if (id === "listenBlur") applyListenBlur();
-    if (id === "listenGrey") applyListenGrey();
     if (id === "msmSoft") applyMsmSoft();
   }
   // distance (0 inside .. 1 at the screen's edge) → wash: the colour fades
@@ -1225,13 +1236,6 @@
     col.setAttribute("flood-color", `hsl(${settings.edgeHue} 70% 62%)`);
     col.setAttribute("flood-opacity", Math.min(1, a).toFixed(3));
   }
-  // Grey look: the resting #efeeec made darker by this fraction while listening
-  function applyListenGrey() {
-    const k = 1 - settings.listenGrey;
-    const hex = "#" + [239, 238, 236].map((c) => Math.round(c * k).toString(16).padStart(2, "0")).join("");
-    document.querySelector(".stage").style.setProperty("--blob-grey", hex);
-  }
-  applyListenGrey();
   function applyListenBlur() { document.querySelector(".stage").style.setProperty("--listen-blur", settings.listenBlur); }
   applyEdges();
   applyPaper();
@@ -1405,7 +1409,8 @@
   }
   function blobTick() {
     const target = voice.dataset.state === "listening" || performance.now() / 1000 < micPreviewUntil ? 1 : 0;
-    spread = reduceMotion ? target : spread + (target - spread) * 0.09;
+    // in quickly when listening starts; back slowly, so the wiggling shape visibly settles back into the resting pebble
+    spread = reduceMotion ? target : spread + (target - spread) * (target ? 0.09 : 0.035);
     renderBlob();
     if (target === 1 || Math.abs(target - spread) > 0.002) blobRaf = requestAnimationFrame(blobTick);
     else { spread = target; renderBlob(); blobRaf = 0; }
