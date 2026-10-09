@@ -96,7 +96,7 @@
   .progress {
     position: absolute;
     left: calc(112.2 * var(--u));      /* 40% smaller than the Figma strip, gaps +10%, centred */
-    top: calc(72.4 * var(--u));
+    top: calc(84.4 * var(--u));   /* 12u lower than Figma, by request */
     width: calc(177.6 * var(--u));
     height: calc(7.2 * var(--u));
     opacity: 0.2;
@@ -117,7 +117,7 @@
     position: absolute;
     left: 0;
     right: 0;
-    top: calc(130 * var(--u));
+    top: calc(142 * var(--u));    /* 12u lower than Figma, by request */
     margin: 0;
     display: grid;
     justify-items: center;
@@ -128,7 +128,7 @@
      the page (block ~61u tall, centred on y 437); it glides up to its place
      at the top when the first picture appears. */
   .prompt { transition: translate 750ms var(--ease-in-out); }
-  .stage[data-intro] .prompt { translate: 0 calc(216 * var(--u)); }   /* centred, then 60u higher by request */
+  .stage[data-intro] .prompt { translate: 0 calc(204 * var(--u)); }   /* centred, then 60u higher by request (same spot as before the 12u move) */
   @media (prefers-reduced-motion: reduce) { .prompt { transition: none; } }
   .prompt-label {
     font-family: var(--sf);

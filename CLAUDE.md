@@ -56,12 +56,13 @@ user double-clicks it on their Mac.
   Around the phone the preview background is white (`--surround: #fff`) and the
   phone has no drop shadow (both by request).
 - Top: the progress strip (six blob shapes at 20% opacity, centred). The user
-  asked for it 40% smaller than in Figma, then 10% wider gaps: 178 × 7u at y ≈ 72.
+  asked for it 40% smaller than in Figma, then 10% wider gaps: 178 × 7u at y ≈ 84
+  (moved 12u down, by request).
   No close button: the main Figma frame has none.
 - Title in SF Pro (system font stack `--sf`): "Translate" Light 20px at 40%
-  black, y 130; "Dad" Regular 28px `#302e2a`, y 158.
+  black, y 142; "Dad" Regular 28px `#302e2a`, y 170 (both moved 12u down, by request).
   Before the first word (and after "next") the title sits 60u above the vertical
-  centre of the page (`.stage[data-intro]`); it glides up to y 130 as soon as
+  centre of the page (`.stage[data-intro]`); it glides up to y 142 as soon as
   the mic is pressed (`beginTake()`), and goes back if the take ends with no picture.
 - Opening (on load, once): the progress dots pop in left to right, "Translate"
   then "Dad" rise 14u with a blur that clears, then the voice blob blooms in
@@ -134,8 +135,8 @@ new defaults show.
 
 `assets/{potato,pope,dad}-cutout.png` are split from the user's
 `assets/pictures-source.webp` (three transparent cut-outs side by side), each
-with a 24px transparent margin and a blur that ramps in over its lower 45%
-(colour and alpha blurred premultiplied, so no dark fringes). `PICTURES` boxes
+with a 24px transparent margin and no blur (a bottom blur was tried and removed
+by request). `PICTURES` boxes
 are each picture's visible bounds in the Figma frames; `layer()` ignores the
 24px margin when sizing. `assets/{pope,potato,dad}.jpg` and `*-mask.png` are
 the older full watercolors, no longer used by the page.
