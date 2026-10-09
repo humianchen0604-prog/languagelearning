@@ -1855,8 +1855,8 @@
     const greyLeft = reveal === "fade" && (washShown || washExit) ? settings.loadFade * settings.loadStart : 0;
     const painted = reveal !== "fade" && washShown ? Math.max(0, washPainted() - performance.now()) / 1000 : 0;
     const edgeSec = (greyLeft + painted + (reveal === "fade" ? settings.paintTime : settings.revealTime)) / 1.1;
-    // its caption turns red 15% of the way into the edges' animation (by request)
-    stageEl.style.setProperty("--red-delay", wrong && !reduceMotion ? Math.round(edgeSec * 150) + "ms" : "0ms");
+    // its caption turns red only as it starts shaking, 25% of the way into the edges' animation (by request)
+    stageEl.style.setProperty("--red-delay", wrong && !reduceMotion ? Math.round(edgeSec * 250) + "ms" : "0ms");
     showHeard(text, key);
     wrongOff();
     if (!key) { endTakeEmpty(); setState("idle"); return; }
