@@ -343,7 +343,7 @@
   }
   .caption[data-show] { opacity: 1; }
   .caption[data-key="pope"], .caption[data-key="potato"] { --cap: var(--say-papa); }
-  .caption[data-key="dad"] { --cap: var(--say-dad); }
+  .caption[data-key="dad"] { --cap: #1a1a1a; }   /* black, as the glare used to leave it (no glare now, by request) */
   .caption[data-key="none"] { --cap: color-mix(in srgb, var(--ink) 55%, transparent); }
   /* Live: the Spanish as it's being spoken, in black, each new piece
      fading in as it's heard */
@@ -1801,7 +1801,7 @@
     caption.classList.remove("shine", "redden", "enter", "from-live", "pre-meaning", "pre-shown"); void caption.offsetWidth;
     if (CAPTION[key]) caption.classList.add("enter");   // results animate in; live transcripts don't
     if (fromLive) caption.classList.add("from-live");
-    if (key === "dad") caption.classList.add("shine");
+    // (Dad's glare across the caption was removed by request; the .shine styles stay unused)
     if (key === "pope" || key === "potato") caption.classList.add("redden");
     capMeaning.textContent = meaning || "";
     capWord.textContent = word || "";

@@ -11,7 +11,7 @@ page in watercolor, with a caption:
 |----------------|------------|------------------------------------------|----------|
 | el papa        | the Pope   | the Pope / El papa                       | edge hue |
 | la papa / papa | a potato   | the potato / La papa                     | edge hue |
-| papá           | Dad        | the dad / El papá                        | #2f88a6  |
+| papá           | Dad        | the dad / El papá                        | black    |
 
 Wrong-answer captions use the same hue as the wrong-answer edges
 (`--say-papa: hsl(var(--edge-h) 62% 46%)` on `.stage`, strawberry red by
@@ -136,10 +136,9 @@ user double-clicks it on their Mac.
   demo voice). When speaking ends the result takes over: wrong answers turn red
   and shake in place, Dad's glare plays (`.from-live`). The Dad caption's lines fade in rising 10u with a
   2px blur that clears (450ms, strong ease-out), the Spanish word 70ms after
-  the meaning (`.caption.enter`, `rise-in`); live transcripts don't animate. When Dad is said (correct), the caption turns black and a
-  glare sweeps across it once in the light blue of the "next" button, a little
-  darker (`--shine: #9fcfe2`, middle `--shine-hi: #c2e2ee`; it was the deep
-  `#2f88a6` until the user asked to match the button), starting 0.5s after the word appears (`.caption.shine`).
+  the meaning (`.caption.enter`, `rise-in`); live transcripts don't animate. When Dad is said (correct), the caption is black with no glare
+  (the light-blue glare sweep, `.caption.shine`, was removed by request; its CSS
+  is still there, unused).
   For the Pope and the potato (wrong answers) there is no glare: the caption
   starts black and quickly changes to the red, which stays (`.caption.redden`).
 - Wrong answer (the Pope or the potato): **Edges** only. It waits for the picture: the
