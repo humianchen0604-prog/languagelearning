@@ -1,5 +1,8 @@
 # Papá o la papa: notes for Claude
 
+(This repo, `languagelearning`, was split out of the `portfolio` repo's
+`papa/` folder with its history; the files that were in `papa/` are now at the root.)
+
 One-screen phone prototype. The screen says **"Translate / Dad"**; the person
 says it in Spanish and whatever they actually pronounced is painted onto the
 page in watercolor, with a caption:
@@ -25,7 +28,7 @@ Everything lives in `index.html` (no build step). Assets are in `assets/`.
 ## Run and check
 
 ```sh
-cd papa && python3 -m http.server 8000   # mic needs http(s), not file://
+python3 -m http.server 8000   # mic needs http(s), not file://
 ```
 `start.command` does the same (first free port from 8000) and opens Chrome; the
 user double-clicks it on their Mac.

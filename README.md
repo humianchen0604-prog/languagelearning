@@ -13,14 +13,14 @@ What you actually pronounce gets painted onto the page in watercolor, with a cap
 
 The microphone needs a real web address (not a double-clicked `index.html`).
 
-**One click (Mac):** double-click `papa/start.command` in Finder. It serves the
+**One click (Mac):** double-click `start.command` in Finder. It serves the
 folder on `http://localhost:8000` (or the next free port) and opens it in Chrome.
 Close the Terminal window to stop it.
 
 **By hand:**
 
 ```sh
-cd papa
+cd languagelearning
 python3 -m http.server 8000
 # open http://localhost:8000 in Chrome or Safari, allow the mic
 ```
