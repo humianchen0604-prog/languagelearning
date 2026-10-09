@@ -7,7 +7,7 @@ What you actually pronounce gets painted onto the page in watercolor, with a cap
 |-----------|------------|
 | el papa   | the Pope   |
 | la papa   | a potato   |
-| papá      | Dad        |
+| papá (or just "papa") | Dad |
 
 ## Run it on your computer (localhost)
 

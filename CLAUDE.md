@@ -10,8 +10,8 @@ page in watercolor, with a caption:
 | Heard          | Paints     | Caption (meaning / Spanish)             | Colour   |
 |----------------|------------|------------------------------------------|----------|
 | el papa        | the Pope   | the Pope / El papa                       | edge hue |
-| la papa / papa | a potato   | the potato / La papa                     | edge hue |
-| papá           | Dad        | the dad / El papá                        | black    |
+| la papa        | a potato   | the potato / La papa                     | edge hue |
+| papa / papá    | Dad        | the dad / El papá                        | black    |
 
 Wrong-answer captions use the same hue as the wrong-answer edges
 (`--say-papa: hsl(var(--edge-h) 62% 46%)` on `.stage`, strawberry red by
@@ -25,7 +25,12 @@ main screen node `109:254` (potato state), Pope `92:1380`, Dad `92:1399`.
 
 The point is the near-miss: people trying to say "papá" often say "el papa" or
 "la papa" first. Classification is in `classify()`, which checks every speech
-alternative.
+alternative. **The article decides, not the accent** (the user's rule: "only
+when papa is said, just papa, show Dad; el papa and la papa go to the two
+incorrect screens"): "el/al/del papa" (or papá) is the Pope, "la/las/una papa"
+(or "papas") the potato, and "papa"/"papá" on its own Dad. Recognisers often
+drop or add the accent, so it is ignored. (Before, bare "papa" was the potato
+and a capitalised "Papa" the Pope.)
 
 Everything lives in `index.html` (no build step). Assets are in `assets/`.
 

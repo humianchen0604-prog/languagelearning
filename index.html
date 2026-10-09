@@ -1465,12 +1465,14 @@
     pope:   ["the Pope", "El papa"],
     dad:    ["the dad", "El papá"],
   };
+  // By request: just "papa" (or "papá") is Dad; "el papa" is the Pope and
+  // "la papa" the potato, accent or not (recognisers often drop or add it).
   function classify(raw) {
-    const text = raw.normalize("NFC").trim();
-    const t = text.toLowerCase();
-    if (/papá|\bpapi\b|\bpadre\b|\bapá/.test(t)) return "dad";
-    if (/\b(el|al|del)\s+papa\b|pont[ií]fice|vaticano/.test(t) || /\bPapa\b/.test(text)) return "pope";
-    if (/\bpapas?\b|patata/.test(t)) return "potato";
+    const t = raw.normalize("NFC").toLowerCase().replace(/[.,;:!?¡¿"“”]/g, " ").replace(/\s+/g, " ").trim();
+    const W = (re) => new RegExp(`(?<!\\p{L})(?:${re})(?!\\p{L})`, "u").test(t);   // whole words
+    if (W("(?:el|al|del) pap[aá]") || W("pont[ií]fice|vaticano")) return "pope";
+    if (W("(?:la|las|una) pap[aá]s?") || W("papas|patatas?")) return "potato";
+    if (W("pap[aá]|papi|padre|apá")) return "dad";
     return null;
   }
 
