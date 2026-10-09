@@ -863,9 +863,9 @@
 
   <section class="group">
     <h3>Paper</h3>
-    <div class="row"><label for="toothSize">Tooth size</label><output for="toothSize"></output><input id="toothSize" type="range" min="-2" max="2" step="0.01" value="0"></div>
-    <div class="row"><label for="toothDepth">Tooth depth</label><output for="toothDepth"></output><input id="toothDepth" type="range" min="0" max="1" step="0.005" value="0.3"></div>
-    <div class="row"><label for="warmth">Warmth</label><output for="warmth"></output><input id="warmth" type="range" min="0" max="1" step="0.01" value="0"></div>
+    <div class="row"><label for="toothSize">Tooth size</label><output for="toothSize"></output><input id="toothSize" type="range" min="-2" max="2" step="0.01" value="-1.49"></div>
+    <div class="row"><label for="toothDepth">Tooth depth</label><output for="toothDepth"></output><input id="toothDepth" type="range" min="0" max="1" step="0.005" value="0.27"></div>
+    <div class="row"><label for="warmth">Warmth</label><output for="warmth"></output><input id="warmth" type="range" min="0" max="1" step="0.01" value="0.1"></div>
   </section>
 
   <section class="group">
@@ -877,7 +877,7 @@
     <h3>Wrong answer</h3>
     <div class="row"><label for="edgeHue">Edge hue</label><output for="edgeHue"></output><input id="edgeHue" type="range" min="0" max="360" step="1" value="354"></div>
     <div class="hue-strip" aria-hidden="true"></div>
-    <div class="row"><label for="edgeAlpha">Edge strength</label><output for="edgeAlpha"></output><input id="edgeAlpha" type="range" min="0" max="2.5" step="0.01" value="1"></div>
+    <div class="row"><label for="edgeAlpha">Edge strength</label><output for="edgeAlpha"></output><input id="edgeAlpha" type="range" min="0" max="2.5" step="0.01" value="1.36"></div>
     <div class="row"><label for="edgeTime">Edge time</label><output for="edgeTime"></output><input id="edgeTime" type="range" min="0.2" max="6" step="0.1" value="1"></div>
     <div class="row"><label for="edgeTex">Edge rim</label><output for="edgeTex"></output><input id="edgeTex" type="range" min="0" max="2.5" step="0.01" value="0"></div>
     <div class="seg"><button type="button" id="wrongReplay">Show wrong answer</button></div>
@@ -893,21 +893,21 @@
       <button type="button" data-wash="perplexity" aria-pressed="false">Perplexity</button>
       <button type="button" data-wash="indigo" aria-pressed="false">Indigo</button>
     </div>
-    <div class="row"><label for="washHue">Hue</label><output for="washHue"></output><input id="washHue" type="range" min="0" max="360" step="1" value="196"></div>
+    <div class="row"><label for="washHue">Hue</label><output for="washHue"></output><input id="washHue" type="range" min="0" max="360" step="1" value="30"></div>
     <div class="hue-strip" aria-hidden="true"></div>
-    <div class="row"><label for="washSat">Saturation</label><output for="washSat"></output><input id="washSat" type="range" min="0" max="1" step="0.01" value="0.6"></div>
-    <div class="row"><label for="washLight">Lightness</label><output for="washLight"></output><input id="washLight" type="range" min="0.2" max="0.97" step="0.01" value="0.78"></div>
-    <div class="row"><label for="washAlpha">Colour density</label><output for="washAlpha"></output><input id="washAlpha" type="range" min="0" max="3" step="0.01" value="1"></div>
-    <div class="row"><label for="msmSoft">Edge softness</label><output for="msmSoft"></output><input id="msmSoft" type="range" min="0" max="10" step="0.1" value="5"></div>
+    <div class="row"><label for="washSat">Saturation</label><output for="washSat"></output><input id="washSat" type="range" min="0" max="1" step="0.01" value="0.05"></div>
+    <div class="row"><label for="washLight">Lightness</label><output for="washLight"></output><input id="washLight" type="range" min="0.2" max="0.97" step="0.01" value="0.88"></div>
+    <div class="row"><label for="washAlpha">Colour density</label><output for="washAlpha"></output><input id="washAlpha" type="range" min="0" max="3" step="0.01" value="0.2"></div>
+    <div class="row"><label for="msmSoft">Edge softness</label><output for="msmSoft"></output><input id="msmSoft" type="range" min="0" max="10" step="0.1" value="1.5"></div>
     <p class="note">Shown with Voice visual → Smudges. Moving a slider previews them on the button.</p>
   </section>
 
   <section class="group">
     <h3>First-picture wash</h3>
-    <div class="row"><label for="loadPaint">Paint-in time</label><output for="loadPaint"></output><input id="loadPaint" type="range" min="0.5" max="6" step="0.1" value="2.2"></div>
-    <div class="row"><label for="loadLight">Grey lightness</label><output for="loadLight"></output><input id="loadLight" type="range" min="0.3" max="0.95" step="0.01" value="0.7"></div>
-    <div class="row"><label for="loadAlpha">Strength</label><output for="loadAlpha"></output><input id="loadAlpha" type="range" min="0" max="2" step="0.01" value="1"></div>
-    <div class="row"><label for="loadFade">Fade out</label><output for="loadFade"></output><input id="loadFade" type="range" min="0.3" max="4" step="0.1" value="1"></div>
+    <div class="row"><label for="loadPaint">Paint-in time</label><output for="loadPaint"></output><input id="loadPaint" type="range" min="0.5" max="6" step="0.1" value="1.9"></div>
+    <div class="row"><label for="loadLight">Grey lightness</label><output for="loadLight"></output><input id="loadLight" type="range" min="0.3" max="0.95" step="0.01" value="0.3"></div>
+    <div class="row"><label for="loadAlpha">Strength</label><output for="loadAlpha"></output><input id="loadAlpha" type="range" min="0" max="2" step="0.01" value="0.1"></div>
+    <div class="row"><label for="loadFade">Fade out</label><output for="loadFade"></output><input id="loadFade" type="range" min="0.3" max="4" step="0.1" value="0.5"></div>
     <div class="row"><label for="loadBlur">Blur</label><output for="loadBlur"></output><input id="loadBlur" type="range" min="0" max="20" step="0.5" value="0"></div>
   </section>
 
@@ -940,47 +940,13 @@
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   /* ---------------- Settings (remembered per browser) ---------------- */
-  const KEY = "papa-settings-v18";
+  const KEY = "papa-settings-v19";
   const ids = ["toothSize", "toothDepth", "warmth", "paintTime", "edgeHue", "edgeAlpha", "edgeTime", "washHue", "washSat", "washLight", "washAlpha", "listenBlur", "loadLight", "loadAlpha", "loadFade", "msmSoft", "loadBlur", "loadPaint", "edgeTex", "listenGrey"];
+  // v19: the user's tuned settings (their Save settings file, 2026-10-09) are
+  // the defaults, so values saved under older keys are dropped
   let saved = {};
   try {
-    saved = JSON.parse(localStorage.getItem(KEY) || "null");
-    if (!saved) {   // v18: strawberry red edges (hue 354) instead of tomato red (16)
-      saved = JSON.parse(localStorage.getItem("papa-settings-v17") || "null");
-      if (saved) delete saved.edgeHue;
-    }
-    if (!saved) {   // v17: softer mic smudges (no grey button under them)
-      saved = JSON.parse(localStorage.getItem("papa-settings-v16") || "null");
-      if (saved) delete saved.msmSoft;
-    }
-    if (!saved) {   // v16: the edge colour fades out softly on all four sides again (Edge rim 0)
-      saved = JSON.parse(localStorage.getItem("papa-settings-v15") || "null");
-      if (saved) delete saved.edgeTex;
-    }
-    if (!saved) {   // v15: mic smudges are Dad's blue by default
-      saved = JSON.parse(localStorage.getItem("papa-settings-v14") || "null");
-      if (saved) ["washHue", "washSat", "washLight"].forEach((k) => delete saved[k]);
-    }
-    if (!saved) {   // v14: the defined wavy edge with a denser rim is back (Edge rim 100%)
-      saved = JSON.parse(localStorage.getItem("papa-settings-v13") || "null");
-      if (saved) delete saved.edgeTex;
-    }
-    if (!saved) {   // v13: no rim band by default, so the edge colour fades right into the page
-      saved = JSON.parse(localStorage.getItem("papa-settings-v12") || "null");
-      if (saved) delete saved.edgeTex;
-    }
-    if (!saved) {   // v12: the first-picture wash is the painted watercolor (new grey and blur defaults)
-      saved = JSON.parse(localStorage.getItem("papa-settings-v11") || "null");
-      if (saved) ["loadLight", "loadAlpha", "loadBlur"].forEach((k) => delete saved[k]);
-    }
-    if (!saved) {   // v11: a much lighter, blurrier first-picture wash with a shorter fade
-      saved = JSON.parse(localStorage.getItem("papa-settings-v10") || "null");
-      if (saved) ["loadLight", "loadAlpha", "loadFade", "washHue", "washSat", "washLight", "washAlpha", "msmSoft"].forEach((k) => delete saved[k]);
-    }
-    if (!saved) {   // older versions had other mic smudge colours
-      saved = JSON.parse(localStorage.getItem("papa-settings-v9") || localStorage.getItem("papa-settings-v8") || "{}");
-      ["washHue", "washSat", "washLight", "washAlpha", "loadLight", "loadAlpha", "loadFade"].forEach((k) => delete saved[k]);
-    }
+    saved = JSON.parse(localStorage.getItem(KEY) || "{}") || {};
   } catch (e) { saved = {}; }
   const settings = {};
   const fmt = (id, v) => id === "paintTime" || id === "edgeTime" || id === "loadFade" || id === "loadPaint" ? v.toFixed(1) + " s" : id === "edgeHue" || id === "washHue" ? Math.round(v) + "°" : id === "listenBlur" || id === "msmSoft" || id === "loadBlur" ? v.toFixed(1) + " px" : id === "toothSize" ? Math.pow(2, v).toFixed(2) + "×" : Math.round(v * 100) + "%";
@@ -1615,12 +1581,12 @@
     // correct answer: the button goes straight from listening to the "next" arrow
     if (key === "dad") voice.toggleAttribute("data-next", true);
     setState("processing");
-    if (washShown) {   // first picture: the grey wash finishes painting, fades away completely, then the picture paints in
+    if (washShown) {   // first picture: the grey wash finishes painting and fades away; the picture starts painting in halfway through that fade, so they overlap a little
       const left = washPainted() - performance.now();
       if (left > 0 && !reduceMotion) await new Promise((r) => setTimeout(r, left));
       const ms = settings.loadFade * 1000;
       washOff(ms);
-      await new Promise((r) => setTimeout(r, reduceMotion ? 0 : ms));
+      await new Promise((r) => setTimeout(r, reduceMotion ? 0 : ms * 0.5));
     }
     await paint(key);
     setState("idle");

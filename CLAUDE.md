@@ -77,10 +77,11 @@ user double-clicks it on their Mac.
   a brushy, displaced front (`#revealMask`, `revA`/`revB` stop offsets driven
   in `renderWash()`). Box 300 × 284u centred on (199, 370).
   When speaking ends it first finishes painting, then loosens, blurs and fades
-  out completely; only then does the picture paint in (the user asked for this
-  order: no picture showing together with the grey wash; `finish()` awaits it).
-  Adjust → First-picture wash: paint-in time (default 2.2s), grey lightness
-  (0.7), strength, fade-out time (1s), blur (0).
+  out; the picture starts painting in when the fade is halfway through, so the
+  two overlap a little (the user found waiting for a full fade too long a
+  pause, and earlier didn't want them fully together; `finish()` awaits it).
+  Adjust → First-picture wash: paint-in time, grey lightness, strength,
+  fade-out time, blur (defaults are the user's tuned values, below).
   Between pictures there is NO wash: the old picture stays while listening and
   dissolves into the new one (the original effect; the user asked to keep it).
   Tried and dropped: a blue wash for every take; six layered grey blob washes.
@@ -126,6 +127,13 @@ user double-clicks it on their Mac.
   depth, warmth: 0 = `#fafafa` default, 1 = `#f5f2ee`), Painting time, Wrong answer, Mic smudges, First-picture wash, and Voice visual.
 
 ## Saving tuned settings
+
+Current defaults are the user's own tuned file (2026-10-09), settings key
+`papa-settings-v19`: tooth size −1.49, tooth depth 0.27, warmth 0.1, painting
+time 1s, edge hue 354, edge strength 1.36, edge time 1s, edge rim 0; mic
+smudges hue 30 / sat 0.05 / light 0.88 / density 0.2 / softness 1.5; listening
+blur 3.5, listening grey 3.5%; first-picture wash lightness 0.3, strength 0.1,
+fade 0.5s, blur 0, paint-in 1.9s; voice look Grey.
 
 Adjust → Save → **Save settings** downloads `papa-settings.json` (every
 slider's value plus the voice look), copies it, and shows it in the panel.
