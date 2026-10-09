@@ -72,8 +72,10 @@ user double-clicks it on their Mac.
   then "Dad" rise 14u with a blur that clears, then the voice blob blooms in
   (scale 0.8, blur) and the mic appears; about 1.2s in all (`open-*` keyframes,
   backwards fill only so the elements' own styles take over afterwards).
-- First-picture wash: only when the page has no picture yet (first word,
-  after "next", after a miss), a soft grey watercolor appears where the
+- First-picture wash: for every take (by request; it used to be only when
+  the page had no picture yet). When a picture is showing, e.g. a wrong
+  answer, pressing the mic fades it out (`clearPicture()`) as the wash appears,
+  so each new picture is generated the same way. A soft grey watercolor appears where the
   picture will appear as soon as the mic is pressed, quickly fading in while it
   scales from 95% to 100% (Fade-in time, default 0.45s). History: it first
   painted in from the top left to the bottom right, then from the centre
@@ -110,9 +112,9 @@ user double-clicks it on their Mac.
   over the middle). Every mode ends exactly on the sharp picture. The shader's `fbm` uses
   quintic value noise with rotated octaves so no lattice/grid shows. Picking a
   style, or the Try buttons, empties the page and plays a take (`tryReveal()`).
-  Between pictures there is NO wash: the old picture stays while listening and
-  dissolves into the new one (the original effect; the user asked to keep it).
-  Tried and dropped: a blue wash for every take; six layered grey blob washes.
+  (Earlier the old picture stayed while listening and dissolved into the new
+  one, with no wash between pictures; the user then asked for the fade-out and
+  wash between pictures too.) Tried and dropped: a blue wash for every take; six layered grey blob washes.
 - Pictures: watercolor cut-outs drawn by a WebGL canvas covering y 90–590 at
   full width (normal blending, so the Bleed layer stays behind it), each in its box (`PICTURES` in the script).
 - Caption: meaning in SF Pro Light 16px at 80%, y 541; Spanish in Regular 28px,
@@ -250,7 +252,8 @@ the older full watercolors, no longer used by the page.
 
 - Spreading wash fronts with pale/whitened layers ("white glare"); blooming
   patches; a pen-stroke/hatching reveal of the subject.
-- Fading the old picture out before painting the next.
+- Fading the old picture out before painting the next (rejected early on; the
+  user later asked for it together with the grey wash, which is current).
 - A blue listening state; a rounded-square or speckled/grainy pad; Bean and Cloud
   blob shapes. (An early "watercolor smudges" voice look was rejected, but the
   user later asked for the current Smudges look.)

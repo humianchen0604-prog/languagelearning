@@ -1694,13 +1694,15 @@
   }));
   markWashPreset();
 
-  /* A take starts: the title moves up straight away and, if the page has no
-     picture yet, the grey wash blooms where it will go. A picture already
-     showing stays until the new one dissolves over it. */
+  /* A take starts: the title moves up straight away, any picture showing
+     fades out, and the grey wash appears where the new picture will go. */
   function beginTake() {
     stageEl.removeAttribute("data-intro");
     clearTimeout(washPreview);
-    if (!state.current) washOn();
+    // a picture from the last take (e.g. a wrong answer) fades out and the grey
+    // wash comes back, so every new picture is generated the same way
+    if (state.current) clearPicture();
+    washOn();
   }
   /* A take ends without a picture: the wash goes and the title returns. */
   function endTakeEmpty() {
