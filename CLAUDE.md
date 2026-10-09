@@ -75,7 +75,10 @@ user double-clicks it on their Mac.
 - First-picture wash: for every take (by request; it used to be only when
   the page had no picture yet). When a picture is showing, e.g. a wrong
   answer, pressing the mic fades it out (`clearPicture()`) as the wash appears,
-  so each new picture is generated the same way. When the title is gliding up
+  so each new picture is generated the same way. That change is gentler (by
+  request): the picture fades out over 850ms (not 600) and the wash starts
+  200ms later with a plain, slower opacity fade (2× the fade-in time, at least
+  0.9s) and no scale (`washOn(true)`, `washSoft`). When the title is gliding up
   (first take, after "next" or a miss), the wash waits until the glide is 90%
   done (~495ms, `TITLE_90`) before fading in; everything after follows from
   then (`washOnAt`). A soft grey watercolor appears where the
@@ -155,8 +158,10 @@ user double-clicks it on their Mac.
   the wash (`#ebTable`). Edge rim slider (0–250%, default 0%) can add a soft,
   slightly denser band. Tried and rejected: zig-zag fibres along the edge; a
   defined wavy edge with a dense rim (the user went back and forth once, then
-  settled on the soft fade). Edge time
-  (0.2–6s, default 1s) sets how long the edges take to creep in.
+  settled on the soft fade). The edges creep in over the same time and
+  easing as the picture fades in (painting time, or Reveal time for the ten
+  reveal styles; `edgeMs()`), so the two arrive together; the separate Edge
+  time slider was removed for that (by request).
   The stage carries `data-won`; `.won-play` replays the shake. It clears when
   listening starts again or Dad is said. (Rise, Shake, Bleed, Ripples,
   Scribble and Blush were tried and dropped; they're in git history.)
@@ -171,8 +176,8 @@ user double-clicks it on their Mac.
 ## Saving tuned settings
 
 Current defaults are the user's own tuned file (2026-10-09), settings key
-`papa-settings-v20` (v19 plus the 0.45s fade-in): tooth size −1.49, tooth depth 0.27, warmth 0.1, painting
-time 1s, edge hue 354, edge strength 1.36, edge time 1s, edge rim 0; mic
+`papa-settings-v21` (v19 plus the 0.45s fade-in and 1.5s painting time): tooth size −1.49, tooth depth 0.27, warmth 0.1, painting
+time 1.5s, edge hue 354, edge strength 1.36, edge rim 0; mic
 smudges hue 30 / sat 0.05 / light 0.88 / density 0.2 / softness 1.5; listening
 blur 3.5, listening grey 3.5%; first-picture wash lightness 0.3, strength 0.1,
 fade 0.5s, blur 0, fade-in 0.45s; voice look Grey.
@@ -203,7 +208,9 @@ the older full watercolors, no longer used by the page.
   (0 = smooth), warmth.
 - **Painting**: a new picture fades in from a blurred copy and comes into focus.
   When the word changes, the old picture dissolves while the new one fades in.
-  Painting time is adjustable (default 1s).
+  Painting time is adjustable (default 1.5s; was 1s until the user asked for
+  a slower fade). A first picture fades in over the whole painting time
+  (ease-in-out), in step with the wrong-answer edges.
 - **Voice blob** (kept from before the Figma pass):
   - Single **pebble** (outline tilted 12° clockwise; the icons stay upright), near-white grey `#efeeec`, soft watercolor edge.
   - Listening: satellite blobs slide out and merge via a gooey SVG filter
