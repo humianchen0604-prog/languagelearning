@@ -39,6 +39,9 @@ a Mac or iPhone; Firefox has no speech recognition and shows the tap words).
 `vercel.json` allows the microphone; `.vercelignore` leaves out the Mac
 launcher and the notes. There is no build step.
 
+The web version shows just the prototype: the Adjust panel and the Restart
+button are hidden there. Add `?adjust` to the address to bring them back.
+
 Published preview (tap words only, no mic): https://claude.ai/artifact/MrvbqSWJfhkj1HsnJr35ku
 
 Design notes and decisions for future work: `CLAUDE.md`.

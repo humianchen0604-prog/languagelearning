@@ -48,7 +48,12 @@ The repo is meant to be imported into Vercel from GitHub (static, no build;
 `vercel.json` sends `Permissions-Policy: microphone=(self)`, `.vercelignore`
 drops `start.command` and this file), so every push to `main` redeploys.
 HTTPS is all the mic and `webkitSpeechRecognition` need; no code differs from
-localhost. A viewport meta tag was added for phones.
+localhost. A viewport meta tag was added for phones. On the public site the
+Adjust panel, its toggle and the Restart button are hidden (by request: "when
+pushing it, hide all panels/adjustment and restart prototype button"): a
+script in `<head>` adds `html.public` on any host but localhost/127.0.0.1,
+claude.ai/claudeusercontent (the artifact) or a page with `?adjust`, which
+brings the tools back anywhere.
 
 - Real speech: Chrome or Safari via `localhost`, using `webkitSpeechRecognition` with `es-MX`.
 - No speech API, or the mic is refused: tapping the mic shows three tap-words.

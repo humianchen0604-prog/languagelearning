@@ -1,6 +1,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Papá o la papa</title>
+<script>
+  /* The public web version (Vercel) hides the Adjust panel and the Restart
+     button (by request). Localhost and the claude.ai preview keep them, and
+     adding ?adjust to the address brings them back anywhere. */
+  (function () {
+    var h = location.hostname;
+    var tools = h === "localhost" || h === "127.0.0.1" || h === "" || /(^|\.)claude(usercontent)?\.(ai|com)$/.test(h) ||
+      !!window.claude || new URLSearchParams(location.search).has("adjust");
+    if (!tools) document.documentElement.classList.add("public");
+  })();
+</script>
 <style>
   /* Layout: the Figma "Potato" frame (Side-project, node 109:254), a
      402 × 874 phone screen (1u = 100cqw / 402) scaled to fit; the Adjust
@@ -570,6 +581,8 @@
     cursor: pointer;
   }
   .restart-fab:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  /* the public web version: just the prototype, no tools */
+  html.public .panel, html.public .adjust-toggle, html.public .restart-fab { display: none !important; }
 
   .panel {
     position: fixed;
