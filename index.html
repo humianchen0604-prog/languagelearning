@@ -278,9 +278,9 @@
     justify-content: center;
     transition: opacity 260ms var(--ease-out), transform 260ms var(--ease-out), filter 260ms var(--ease-out);
   }
-  /* the mic comes back as the shape settles: it grows and comes into focus a moment later */
+  /* the mic comes back as the shape settles: it just fades in, a moment later (no zoom) */
   .voice:not([data-state="listening"]):not([data-next]) .mic {
-    transition: opacity 500ms var(--ease-out) 300ms, transform 650ms var(--ease-out) 300ms, filter 500ms var(--ease-out) 300ms;
+    transition: opacity 500ms var(--ease-out) 300ms;
   }
   .mic svg { width: calc(19 * var(--u)); height: calc(25.3 * var(--u)); overflow: visible; }
 
@@ -315,7 +315,7 @@
     transition: opacity 260ms var(--ease-out), transform 260ms var(--ease-out), filter 260ms var(--ease-out);
   }
   .next svg { width: calc(25.3 * var(--u)); height: calc(19 * var(--u)); overflow: visible; margin-top: calc(-3 * var(--u)); }
-  .voice[data-next] .mic { opacity: 0; transform: scale(0.6); filter: blur(4px); }
+  .voice[data-next] .mic { opacity: 0; }
   .voice[data-next]:not([data-state="listening"]) .next { opacity: 1; transform: none; filter: none; transition-delay: 120ms; }
   /* once it appears, the arrow nudges right one time: "this way" */
   .voice[data-next]:not([data-state="listening"]) .next svg { animation: nudge 650ms var(--ease-in-out) 380ms both; }
@@ -324,7 +324,7 @@
     45%      { translate: calc(5 * var(--u)) 0; }
   }
   @media (prefers-reduced-motion: reduce) { .voice .next svg { animation: none !important; } }
-  .voice[data-state="listening"] .mic { opacity: 0; transform: scale(0.6); filter: blur(4px); }
+  .voice[data-state="listening"] .mic { opacity: 0; }   /* the mic just fades (no zoom) */
   .voice[data-state="listening"] .waves { opacity: 1; transform: none; filter: none; transition-delay: 120ms; }
 
   /* What was heard: the meaning, then the Spanish as said, in the word's colour */

@@ -210,8 +210,8 @@ the older full watercolors, no longer used by the page.
     slow. 
   - Back from listening (e.g. after a wrong answer) it morphs, not switches:
     the wiggle/twirl settles slowly (`spread` eases back at 0.035/frame, about
-    a second), the grey eases back over 900ms, and the mic grows back into
-    focus 300ms later (500–650ms).
+    a second), the grey eases back over 900ms, and the mic just fades back
+    in 300ms later (500ms; no zoom, by request).
   - Processing (while the picture paints): no loading indicator; the mic stays.
   - The mic uses the **pencil** filter in `--mic-ink #7f7d7a`. The mic
     capsule is filled with that ink at 48% on white; the icon is about 19 × 25u.
