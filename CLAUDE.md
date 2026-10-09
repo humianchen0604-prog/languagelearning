@@ -237,12 +237,16 @@ the older full watercolors, no longer used by the page.
   (ease-in-out), in step with the wrong-answer edges. The correct answer
   (Dad) comes in faster, over 0.7s whatever the painting / reveal time
   (`DAD_SEC`, passed to `paint()` / `revealPaint()` as a speed; by request,
-  it felt too slow; first tried at half the time, ~0.5s). It also starts 40%
-  sooner after the word (`DAD_LEAD` 0.6, by request): the demo result comes
-  102ms after the word instead of 170ms; Underpainting's colour starts at
-  8.2% of the reveal (not 13.6%) and its grey is gone by 14.4% (not 24%),
-  via the shader's `uLead`; with Fade, the picture starts once the grey is
-  42% out instead of 70% (`washLead` in `exitWash()`). `tween()` starts its
+  it felt too slow; first tried at half the time, ~0.5s). It starts as soon
+  as "papá" is recognised (by request; the animation itself is unchanged):
+  with the real mic on the first interim result that classifies as Dad
+  (`onresult`, which then stops listening; a guard drops the later final
+  result), in the demo with its last syllable instead of 170ms after the
+  word. With a reveal style it doesn't wait for the grey to finish fading in:
+  the shader takes the grey over at however far it had got (`greyK`); with
+  Fade the grey leaves at once (`exitWash(true)`), then the picture. (A
+  first try made only the reveal's internal start 40% sooner (`uLead`); the
+  user wanted the whole animation to start earlier instead.) `tween()` starts its
   clock on the first drawn frame (a first-time texture upload used to stall
   it, so a wrong answer's picture, usually the first of a session, jumped in
   partway and felt harsher than Dad's); the red and the shake start on that
