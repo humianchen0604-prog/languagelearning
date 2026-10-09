@@ -77,7 +77,7 @@ user double-clicks it on their Mac.
   answer, pressing the mic fades it out (`clearPicture()`) as the wash appears,
   so each new picture is generated the same way. That change is gentler (by
   request): the picture fades out over 850ms (not 600) and the wash starts
-  200ms later with a plain, slower opacity fade (2× the fade-in time, at least
+  only once it is gone (850ms, no overlap, by request) with a plain, slower opacity fade (2× the fade-in time, at least
   0.9s) and no scale (`washOn(true)`, `washSoft`). When the title is gliding up
   (first take, after "next" or a miss), the wash waits until the glide is 90%
   done (~495ms, `TITLE_90`) before fading in; everything after follows from
@@ -91,16 +91,20 @@ user double-clicks it on their Mac.
   now held fully open in `renderWash()`). Box 264 × 250u centred on (199, 370) (12% smaller than the
   first 300 × 284, by request; `uBox` in `revealPaint()` must match `.smudge`).
   When speaking ends it first finishes painting, then loosens, blurs and fades
-  out; the picture starts painting in when the fade is 85% through (Adjust →
-  Picture starts at), so the two barely overlap. History: waiting for a full
-  fade was too long a pause, starting at half overlapped too much; `finish()`
-  awaits it.
+  out completely, and only then does the picture paint in (Adjust → Picture
+  starts at, default 100%: no overlap; the user insisted, "make sure the gray
+  picture wash fade out first, and then show the image"). History: half and
+  85% overlaps were tried first; `finish()` awaits it.
+  The grey's exit starts as soon as the word is ~95% said (`exitWash()`: on
+  the recogniser's speech end, or 180ms after the demo voice's last syllable;
+  the demo result follows 250ms later), so the picture follows the word closely.
   Adjust → First-picture wash: fade-in time, grey lightness, strength,
   fade-out time, blur (defaults are the user's tuned values, below).
   **Reveal style** (Adjust → First-picture wash; remembered in
-  `papa-reveal-v1`, included in Save settings): how the finished grey wash
-  turns into the first picture. "Fade" is the wash fading out with the picture
-  starting near the end of the fade (85%). The ten others (the user asked for ten ideas and
+  `papa-reveal-v2`, default Fade, included in Save settings; only Fade keeps
+  the grey and the picture strictly apart, the other ten blend them by design): how the finished grey wash
+  turns into the first picture. "Fade" is the wash fading out completely, then
+  the picture. The ten others (the user asked for ten ideas and
   wanted to try all) hand the wash over to the WebGL painter at the moment it
   finishes painting: `revealPaint(key, mode)` draws the same grey (pigment
   texture `tWash`, colour, box `uBox`) in the shader, hides the SVG wash in the
@@ -161,7 +165,8 @@ user double-clicks it on their Mac.
   settled on the soft fade). The edges creep in over the same time and
   easing as the picture fades in (painting time, or Reveal time for the ten
   reveal styles; `edgeMs()`), so the two arrive together; the separate Edge
-  time slider was removed for that (by request).
+  time slider was removed for that (by request). When leaving (the next take), the red fades out with
+  the old picture over 850ms, before the grey wash comes in.
   The stage carries `data-won`; `.won-play` replays the shake. It clears when
   listening starts again or Dad is said. (Rise, Shake, Bleed, Ripples,
   Scribble and Blush were tried and dropped; they're in git history.)
@@ -176,8 +181,8 @@ user double-clicks it on their Mac.
 ## Saving tuned settings
 
 Current defaults are the user's own tuned file (2026-10-09), settings key
-`papa-settings-v21` (v19 plus the 0.45s fade-in and 1.5s painting time): tooth size −1.49, tooth depth 0.27, warmth 0.1, painting
-time 1.5s, edge hue 354, edge strength 1.36, edge rim 0; mic
+`papa-settings-v22` (v19 plus the 0.45s fade-in, 2s painting time and no overlap): tooth size −1.49, tooth depth 0.27, warmth 0.1, painting
+time 2s, edge hue 354, edge strength 1.36, edge rim 0; mic
 smudges hue 30 / sat 0.05 / light 0.88 / density 0.2 / softness 1.5; listening
 blur 3.5, listening grey 3.5%; first-picture wash lightness 0.3, strength 0.1,
 fade 0.5s, blur 0, fade-in 0.45s; voice look Grey.
@@ -208,9 +213,13 @@ the older full watercolors, no longer used by the page.
   (0 = smooth), warmth.
 - **Painting**: a new picture fades in from a blurred copy and comes into focus.
   When the word changes, the old picture dissolves while the new one fades in.
-  Painting time is adjustable (default 1.5s; was 1s until the user asked for
-  a slower fade). A first picture fades in over the whole painting time
-  (ease-in-out), in step with the wrong-answer edges.
+  Painting time is adjustable (default 2s; was 1s, then 1.5s, until the user
+  asked for slower). A first picture fades in over the whole painting time
+  (ease-in-out), in step with the wrong-answer edges. `tween()` starts its
+  clock on the first drawn frame (a first-time texture upload used to stall
+  it, so a wrong answer's picture, usually the first of a session, jumped in
+  partway and felt harsher than Dad's); the red and the shake start on that
+  frame too (`onStart`).
 - **Voice blob** (kept from before the Figma pass):
   - Single **pebble** (outline tilted 12° clockwise; the icons stay upright), near-white grey `#efeeec`, soft watercolor edge.
   - Listening: satellite blobs slide out and merge via a gooey SVG filter

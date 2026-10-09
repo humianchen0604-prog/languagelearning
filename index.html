@@ -900,7 +900,7 @@
 
   <section class="group">
     <h3>Painting</h3>
-    <div class="row"><label for="paintTime">Painting time</label><output for="paintTime"></output><input id="paintTime" type="range" min="0.5" max="6" step="0.1" value="1.5"></div>
+    <div class="row"><label for="paintTime">Painting time</label><output for="paintTime"></output><input id="paintTime" type="range" min="0.5" max="6" step="0.1" value="2"></div>
   </section>
 
   <section class="group">
@@ -937,7 +937,7 @@
     <div class="row"><label for="loadLight">Grey lightness</label><output for="loadLight"></output><input id="loadLight" type="range" min="0.3" max="0.95" step="0.01" value="0.3"></div>
     <div class="row"><label for="loadAlpha">Strength</label><output for="loadAlpha"></output><input id="loadAlpha" type="range" min="0" max="2" step="0.01" value="0.1"></div>
     <div class="row"><label for="loadFade">Fade out</label><output for="loadFade"></output><input id="loadFade" type="range" min="0.3" max="4" step="0.1" value="0.5"></div>
-    <div class="row"><label for="loadStart">Picture starts at (% of the fade)</label><output for="loadStart"></output><input id="loadStart" type="range" min="0.3" max="1" step="0.01" value="0.85"></div>
+    <div class="row"><label for="loadStart">Picture starts at (% of the fade)</label><output for="loadStart"></output><input id="loadStart" type="range" min="0.3" max="1" step="0.01" value="1"></div>
     <div class="row"><label for="loadBlur">Blur</label><output for="loadBlur"></output><input id="loadBlur" type="range" min="0" max="20" step="0.5" value="0"></div>
     <p class="note">Reveal style: how the grey wash turns into the first picture.</p>
     <div class="seg" id="reveal">
@@ -989,7 +989,7 @@
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   /* ---------------- Settings (remembered per browser) ---------------- */
-  const KEY = "papa-settings-v21";
+  const KEY = "papa-settings-v22";
   const ids = ["toothSize", "toothDepth", "warmth", "paintTime", "edgeHue", "edgeAlpha", "washHue", "washSat", "washLight", "washAlpha", "listenBlur", "loadLight", "loadAlpha", "loadFade", "msmSoft", "loadBlur", "loadPaint", "edgeTex", "revealTime", "loadStart"];
   // v19: the user's tuned settings (their Save settings file, 2026-10-09) are
   // the defaults, so values saved under older keys are dropped
@@ -997,8 +997,10 @@
   let saved = {};
   try {
     saved = JSON.parse(localStorage.getItem(KEY) || "null");
+    // v22: no overlap (the picture starts once the grey is gone) and a slower 2s fade-in with the red edges
+    if (!saved) { saved = JSON.parse(localStorage.getItem("papa-settings-v21") || "null"); if (saved) { delete saved.paintTime; delete saved.loadStart; } }
     // v21: slower picture fade-in (1.5s), and the red edges follow it (no separate Edge time)
-    if (!saved) { saved = JSON.parse(localStorage.getItem("papa-settings-v20") || "null"); if (saved) delete saved.paintTime; }
+    if (!saved) { saved = JSON.parse(localStorage.getItem("papa-settings-v20") || "null"); if (saved) { delete saved.paintTime; delete saved.loadStart; } }
     if (!saved) { saved = JSON.parse(localStorage.getItem("papa-settings-v19") || "{}") || {}; delete saved.loadPaint; delete saved.paintTime; }
   } catch (e) { saved = {}; }
   const settings = {};
@@ -1297,12 +1299,16 @@
 
   const easeOut = (t) => 1 - Math.pow(1 - t, 2.4);
   const easeInOut = (t) => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-  function tween(ms, step, alive) {
+  // The clock starts on the first frame actually drawn, so a stall before it
+  // (e.g. the first texture upload) can't make a fade jump in partway through.
+  // onStart runs on that same frame (things that should start with the picture).
+  function tween(ms, step, alive, onStart) {
     return new Promise((done) => {
-      if (reduceMotion || ms <= 0) { step(1); draw(); return done(); }
-      const t0 = performance.now();
+      if (reduceMotion || ms <= 0) { onStart && onStart(); step(1); draw(); return done(); }
+      let t0 = null;
       const tick = (now) => {
         if (!alive()) return done();
+        if (t0 === null) { t0 = now; onStart && onStart(); }
         const t = Math.min(1, (now - t0) / ms); step(t); draw();
         t < 1 ? requestAnimationFrame(tick) : done();
       };
@@ -1311,7 +1317,7 @@
   }
 
   let paintToken = 0;
-  async function paint(key) {
+  async function paint(key, onStart) {
     const token = ++paintToken, alive = () => token === paintToken;
     const prev = state.current;
     const [layers, before] = await Promise.all([layersFor(key), prev ? layersFor(prev) : null]);
@@ -1334,7 +1340,7 @@
       // a first picture fades in over the whole painting time (in step with the red edges)
       state.s = first ? [easeInOut(t), easeInOut(stage(t, 0.05, 0.95))]
                       : [easeOut(stage(t, 0.28, 0.5)), easeInOut(stage(t, 0.34, 0.62))];
-    }, alive);
+    }, alive, onStart);
   }
 
   /* First picture with a reveal style: the canvas takes over drawing the grey
@@ -1345,7 +1351,7 @@
     const k = (n) => (n + h / 30) % 12, a = s * Math.min(l, 1 - l);
     return [0, 8, 4].map((n) => l - a * Math.max(-1, Math.min(k(n) - 3, 9 - k(n), 1)));
   }
-  async function revealPaint(key, mode) {
+  async function revealPaint(key, mode, onStart) {
     const token = ++paintToken, alive = () => token === paintToken;
     const layers = await layersFor(key);
     if (!alive()) return;
@@ -1359,7 +1365,7 @@
     gl.uniform2f(uni.uC, (bl + bw / 2) / 402, (bt + bh / 2 - AREA.y) / AREA.h);
     state.current = key; state.out = 1; state.s = [0, 0]; state.reveal = { mode, t: 0 };
     draw(); washHandoff();   // the canvas draws the grey now; hide the SVG wash in the same frame
-    await tween(settings.revealTime * 1000, (t) => { state.reveal.t = t; }, alive);
+    await tween(settings.revealTime * 1000, (t) => { state.reveal.t = t; }, alive, onStart);
     if (!alive()) return;
     state.reveal = null; state.s = [1, 1]; draw();
   }
@@ -1710,7 +1716,7 @@
   function beginTake() {
     const gliding = stageEl.hasAttribute("data-intro");
     stageEl.removeAttribute("data-intro");
-    clearTimeout(washPreview); clearTimeout(washDelay);
+    clearTimeout(washPreview); clearTimeout(washDelay); washExit = null;
     // a picture from the last take (e.g. a wrong answer) fades out and the grey
     // wash comes back, so every new picture is generated the same way. When the
     // title is gliding up, the wash waits until it is 90% of the way there.
@@ -1718,10 +1724,31 @@
     // out a little slower (850ms) and the wash fades in softly just after it starts.
     if (state.current) {
       clearPicture(850);
-      if (!reduceMotion) { washDelay = setTimeout(() => { washDelay = 0; washOn(true); }, 200); return; }
+      // the grey wash comes in only once the old picture has faded out completely
+      if (!reduceMotion) { washDelay = setTimeout(() => { washDelay = 0; washOn(true); }, 850); return; }
     }
     if (gliding && !reduceMotion) washDelay = setTimeout(() => { washDelay = 0; washOn(); }, TITLE_90);
     else washOn();
+  }
+  /* The grey wash leaves (Fade style): once it has fully appeared it fades out,
+     and the picture may start once it's gone (Picture starts at, default 100%).
+     Started as soon as the word is ~95% said (end of speech, or the demo
+     voice's last syllable), so the picture follows the word closely;
+     finish() waits on the same promise. */
+  let washExit = null;
+  const sleep = (ms) => new Promise((r) => setTimeout(r, reduceMotion ? 0 : ms));
+  function exitWash() {
+    if (washExit) return washExit;
+    if (reveal !== "fade") return Promise.resolve();
+    washNow();
+    if (!washShown) return Promise.resolve();
+    washExit = (async () => {
+      await sleep(washPainted() - performance.now());
+      const ms = settings.loadFade * 1000;
+      washOff(ms);
+      await sleep(ms * settings.loadStart);
+    })();
+    return washExit;
   }
   // speaking ended before the delayed wash came in: bring it in now
   function washNow() { if (washDelay) { clearTimeout(washDelay); washDelay = 0; washOn(!!state.current); } }
@@ -1786,14 +1813,16 @@
 
   /* ---------------- Wrong answer: Edges ---------------- */
   const stageEl = document.querySelector(".stage");
-  function wrongOn() {
+  function wrongOn(sec = settings.paintTime) {
+    edgeMs(sec);                                    // creeps in with the picture
     stageEl.toggleAttribute("data-won", false);
     stageEl.classList.remove("won-play");
     void stageEl.offsetWidth;                       // restart the shake
     stageEl.toggleAttribute("data-won", true);
     stageEl.classList.add("won-play");
   }
-  function wrongOff() { stageEl.toggleAttribute("data-won", false); stageEl.classList.remove("won-play"); }
+  // leaving: the red goes with the old picture (850ms), before the grey wash comes in
+  function wrongOff() { if (stageEl.hasAttribute("data-won")) edgeMs(0.85); stageEl.toggleAttribute("data-won", false); stageEl.classList.remove("won-play"); }
   $("#wrongReplay").addEventListener("click", () => {
     if (state.current === "pope" || state.current === "potato") wrongOn();   // replay on the wrong answer showing
     else simulate("el papa");
@@ -1820,24 +1849,23 @@
     if (key === "dad") voice.toggleAttribute("data-next", true);
     setState("processing");
     let handoff = false;
-    washNow();
-    if (washShown) {   // first picture: the grey wash finishes appearing first
-      const left = washPainted() - performance.now();
-      if (left > 0 && !reduceMotion) await new Promise((r) => setTimeout(r, left));
-      if (reveal === "fade") {   // Fade: the wash fades away; the picture starts near the end of that, so they barely overlap
-        const ms = settings.loadFade * 1000;
-        washOff(ms);
-        // the picture starts once the grey is nearly gone (Adjust → Picture starts at, default 85% of the fade)
-        await new Promise((r) => setTimeout(r, reduceMotion ? 0 : ms * settings.loadStart));
-      } else handoff = true;     // the other styles turn the wash itself into the picture
+    if (reveal === "fade") {
+      if (washShown || washExit) await exitWash();   // the grey is gone (it may have started leaving as the word was ~95% said)
+    } else {
+      washNow();
+      if (washShown) {   // the other styles turn the finished wash itself into the picture
+        const left = washPainted() - performance.now();
+        if (left > 0 && !reduceMotion) await new Promise((r) => setTimeout(r, left));
+        handoff = true;
+      }
     }
-    if (wrong) {
-      edgeMs(handoff ? settings.revealTime : settings.paintTime);   // in step with this picture's reveal
+    // a wrong answer's red and shake start on the picture's first frame, in step with it
+    const onStart = wrong ? () => {
       showHeard(text, key);
       if (preShown) caption.classList.add("pre-shown");   // already showing: just turn red and shake
-      wrongOn();
-    }
-    await (handoff ? revealPaint(key, REVEALS.indexOf(reveal)) : paint(key));
+      wrongOn(handoff ? settings.revealTime : settings.paintTime);
+    } : null;
+    await (handoff ? revealPaint(key, REVEALS.indexOf(reveal), onStart) : paint(key, onStart));
     setState("idle");
     if (key === "dad") voice.setAttribute("aria-label", "Next word");
   }
@@ -1881,8 +1909,13 @@
     beginTake();
     startWaves(syntheticVoice(phrase, performance.now() / 1000));
     // each syllable appears as the synthetic voice says it (~0.25s, then every 0.3s)
-    syllables(phrase).forEach((t, i) => liveTimers.push(setTimeout(() => showLive(t), 250 + i * 300)));
-    simTimer = setTimeout(() => finish(phrase), 1500);
+    const syl = syllables(phrase);
+    syl.forEach((t, i) => liveTimers.push(setTimeout(() => showLive(t), 250 + i * 300)));
+    // the word is ~95% said just after its last syllable: the grey starts leaving then,
+    // and the result follows a moment later
+    const said = 250 + (syl.length - 1) * 300 + 180;
+    liveTimers.push(setTimeout(exitWash, said));
+    simTimer = setTimeout(() => finish(phrase), said + 250);
   }
   document.querySelectorAll("[data-say]").forEach((b) => b.addEventListener("click", (e) => { e.stopPropagation(); simulate(b.dataset.say); }));
 
@@ -1935,7 +1968,7 @@
     const fake = (now) => speaking ? syntheticVoice("la papa", t0)((now - t0) % 1.2 + t0) : [0.05, 0.05, 0.05, 0.05, 0.05];
     startWaves(fake);
     rec.onspeechstart = () => { speaking = true; t0 = performance.now() / 1000; };
-    rec.onspeechend = () => { speaking = false; };
+    rec.onspeechend = () => { speaking = false; exitWash(); };   // the word is said: the grey starts leaving now
     rec.onresult = (e) => {
       const r = e.results[e.results.length - 1];
       if (!r.isFinal) { showLive(r[0].transcript); return; }
@@ -1976,13 +2009,14 @@
   /* Reveal style for the first picture (remembered per browser). Picking one,
      or a Try button, starts over from an empty page and plays a take. */
   let reveal = "fade";
-  try { reveal = localStorage.getItem("papa-reveal-v1") || reveal; } catch (e) {}
+  // v2: back to Fade by default, so the grey is gone before the picture (the other styles blend them)
+  try { reveal = localStorage.getItem("papa-reveal-v2") || reveal; } catch (e) {}
   if (!REVEALS.includes(reveal)) reveal = "fade";
   const revealBtns = [...document.querySelectorAll("#reveal button")];
   function setReveal(r) {
     reveal = r;
     revealBtns.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.reveal === r)));
-    try { localStorage.setItem("papa-reveal-v1", r); } catch (e) {}
+    try { localStorage.setItem("papa-reveal-v2", r); } catch (e) {}
   }
   setReveal(reveal);
   function tryReveal(word) {
