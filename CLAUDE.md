@@ -33,7 +33,8 @@ python3 -m http.server 8000   # mic needs http(s), not file://
 **The user views the prototype on localhost on their Mac, not the claude.ai
 artifact (by request): push changes to `main` here and tell them to
 double-click `start.command` (it runs `git pull` first) or reload the page.
-Don't republish the artifact unless they ask.**
+Also republish the claude.ai artifact when they ask (copy index.html and
+assets/ to the scratchpad first; the Artifact tool only takes files there).**
 
 `start.command` does the same (first free port from 8000) and opens Chrome; the
 user double-clicks it on their Mac.
@@ -98,16 +99,16 @@ user double-clicks it on their Mac.
   lines appear (no rise) and shake straight away "no"; the voice button turns 70% opaque so the colour shows
   through. Adjust → Wrong answer: Edge hue (0–360°, default 16° = soft red
   hsl(16 70% 62%)), Edge strength (0–250%), and a Show wrong answer button.
-  It reads as watercolor: the colour is sheer and uneven (patchy pigment),
-  deepening toward the screen's edge, with a gently wavy shape, and it fades
-  out GRADUALLY toward the inside (no edge line; the user asked for this
-  after a version with a defined edge and dense rim). CSS `filter:
-  url(#edge-bloom)` on `.w-edges` uses the gradient as a distance map
-  (smoothed, warped), and `edgeTable()` turns distance into the wash
-  (`#ebTable`). The inner end fades right into the page
-  colour with no visible ring (by request). Edge rim slider (0–250%, default
-  0%) can add a soft, slightly denser band where the colour thins out. Tried and rejected: zig-zag fibres
-  along the edge; a defined wavy edge with a dense rim. Edge time
+  It is painted like a watercolor wash that dried (the user's reference: a
+  pink wash with a denser rim): the colour is sheer and uneven, deepening
+  toward the screen's edge, and ends in a gently wavy, DEFINED edge with a
+  denser rim of pigment along it; inside that edge is plain page colour.
+  CSS `filter: url(#edge-bloom)` on `.w-edges` uses the gradient as a
+  distance map (smoothed, warped), and `edgeTable()` turns distance into the
+  wash (`#ebTable`). Edge rim slider (0–250%, default 100%) sets how dense
+  the rim is. The user confirmed this look ("make this not fade out!!!")
+  after a version that faded out gradually toward the inside; don't make it
+  fade out again. Zig-zag fibres along the edge were also tried and rejected. Edge time
   (0.2–6s, default 1s) sets how long the edges take to creep in.
   The stage carries `data-won`; `.won-play` replays the shake. It clears when
   listening starts again or Dad is said. (Rise, Shake, Bleed, Ripples,
@@ -154,7 +155,7 @@ the older full watercolors, no longer used by the page.
     and swell with the voice. Light grey layering by default (hsl 30 5% 88%),
     with soft, blurred-out edges (Edge softness, default 3.5). Adjust → Mic
     smudges: Light gray default, Light blue, Aqua, Perplexity, Indigo, or
-    hue/saturation/lightness/strength. Settings key `papa-settings-v13` (older
+    hue/saturation/lightness/strength. Settings key `papa-settings-v14` (older
     wash and smudge values are dropped on migration so new defaults show). The other looks
     fill the shape with five blurred pastel drops (clipped to it): Swirl
     (clockwise, about one lap per 30s), Marble, Ripples; or Ellipses. Motion is
