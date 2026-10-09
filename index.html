@@ -312,9 +312,8 @@
     background-position: 100% 0;
     -webkit-background-clip: text;
     background-clip: text;
-    animation: shine 1.3s ease-in-out 0.05s 1 both;   /* once, right away */
+    /* glare: once, right away (animation set with the entrance below) */
   }
-  .caption.shine .caption-meaning { animation-delay: 0s; }
   /* starts with the glare already at the text's edge, so it shows at once */
   @keyframes shine {
     from { background-position: 82% 0; }
@@ -322,17 +321,31 @@
   }
   /* The Pope and the potato (wrong answers): black first, then a quick plain
      change to the red, which stays. No glare. */
-  .caption.redden .caption-meaning,
-  .caption.redden .caption-word {
-    animation: redden 0.35s ease-out 0.1s 1 both;
-  }
   @keyframes redden {
     from { color: #1a1a1a; }
     to   { color: var(--say-papa); }
   }
+
+  /* Entrance for every result: each line fades in while rising a little,
+     with a 2px blur that clears so it reads as one arrival. Strong ease-out
+     (fast start, soft landing); the Spanish word follows 70ms after the
+     meaning. Uses the `translate` property so the "no" shakes (transform)
+     add on top instead of fighting it. */
+  @keyframes rise-in {
+    from { opacity: 0; translate: 0 calc(10 * var(--u)); filter: blur(2px); }
+    to   { opacity: 1; translate: 0 0; filter: blur(0); }
+  }
+  .caption.enter .caption-meaning { animation: rise-in 450ms var(--ease-out) both; }
+  .caption.enter .caption-word    { animation: rise-in 450ms var(--ease-out) 70ms both; }
+  .caption.enter.shine .caption-meaning  { animation: rise-in 450ms var(--ease-out) both, shine 1.3s ease-in-out both; }
+  .caption.enter.shine .caption-word     { animation: rise-in 450ms var(--ease-out) 70ms both, shine 1.3s ease-in-out 0.05s both; }
+  .caption.enter.redden .caption-meaning { animation: rise-in 450ms var(--ease-out) both, redden 0.35s ease-out 0.05s both; }
+  .caption.enter.redden .caption-word    { animation: rise-in 450ms var(--ease-out) 70ms both, redden 0.35s ease-out 0.1s both; }
+  @keyframes fade-in { from { opacity: 0; } }
   @media (prefers-reduced-motion: reduce) {
-    .caption.shine .caption-meaning, .caption.shine .caption-word { animation: none; background-position: 50% 0; }
-    .caption.redden .caption-meaning, .caption.redden .caption-word { animation: none; }
+    /* reduced motion: keep a short fade, drop the rise, blur and sweep */
+    .caption.enter .caption-meaning, .caption.enter .caption-word { animation: fade-in 200ms ease both !important; }
+    .caption.shine .caption-meaning, .caption.shine .caption-word { background-position: 50% 0; }
   }
   .caption-word {
     margin-top: calc(5 * var(--u));
@@ -376,7 +389,9 @@
     transition: opacity 500ms var(--ease-out), transform 900ms var(--ease-out);
   }
   .stage[data-wfx="edges"][data-won] .w-edges { opacity: 1; transform: none; }
-  .stage[data-wfx="edges"].won-play .caption-word { animation: no-shake 560ms ease-out 120ms both; }
+  .stage[data-wfx="edges"].won-play .caption.enter .caption-word {
+    animation: rise-in 450ms var(--ease-out) 70ms both, redden 0.35s ease-out 0.1s both, no-shake 560ms ease-out 120ms both;
+  }
 
   /* 3 · Shake: the picture and the caption shake "no" */
   @keyframes no-shake {
@@ -1185,7 +1200,8 @@
   function showCaption(key, meaning, word) {
     caption.dataset.key = key || "none";
     // restart the glare each time Dad is said
-    caption.classList.remove("shine", "redden"); void caption.offsetWidth;
+    caption.classList.remove("shine", "redden", "enter"); void caption.offsetWidth;
+    if (CAPTION[key]) caption.classList.add("enter");   // results rise in; live transcripts don't
     if (key === "dad") caption.classList.add("shine");
     if (key === "pope" || key === "potato") caption.classList.add("redden");
     capMeaning.textContent = meaning || "";

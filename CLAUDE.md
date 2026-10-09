@@ -48,7 +48,9 @@ cd papa && python3 -m http.server 8000   # mic needs http(s), not file://
   full width (normal blending, so the Bleed layer stays behind it), each in its box (`PICTURES` in the script).
 - Caption: meaning in SF Pro Light 16px at 80%, y 541; Spanish in Regular 28px,
   y 565; colour per word (table above). A miss shows "No te entendí" and the
-  transcript in grey. When Dad is said (correct), the caption turns black and a
+  transcript in grey. Every result's caption lines fade in rising 10u with a
+  2px blur that clears (450ms, strong ease-out), the Spanish word 70ms after
+  the meaning (`.caption.enter`, `rise-in`); live transcripts don't animate. When Dad is said (correct), the caption turns black and a
   glare of the blue sweeps across it once, straight away (`.caption.shine`).
   For the Pope and the potato (wrong answers) there is no glare: the caption
   starts black and quickly changes to the red, which stays (`.caption.redden`).
