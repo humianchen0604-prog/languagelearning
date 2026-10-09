@@ -264,7 +264,7 @@
     filter: blur(4px);
     transition: opacity 260ms var(--ease-out), transform 260ms var(--ease-out), filter 260ms var(--ease-out);
   }
-  .next svg { width: calc(25.3 * var(--u)); height: calc(19 * var(--u)); overflow: visible; }
+  .next svg { width: calc(25.3 * var(--u)); height: calc(19 * var(--u)); overflow: visible; margin-top: calc(-3 * var(--u)); }
   .voice[data-next] .mic { opacity: 0; transform: scale(0.6); filter: blur(4px); }
   .voice[data-next][data-state="idle"] .next { opacity: 1; transform: none; filter: none; transition-delay: 120ms; }
   .voice[data-state="listening"] .mic,
@@ -671,10 +671,10 @@
         </span>
         <span class="next" aria-hidden="true">
           <svg viewBox="0 0 40 30" fill="none" stroke="var(--mic-ink)" stroke-linecap="round" stroke-linejoin="round"><g filter="url(#pencil)">
-            <path d="M4.5 15.4C12 14.8 22 15.2 33.6 15" stroke-width="1.8" />
-            <path d="M5.4 16.6C13 16 21.6 16.4 31.4 16.2" stroke-width="0.6" opacity="0.6" />
-            <path d="M24.2 6.4C27.6 9.4 31 12.4 34.4 15.2C31.2 18 27.8 21.2 24.6 24" stroke-width="1.8" />
-            <path d="M25.6 8.2C28.4 10.6 30.8 12.8 33 15" stroke-width="0.6" opacity="0.6" />
+            <path d="M4.5 15.4C12 14.8 22 15.2 33.6 15" stroke-width="2.3" />
+            <path d="M5.4 16.6C13 16 21.6 16.4 31.4 16.2" stroke-width="0.8" opacity="0.6" />
+            <path d="M24.2 6.4C27.6 9.4 31 12.4 34.4 15.2C31.2 18 27.8 21.2 24.6 24" stroke-width="2.3" />
+            <path d="M25.6 8.2C28.4 10.6 30.8 12.8 33 15" stroke-width="0.8" opacity="0.6" />
           </g></svg>
         </span>
         <span class="waves" aria-hidden="true"><i class="wave"></i><i class="wave"></i><i class="wave"></i><i class="wave"></i><i class="wave"></i></span>
