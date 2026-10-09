@@ -82,6 +82,14 @@ tuning still works.
 
 ## Layout (matches the Figma frames)
 
+- On phones (≤600px wide; asked for on an iPhone 17 in Safari, which
+  showed white bars around the phone and a white band under the status bar)
+  the page fills the whole screen: paper colour on `html`/`body` plus
+  `theme-color`, the `.paper`, `.grain` and `.wrong` layers stretched to the
+  full viewport, and the design scaled to the screen's width (`--fu`,
+  at most 1/754 of the height between the safe areas) and centred, so its
+  empty top and bottom margins can run off-screen. Home Screen meta tags make
+  it open full screen when added to the Home Screen.
 - The phone is a 402 × 874 design. Every size is `calc(N * var(--u))` with
   `--u: calc(100cqw / 402)` on `.stage`, scaled to fit. Page colour `#fafafa`
   (by request; Figma used `#f5f2ee`), under the paper texture; square corners (radius 0, by request).

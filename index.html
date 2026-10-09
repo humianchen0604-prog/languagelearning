@@ -1,5 +1,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- phones: Safari tints its bars with the paper colour; added to the Home Screen it opens full screen -->
+<meta name="theme-color" content="#fafafa">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Papá">
 <title>Papá o la papa</title>
 <script>
   /* The public web version (Vercel) hides the Adjust panel and the Restart
@@ -88,6 +94,47 @@
     inset: 0;
     container-type: inline-size;
     --u: calc(100cqw / 402);
+  }
+
+  /* Phones (e.g. iPhone 17, by request): fill the whole screen, no white
+     around it. The paper (and the red edges) cover the full viewport; the
+     402 × 874 design is scaled to the screen's width and centred in the
+     space between the safe areas, letting its empty top and bottom margins
+     (up to 60u each) run off the screen. A shorter screen scales it down a
+     little instead (754u = the design without those margins). */
+  @media (max-width: 600px) {
+    html, body { background: var(--paper); }
+    .shell { height: 100dvh; display: block; }
+    .phone {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100dvh;
+      max-width: none;
+      aspect-ratio: auto;
+      --sa-t: env(safe-area-inset-top, 0px);
+      --sa-b: env(safe-area-inset-bottom, 0px);
+      --avail: calc(100dvh - var(--sa-t) - var(--sa-b));
+      --fu: min(100vw / 402, var(--avail) / 754);
+      --st: calc(var(--sa-t) + (var(--avail) - 874 * var(--fu)) / 2);   /* the stage's top */
+      --sl: calc((100vw - 402 * var(--fu)) / 2);                          /* and left */
+    }
+    .stage {
+      inset: auto;
+      top: var(--st);
+      left: var(--sl);
+      width: calc(402 * var(--fu));
+      height: calc(874 * var(--fu));
+    }
+    /* full-bleed layers reach the screen's edges from the stage */
+    .stage > .paper, .stage > .grain, .stage > .wrong {
+      top: calc(-1 * var(--st));
+      left: calc(-1 * var(--sl));
+      width: 100vw;
+      height: 100dvh;
+      right: auto;
+      bottom: auto;
+    }
   }
 
   /* ---------- Paper ---------- */
