@@ -73,21 +73,21 @@ user double-clicks it on their Mac.
   (scale 0.8, blur) and the mic appears; about 1.2s in all (`open-*` keyframes,
   backwards fill only so the elements' own styles take over afterwards).
 - First-picture wash: only when the page has no picture yet (first word,
-  after "next", after a miss), a soft grey watercolor paints itself in where
-  the picture will appear, spreading from the centre outward (it went from the
-  top left to the bottom right until the user asked for centre-out), as soon as
-  the mic is pressed. It is the user's watercolor (`assets/loading-wash-source.png`,
+  after "next", after a miss), a soft grey watercolor appears where the
+  picture will appear as soon as the mic is pressed, quickly fading in while it
+  scales from 95% to 100% (Fade-in time, default 0.45s). History: it first
+  painted in from the top left to the bottom right, then from the centre
+  outward; the user then asked for this faster fade-and-scale. It is the user's watercolor (`assets/loading-wash-source.png`,
   turned into a pigment mask `assets/loading-wash.png`, white = paint) filling
-  a grey rect (`#washFill`, hsl 30 5% L), revealed by a radial gradient (centre
-  out) with a brushy, displaced front (`#revealMask`, `revA`/`revB` stop offsets driven
-  in `renderWash()`). Box 264 × 250u centred on (199, 370) (12% smaller than the
+  a grey rect (`#washFill`, hsl 30 5% L), (`#revealMask`, the old paint front, is
+  now held fully open in `renderWash()`). Box 264 × 250u centred on (199, 370) (12% smaller than the
   first 300 × 284, by request; `uBox` in `revealPaint()` must match `.smudge`).
   When speaking ends it first finishes painting, then loosens, blurs and fades
   out; the picture starts painting in when the fade is 85% through (Adjust →
   Picture starts at), so the two barely overlap. History: waiting for a full
   fade was too long a pause, starting at half overlapped too much; `finish()`
   awaits it.
-  Adjust → First-picture wash: paint-in time, grey lightness, strength,
+  Adjust → First-picture wash: fade-in time, grey lightness, strength,
   fade-out time, blur (defaults are the user's tuned values, below).
   **Reveal style** (Adjust → First-picture wash; remembered in
   `papa-reveal-v1`, included in Save settings): how the finished grey wash
@@ -166,11 +166,11 @@ user double-clicks it on their Mac.
 ## Saving tuned settings
 
 Current defaults are the user's own tuned file (2026-10-09), settings key
-`papa-settings-v19`: tooth size −1.49, tooth depth 0.27, warmth 0.1, painting
+`papa-settings-v20` (v19 plus the 0.45s fade-in): tooth size −1.49, tooth depth 0.27, warmth 0.1, painting
 time 1s, edge hue 354, edge strength 1.36, edge time 1s, edge rim 0; mic
 smudges hue 30 / sat 0.05 / light 0.88 / density 0.2 / softness 1.5; listening
 blur 3.5, listening grey 3.5%; first-picture wash lightness 0.3, strength 0.1,
-fade 0.5s, blur 0, paint-in 1.9s; voice look Grey.
+fade 0.5s, blur 0, fade-in 0.45s; voice look Grey.
 
 Adjust → Save → **Save settings** downloads `papa-settings.json` (every
 slider's value plus the voice look and reveal style), copies it, and shows it in the panel.
