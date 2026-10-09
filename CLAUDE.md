@@ -98,8 +98,8 @@ the older full watercolors, no longer used by the page.
   - Inside while listening: five large, blurred, light pastel drops fill the
     shape (clipped to it). Looks: **Swirl** (default; clockwise, about one lap
     per 30s), Marble, Ripples, Ellipses. Motion is slow.
-  - Processing: grey blob with three small pulsing dots.
-  - Mic and dots use the **pencil** filter in `--mic-ink #7f7d7a`. The mic
+  - Processing (while the picture paints): no loading indicator; the mic stays.
+  - The mic uses the **pencil** filter in `--mic-ink #7f7d7a`. The mic
     capsule is filled with that ink at 48% on white; the icon is about 19 × 25u.
   - After Dad (correct) the mic swaps for a pencil "next" arrow (`.next`,
     `data-next` on the button). Tapping it fades the picture and caption out,
