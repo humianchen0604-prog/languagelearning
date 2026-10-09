@@ -96,7 +96,8 @@ user double-clicks it on their Mac.
   texture `tWash`, colour, box `uBox`) in the shader, hides the SVG wash in the
   same frame (`washHandoff()`; pixel-checked: within 1–2 levels), then plays
   `uMode` 1–10 over Reveal time (default 1.8s): 1 Underpainting (colour soaks
-  into the grey from the inside), 2 Bloom (wet-into-wet from the centre with a
+  into the grey from the inside; its front is a smooth sine warp, as noise
+  showed grid lines), 2 Bloom (wet-into-wet from the centre with a
   grey rim pushed out), 3 Brush pass (second diagonal stroke wipes grey,
   reveals picture), 4 Glazing (four even glazes deepen the colour, lights
   first), 5 Settling (pale larger blot settles, sharpens, gains colour),
@@ -104,7 +105,8 @@ user double-clicks it on their Mac.
   (speckles into the paper's tooth, darkest first), 8 Blotting (tissue patches
   lift the grey), 9 Wicking (colour creeps in from the outline, `tGlow` = a
   40px-blurred copy as depth), 10 Brush strokes (five soft strokes, the last
-  over the middle). Every mode ends exactly on the sharp picture. Picking a
+  over the middle). Every mode ends exactly on the sharp picture. The shader's `fbm` uses
+  quintic value noise with rotated octaves so no lattice/grid shows. Picking a
   style, or the Try buttons, empties the page and plays a take (`tryReveal()`).
   Between pictures there is NO wash: the old picture stays while listening and
   dissolves into the new one (the original effect; the user asked to keep it).

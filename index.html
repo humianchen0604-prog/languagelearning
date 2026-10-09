@@ -1096,9 +1096,10 @@
     uniform vec2 uC;
 
     float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
-    float noise(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3. - 2. * f);
+    float noise(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * f * (f * (f * 6. - 15.) + 10.);   // quintic: no visible cell seams
       return mix(mix(hash(i), hash(i + vec2(1., 0.)), f.x), mix(hash(i + vec2(0., 1.)), hash(i + vec2(1., 1.)), f.x), f.y); }
-    float fbm(vec2 p){ float s = 0., a = .5; for (int k = 0; k < 4; k++) { s += a * noise(p); p *= 2.03; a *= .5; } return s; }
+    // each octave rotated, so the noise lattice never lines up into a grid
+    float fbm(vec2 p){ float s = 0., a = .5; for (int k = 0; k < 4; k++) { s += a * noise(p); p = mat2(1.6, 1.2, -1.2, 1.6) * p + 1.7; a *= .5; } return s; }
     float lum(vec3 c){ return dot(c, vec3(.299, .587, .114)); }
     vec3 unpre(vec4 c){ return c.a > .001 ? c.rgb / c.a : vec3(0.); }
     vec4 over(vec4 top, vec4 bot){ return top + bot * (1. - top.a); }
@@ -1121,7 +1122,10 @@
       vec2 q = vec2(v.x * .804, v.y), c = vec2(uC.x * .804, uC.y);   // equal units across and down
       vec4 g = greyAt(v), o;
       if (uMode < 1.5) {            // 1 underpainting: colour soaks into the grey from the inside
-        float f = length(q - c) * 2.6 + fbm(q * 4.5) * .5;
+        // a smooth, organic front (sines, no noise lattice, so no grid lines)
+        vec2 d = q - c;
+        float wav = sin(d.x * 9. + sin(d.y * 7.) * 1.6) * sin(d.y * 8. + sin(d.x * 6.) * 1.4) + .5 * sin(d.x * 4. - d.y * 5. + 1.);
+        float f = length(d) * 2.6 + .2 + wav * .12;
         float r = max(smoothstep(f - .35, f, t * 2.2), smoothstep(.85, 1., t));
         vec4 im = pic(v, smoothstep(.35, 1., t)) * r;
         o = over(im, g * (1. - smoothstep(.45, 1., t)));
