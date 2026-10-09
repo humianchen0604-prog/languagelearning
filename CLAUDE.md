@@ -58,8 +58,8 @@ cd papa && python3 -m http.server 8000   # mic needs http(s), not file://
   in evenly along every side (eased in many small steps) while both caption
   lines shake "no"; the voice button turns 70% opaque so the colour shows
   through. Adjust → Wrong answer: Edge hue (0–360°, default 16° = soft red
-  hsl(16 70% 62%)), Edge strength (0–250%), and a Show wrong answer button. The edges
-  creep in over the Painting time, so both move together.
+  hsl(16 70% 62%)), Edge strength (0–250%), and a Show wrong answer button. Edge time
+  (0.2–6s, default 1s) sets how long the edges take to creep in.
   The stage carries `data-won`; `.won-play` replays the shake. It clears when
   listening starts again or Dad is said. (Rise, Shake, Bleed, Ripples,
   Scribble and Blush were tried and dropped; they're in git history.)
