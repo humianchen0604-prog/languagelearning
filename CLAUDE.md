@@ -95,8 +95,10 @@ user double-clicks it on their Mac.
   starts at, default 100%: no overlap; the user insisted, "make sure the gray
   picture wash fade out first, and then show the image"). History: half and
   85% overlaps were tried first; `finish()` awaits it.
-  The grey's exit starts as soon as the word is ~95% said (`exitWash()`: on
-  the recogniser's speech end, or 180ms after the demo voice's last syllable;
+  The grey's exit starts as soon as the word is ~95% said (`exitWash()`: with
+  the real mic, when its volume shows the speaker has spoken and then been
+  quiet for 220ms (`watchSpeechEnd()`, by request: follow the speaker's
+  input), or the recogniser's speech end, whichever comes first; or 180ms after the demo voice's last syllable;
   the demo result follows 250ms later), so the picture follows the word closely.
   Adjust → First-picture wash: fade-in time, grey lightness, strength,
   fade-out time, blur (defaults are the user's tuned values, below).

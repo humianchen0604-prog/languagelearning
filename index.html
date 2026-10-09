@@ -1992,7 +1992,26 @@
     try { rec.start(); } catch (e) { stopListening(); say.hidden = false; return; }
     // Drive the ellipses from the real volume when the mic level is available
     const real = await micLevel();
-    if (real && voice.dataset.state === "listening") level = real;
+    if (real && voice.dataset.state === "listening") { level = real; watchSpeechEnd(real); }
+  }
+
+  /* Follow the speaker's own voice from the microphone: once they have spoken
+     and gone quiet for a moment, the word is said, so the grey starts leaving
+     now (the picture and the red follow it), instead of waiting for the
+     recogniser's later "speech end"/result signals. */
+  function watchSpeechEnd(read) {
+    let heard = false, quietAt = 0;
+    const tick = () => {
+      if (voice.dataset.state !== "listening") return;
+      const b = read(), v = b.reduce((a, c) => a + c, 0) / b.length, now = performance.now();
+      if (v > 0.16) { heard = true; quietAt = 0; }                 // voice
+      else if (heard && v < 0.07) {                                 // quiet after speaking
+        if (!quietAt) quietAt = now;
+        else if (now - quietAt > 220) { exitWash(); return; }
+      }
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
   }
 
   voice.addEventListener("click", () => {
