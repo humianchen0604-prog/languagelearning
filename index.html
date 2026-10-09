@@ -1860,10 +1860,11 @@
     stopWaves();
     const key = classify(text || "");
     const wrong = key === "pope" || key === "potato";
-    // a wrong answer's red edges run 1.1x faster than the picture (they finish a little before it)
+    // a wrong answer's red edges run 1.1x faster than the picture, then 10% sooner again (by request),
+    // so they show and finish a little before it
     const greyLeft = reveal === "fade" && (washShown || washExit) ? settings.loadFade * settings.loadStart : 0;
     const painted = reveal !== "fade" && washShown ? Math.max(0, washPainted() - performance.now()) / 1000 : 0;
-    const edgeSec = (greyLeft + painted + (reveal === "fade" ? settings.paintTime : settings.revealTime)) / 1.1;
+    const edgeSec = (greyLeft + painted + (reveal === "fade" ? settings.paintTime : settings.revealTime)) / 1.1 * 0.9;
     // its caption stays black (red-hold) until the picture is 50% in, then turns red and shakes (by request)
     stageEl.style.setProperty("--red-delay", "0ms");
     showHeard(text, key);

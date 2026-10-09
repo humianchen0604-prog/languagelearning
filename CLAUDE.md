@@ -195,7 +195,9 @@ smudges hue 205 / sat 0.75 / light 0.68 / density 0.1 / softness 1.5;
 listening blur 3.5; first-picture wash lightness 0.3, strength 0.16, fade
 0.5s, blur 0.5, fade-in 0.4s, picture starts at 70% of the fade, reveal time
 1s; voice look Pebble (`grey`); reveal style Underpainting. The red edges
-run 1.1× faster than the picture (by request; they finish just before it).
+run 1.1× faster than the picture, then 10% sooner again (`/ 1.1 * 0.9` in
+`finish()`, by request: "make the gradient of the error enter 10% earlier"),
+so they show and finish a little before it.
 
 Adjust → Save → **Save settings** downloads `papa-settings.json` (every
 slider's value plus the voice look and reveal style), copies it, and shows it in the panel.
