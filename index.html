@@ -369,6 +369,7 @@
     transition: opacity 500ms var(--ease-out), transform 900ms var(--ease-out);
   }
   .stage[data-wfx="edges"][data-won] .w-edges { opacity: 1; transform: none; }
+  .stage[data-wfx="edges"].won-play .caption-word { animation: no-shake 560ms ease-out 120ms both; }
 
   /* 3 · Shake: the picture and the caption shake "no" */
   @keyframes no-shake {
@@ -383,17 +384,18 @@
   .stage[data-wfx="shake"].won-play .caption { animation: no-shake 560ms ease-out both; }
   .stage[data-wfx="shake"].won-play .caption { animation-delay: 60ms; }
 
-  /* 4 · Bleed: a red watercolor wash blooming behind the caption */
+  /* 4 · Bleed: a red watercolor wash bleeding out from behind the picture
+     (multiplied, so it reads as behind the watercolor) */
   .w-bleed {
-    left: 50%; top: calc(572 * var(--u));
-    width: calc(250 * var(--u)); height: calc(110 * var(--u));
+    left: 50%; top: calc(375 * var(--u));
+    width: calc(320 * var(--u)); height: calc(340 * var(--u));
     translate: -50% -50%;
-    border-radius: 48% 52% 44% 56% / 58% 46% 54% 42%;
-    background: radial-gradient(closest-side, rgb(var(--wrong) / 0.34), rgb(var(--wrong) / 0.16) 62%, rgb(var(--wrong) / 0));
-    filter: blur(calc(9 * var(--u)));
+    border-radius: 46% 54% 42% 58% / 55% 45% 57% 43%;
+    background: radial-gradient(closest-side, rgb(var(--wrong) / 0.36), rgb(var(--wrong) / 0.2) 55%, rgb(var(--wrong) / 0));
+    filter: blur(calc(18 * var(--u)));
     mix-blend-mode: multiply;
-    transform: scale(0.25) rotate(-8deg);
-    transition: opacity 500ms var(--ease-out), transform 1300ms cubic-bezier(0.16, 1, 0.3, 1);
+    transform: scale(0.35) rotate(-8deg);
+    transition: opacity 500ms var(--ease-out), transform 1500ms cubic-bezier(0.16, 1, 0.3, 1);
   }
   .stage[data-wfx="bleed"][data-won] .w-bleed { opacity: 1; transform: none; }
 
