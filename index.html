@@ -363,8 +363,12 @@
   /* 2 · Edges: red creeping in from all four edges */
   .w-edges {
     inset: 0;
-    background: radial-gradient(ellipse 78% 72% at 50% 50%,
-      rgb(var(--wrong) / 0) 52%, rgb(var(--wrong) / 0.16) 76%, rgb(var(--wrong) / 0.42) 100%);
+    /* the same depth (~110u) in from every side: 12.6% of the height, 27% of the width */
+    background:
+      linear-gradient(to bottom, rgb(var(--wrong) / 0.38), rgb(var(--wrong) / 0.14) 5.5%, rgb(var(--wrong) / 0) 12.6%),
+      linear-gradient(to top,    rgb(var(--wrong) / 0.38), rgb(var(--wrong) / 0.14) 5.5%, rgb(var(--wrong) / 0) 12.6%),
+      linear-gradient(to right,  rgb(var(--wrong) / 0.38), rgb(var(--wrong) / 0.14) 12%,  rgb(var(--wrong) / 0) 27%),
+      linear-gradient(to left,   rgb(var(--wrong) / 0.38), rgb(var(--wrong) / 0.14) 12%,  rgb(var(--wrong) / 0) 27%);
     transform: scale(1.25);
     transition: opacity 500ms var(--ease-out), transform 900ms var(--ease-out);
   }

@@ -54,7 +54,7 @@ cd papa && python3 -m http.server 8000   # mic needs http(s), not file://
   starts black and quickly changes to the red, which stays (`.caption.redden`).
 - Wrong-answer treatments (the Pope or the potato), picked in Adjust → "Wrong
   answer" (saved as `papa-wfx`): Rise (red glow rising from the bottom, the
-  user's own idea), Edges (red creeping in from all four edges while the Spanish word shakes), Shake (picture
+  user's own idea), Edges (red gradient creeping in evenly along every side while the Spanish word shakes), Shake (picture
   and caption shake "no"), Bleed (red wash bleeding out from behind the picture), Ripples
   (red rings out of the voice button), Scribble (pencil correction mark across
   the word), Blush (voice button flushes pink and shakes). The stage carries
