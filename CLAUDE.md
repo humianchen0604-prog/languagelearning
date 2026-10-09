@@ -54,16 +54,18 @@ cd papa && python3 -m http.server 8000   # mic needs http(s), not file://
   then "Dad" rise 14u with a blur that clears, then the voice blob blooms in
   (scale 0.8, blur) and the mic appears; about 1.2s in all (`open-*` keyframes,
   backwards fill only so the elements' own styles take over afterwards).
-- Listening wash: while listening, six translucent watercolor layers bloom in
-  one after another where the picture will appear (`svg.smudge`, 250 × 300u
-  centred on (199, 378), about the Dad portrait's size). Each is a wobbly blob
-  (`blobPath`) with a ragged, pigment-rimmed edge (`#wash0-2` filters),
+- First-picture wash: only when the page has no picture yet (first word,
+  after "next", after a miss), very watery soft grey watercolor layers bloom
+  where the picture will appear as soon as the mic is pressed (`svg.smudge`,
+  320 × 384u centred on (199, 370), larger than the portrait). Each is a wobbly
+  blob (`blobPath`) with a ragged, faint-rimmed edge (`#wash0-2` filters),
   multiplied over the others; they drift slowly and swell a little with the
-  voice. When speaking ends they wash away over the painting time while the
-  picture paints in (`washOn()` / `washOff(ms)`). Any picture from the last take fades
-  when the mic is pressed. Adjust → Listening wash: presets Light blue
-  (default, hsl 205 75% 68%), Aqua, Perplexity (#20808D-ish), Indigo, plus hue,
-  saturation, lightness and strength sliders (moving one previews the wash).
+  voice. When the picture is ready they loosen, blur and fade out softly to
+  show it (`washOn()` / `washOff(ms)`). Adjust → First-picture wash: grey
+  lightness, strength, fade-out time (default 1.6s).
+  Between pictures there is NO wash: the old picture stays while listening and
+  dissolves into the new one (the original effect; the user asked to keep it).
+  A blue wash in the picture spot for every take was tried and dropped.
 - Pictures: watercolor cut-outs drawn by a WebGL canvas covering y 90–590 at
   full width (normal blending, so the Bleed layer stays behind it), each in its box (`PICTURES` in the script).
 - Caption: meaning in SF Pro Light 16px at 80%, y 541; Spanish in Regular 28px,
@@ -90,7 +92,7 @@ cd papa && python3 -m http.server 8000   # mic needs http(s), not file://
   (about 85 × 70); the tap-word chips sit below it.
 - Adjust panel: a column beside the phone at ≥980px wide, otherwise a bottom
   sheet behind an "Adjust" button. It holds Try a word, Paper (tooth size, tooth
-  depth, warmth: 0 = `#fafafa` default, 1 = `#f5f2ee`), Painting time, Wrong answer, Listening wash, and Voice visual.
+  depth, warmth: 0 = `#fafafa` default, 1 = `#f5f2ee`), Painting time, Wrong answer, Mic smudges, First-picture wash, and Voice visual.
 
 ## Pictures
 
@@ -119,9 +121,14 @@ the older full watercolors, no longer used by the page.
     (`#blob-goo`) into a wide shape that swells with volume. It stays grey and
     its edge goes paler and blurs out into the paper (CSS blur on `.blob`,
     `--listen-blur`, default 3.5u; Adjust → Voice visual → Edge blur while listening).
-  - Inside while listening: five large, blurred, light pastel drops fill the
-    shape (clipped to it). Looks: **Swirl** (default; clockwise, about one lap
-    per 30s), Marble, Ripples, Ellipses. Motion is slow.
+  - While listening, Looks: **Smudges** (default): five watercolor smudges,
+    each its own shape, bloom in one after another on top of the blob (growing
+    and turning into place, `.blob-smudges`, `#mwash0-2` filters), drift and swell
+    with the voice; colour in Adjust → Mic smudges (Light blue default, Aqua,
+    Perplexity, Indigo, or hue/saturation/lightness/strength). The other looks
+    fill the shape with five blurred pastel drops (clipped to it): Swirl
+    (clockwise, about one lap per 30s), Marble, Ripples; or Ellipses. Motion is
+    slow. Saved look key `papa-look-v3`.
   - Processing (while the picture paints): no loading indicator; the mic stays.
   - The mic uses the **pencil** filter in `--mic-ink #7f7d7a`. The mic
     capsule is filled with that ink at 48% on white; the icon is about 19 × 25u.
@@ -135,8 +142,8 @@ the older full watercolors, no longer used by the page.
   patches; a pen-stroke/hatching reveal of the subject.
 - Fading the old picture out before painting the next.
 - A blue listening state; a rounded-square or speckled/grainy pad; Bean and Cloud
-  blob shapes; a "watercolor smudges" look for the voice blob (smudges are
-  used for the listening wash in the picture spot instead).
+  blob shapes. (An early "watercolor smudges" voice look was rejected, but the
+  user later asked for the current Smudges look.)
 - Mottled/fibrous paper grain; a tiled paper texture.
 - Earlier, pre-Figma look (now replaced by the Figma design): Gaegu
   handwriting, the hand-drawn close X, "Translate: Dad" on one line, the
