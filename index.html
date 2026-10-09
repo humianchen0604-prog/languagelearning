@@ -156,7 +156,8 @@
     inset: 0;
     width: 100%;
     height: 100%;
-    mix-blend-mode: multiply;   /* watercolor is transparent: the paper shows through */
+    /* normal blending: the cut-outs carry their own transparency, and the
+       Bleed wash below must stay behind the picture */
   }
 
   /* ---------- Voice pad ---------- */
@@ -347,8 +348,9 @@
      data-wfx (which one) and data-won (a wrong answer is showing); the
      .won-play class is re-added each time so one-shot motion replays. */
   .wrong { position: absolute; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; }
+  .wrong-under { z-index: 1; }   /* same level as the picture, earlier in the page: behind it */
   .wrong > * { position: absolute; opacity: 0; }
-  .stage { --wrong: 193 77 31; }   /* the caption red, #c14d1f */
+  .stage { --wrong: 193 77 31; --wrong-soft: 226 128 92; }   /* the caption red #c14d1f, and a lighter red for Edges */
 
   /* 1 · Rise: a red glow rising from the bottom of the screen */
   .w-rise {
@@ -363,12 +365,13 @@
   /* 2 · Edges: red creeping in from all four edges */
   .w-edges {
     inset: 0;
-    /* the same depth (~110u) in from every side: 12.6% of the height, 27% of the width */
+    /* the same depth (~135u) in from every side (15.5% of the height, 33% of
+       the width), easing out through many small steps in a lighter red */
     background:
-      linear-gradient(to bottom, rgb(var(--wrong) / 0.38), rgb(var(--wrong) / 0.14) 5.5%, rgb(var(--wrong) / 0) 12.6%),
-      linear-gradient(to top,    rgb(var(--wrong) / 0.38), rgb(var(--wrong) / 0.14) 5.5%, rgb(var(--wrong) / 0) 12.6%),
-      linear-gradient(to right,  rgb(var(--wrong) / 0.38), rgb(var(--wrong) / 0.14) 12%,  rgb(var(--wrong) / 0) 27%),
-      linear-gradient(to left,   rgb(var(--wrong) / 0.38), rgb(var(--wrong) / 0.14) 12%,  rgb(var(--wrong) / 0) 27%);
+      linear-gradient(to bottom, rgb(var(--wrong-soft) / 0.260) 0.00%, rgb(var(--wrong-soft) / 0.208) 1.24%, rgb(var(--wrong-soft) / 0.156) 2.64%, rgb(var(--wrong-soft) / 0.112) 4.19%, rgb(var(--wrong-soft) / 0.078) 5.74%, rgb(var(--wrong-soft) / 0.052) 7.28%, rgb(var(--wrong-soft) / 0.033) 8.83%, rgb(var(--wrong-soft) / 0.018) 10.38%, rgb(var(--wrong-soft) / 0.009) 11.94%, rgb(var(--wrong-soft) / 0.003) 13.48%, rgb(var(--wrong-soft) / 0.000) 15.50%),
+      linear-gradient(to top, rgb(var(--wrong-soft) / 0.260) 0.00%, rgb(var(--wrong-soft) / 0.208) 1.24%, rgb(var(--wrong-soft) / 0.156) 2.64%, rgb(var(--wrong-soft) / 0.112) 4.19%, rgb(var(--wrong-soft) / 0.078) 5.74%, rgb(var(--wrong-soft) / 0.052) 7.28%, rgb(var(--wrong-soft) / 0.033) 8.83%, rgb(var(--wrong-soft) / 0.018) 10.38%, rgb(var(--wrong-soft) / 0.009) 11.94%, rgb(var(--wrong-soft) / 0.003) 13.48%, rgb(var(--wrong-soft) / 0.000) 15.50%),
+      linear-gradient(to right, rgb(var(--wrong-soft) / 0.260) 0.00%, rgb(var(--wrong-soft) / 0.208) 2.64%, rgb(var(--wrong-soft) / 0.156) 5.61%, rgb(var(--wrong-soft) / 0.112) 8.91%, rgb(var(--wrong-soft) / 0.078) 12.21%, rgb(var(--wrong-soft) / 0.052) 15.51%, rgb(var(--wrong-soft) / 0.033) 18.81%, rgb(var(--wrong-soft) / 0.018) 22.11%, rgb(var(--wrong-soft) / 0.009) 25.41%, rgb(var(--wrong-soft) / 0.003) 28.71%, rgb(var(--wrong-soft) / 0.000) 33.00%),
+      linear-gradient(to left, rgb(var(--wrong-soft) / 0.260) 0.00%, rgb(var(--wrong-soft) / 0.208) 2.64%, rgb(var(--wrong-soft) / 0.156) 5.61%, rgb(var(--wrong-soft) / 0.112) 8.91%, rgb(var(--wrong-soft) / 0.078) 12.21%, rgb(var(--wrong-soft) / 0.052) 15.51%, rgb(var(--wrong-soft) / 0.033) 18.81%, rgb(var(--wrong-soft) / 0.018) 22.11%, rgb(var(--wrong-soft) / 0.009) 25.41%, rgb(var(--wrong-soft) / 0.003) 28.71%, rgb(var(--wrong-soft) / 0.000) 33.00%);
     transform: scale(1.25);
     transition: opacity 500ms var(--ease-out), transform 900ms var(--ease-out);
   }
@@ -389,7 +392,7 @@
   .stage[data-wfx="shake"].won-play .caption { animation-delay: 60ms; }
 
   /* 4 · Bleed: a red watercolor wash bleeding out from behind the picture
-     (multiplied, so it reads as behind the watercolor) */
+     (on its own layer under the picture) */
   .w-bleed {
     left: 50%; top: calc(375 * var(--u));
     width: calc(320 * var(--u)); height: calc(340 * var(--u));
@@ -644,6 +647,9 @@
 
       <h1 class="prompt"><span class="prompt-label">Translate</span><span class="prompt-word">Dad</span></h1>
 
+      <!-- Wrong answer · Bleed: sits under the picture -->
+      <div class="wrong wrong-under" aria-hidden="true"><div class="w-bleed"></div></div>
+
       <div class="frame" id="frame">
         <canvas id="paint" role="img" aria-label="Picture of what was said"></canvas>
       </div>
@@ -689,7 +695,6 @@
       <div class="wrong" aria-hidden="true">
         <div class="w-rise"></div>
         <div class="w-edges"></div>
-        <div class="w-bleed"></div>
         <div class="w-ring"></div><div class="w-ring"></div><div class="w-ring"></div>
         <svg class="w-scribble" viewBox="-85 -20 170 40" fill="none" stroke="rgb(193 77 31)" stroke-linecap="round" stroke-linejoin="round">
           <g filter="url(#pencil)">

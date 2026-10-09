@@ -45,7 +45,7 @@ cd papa && python3 -m http.server 8000   # mic needs http(s), not file://
 - Title in SF Pro (system font stack `--sf`): "Translate" Light 20px at 40%
   black, y 130; "Dad" Regular 28px `#302e2a`, y 158.
 - Pictures: watercolor cut-outs drawn by a WebGL canvas covering y 90–590 at
-  full width (`mix-blend-mode: multiply`), each in its box (`PICTURES` in the script).
+  full width (normal blending, so the Bleed layer stays behind it), each in its box (`PICTURES` in the script).
 - Caption: meaning in SF Pro Light 16px at 80%, y 541; Spanish in Regular 28px,
   y 565; colour per word (table above). A miss shows "No te entendí" and the
   transcript in grey. When Dad is said (correct), the caption turns black and a
@@ -54,8 +54,8 @@ cd papa && python3 -m http.server 8000   # mic needs http(s), not file://
   starts black and quickly changes to the red, which stays (`.caption.redden`).
 - Wrong-answer treatments (the Pope or the potato), picked in Adjust → "Wrong
   answer" (saved as `papa-wfx`): Rise (red glow rising from the bottom, the
-  user's own idea), Edges (red gradient creeping in evenly along every side while the Spanish word shakes), Shake (picture
-  and caption shake "no"), Bleed (red wash bleeding out from behind the picture), Ripples
+  user's own idea), Edges (a lighter red gradient creeping in evenly along every side, eased out in small steps, while the Spanish word shakes), Shake (picture
+  and caption shake "no"), Bleed (red wash on a layer under the picture, bleeding out around it), Ripples
   (red rings out of the voice button), Scribble (pencil correction mark across
   the word), Blush (voice button flushes pink and shakes). The stage carries
   `data-wfx` and `data-won`; `.won-play` replays one-shot motion. They clear when
