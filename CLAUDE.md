@@ -266,7 +266,9 @@ the older full watercolors, no longer used by the page.
     blue (`#blobRim` flood `#8fc3d8`) instead of grey.
   - After Dad (correct) the mic swaps straight from listening to a pencil "next" arrow that nudges right once (`.next`,
     `data-next` on the button). Tapping it fades the picture and caption out,
-    moves the progress dot on, and brings the mic back (`goNext()`).
+    moves the progress dot on, and brings the mic back (`goNext()`). The second
+    step asks "Translate / Book" (`WORDS`, `setWord()` crossfades the word); by
+    request it's just the title for now, with no Book pictures or recognition.
 
 ## Tried and rejected (don't bring back without asking)
 

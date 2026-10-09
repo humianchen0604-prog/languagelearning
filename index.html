@@ -1613,7 +1613,7 @@
     if (s === "listening") voice.toggleAttribute("data-next", false);
     if (s === "listening" && typeof wrongOff === "function") wrongOff();
     kickBlob();
-    voice.setAttribute("aria-label", s === "listening" ? "Listening… tap to stop" : s === "processing" ? "Painting" : "Say “Dad” in Spanish");
+    voice.setAttribute("aria-label", s === "listening" ? "Listening… tap to stop" : s === "processing" ? "Painting" : `Say “${typeof wordNow === "string" ? wordNow : "Dad"}” in Spanish`);
   }
 
   /* Volume → ellipse heights. Real mic level when we have one,
@@ -1874,6 +1874,24 @@
      progress dot along, and bring the mic back. (Only "Dad" exists so far,
      so the next step asks for Dad again.) */
   const steps = [...document.querySelectorAll(".progress li")];
+  // the word to translate at each step (only the first two so far; Book has no pictures yet, by request)
+  const WORDS = ["Dad", "Book"];
+  let wordNow = "Dad";
+  function setWord(w) {
+    if (w === wordNow) return;
+    wordNow = w;
+    const el = document.querySelector(".prompt-word");
+    const swap = () => {
+      el.textContent = w;
+      document.querySelector(".phone").setAttribute("aria-label", `Say “${w}” in Spanish`);
+      if (voice.dataset.state === "idle" && !voice.hasAttribute("data-next")) voice.setAttribute("aria-label", `Say “${w}” in Spanish`);
+    };
+    if (reduceMotion || !el.animate) return swap();
+    el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 180, easing: "ease-out", fill: "forwards" }).finished.then(() => {
+      swap();
+      el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 260, easing: "ease-out", fill: "forwards" });
+    });
+  }
   let step = 0;
   async function goNext() {
     voice.toggleAttribute("data-next", false);
@@ -1884,6 +1902,7 @@
     steps[step].removeAttribute("aria-current");
     step = (step + 1) % steps.length;
     steps[step].setAttribute("aria-current", "step");
+    setWord(WORDS[step] || "Dad");
     document.querySelector(".progress").setAttribute("aria-label", `Word ${step + 1} of ${steps.length}`);
     await clearPicture();
   }
