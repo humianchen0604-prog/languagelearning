@@ -7,8 +7,10 @@
      adding ?adjust to the address brings them back anywhere. */
   (function () {
     var h = location.hostname;
-    var tools = h === "localhost" || h === "127.0.0.1" || h === "" || /(^|\.)claude(usercontent)?\.(ai|com)$/.test(h) ||
-      !!window.claude || new URLSearchParams(location.search).has("adjust");
+    // (only by address: a browser extension can define window.claude on any page)
+    var tools = h === "localhost" || h === "127.0.0.1" || h === "" ||
+      /(^|\.)(claude\.ai|claudeusercontent\.com|claude\.site)$/.test(h) ||
+      new URLSearchParams(location.search).has("adjust");
     if (!tools) document.documentElement.classList.add("public");
   })();
 </script>

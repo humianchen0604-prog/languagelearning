@@ -53,7 +53,11 @@ Adjust panel, its toggle and the Restart button are hidden (by request: "when
 pushing it, hide all panels/adjustment and restart prototype button"): a
 script in `<head>` adds `html.public` on any host but localhost/127.0.0.1,
 claude.ai/claudeusercontent (the artifact) or a page with `?adjust`, which
-brings the tools back anywhere.
+brings the tools back anywhere. It decides by address only: it used to also
+keep the tools when `window.claude` existed, and the user still saw them on
+Vercel (a browser extension, e.g. Claude in Chrome, can define it). The user
+said deleting them outright is also fine; hiding was kept so localhost
+tuning still works.
 
 - Real speech: Chrome or Safari via `localhost`, using `webkitSpeechRecognition` with `es-MX`.
   A take never waits on the recogniser forever (the user saw it stuck
