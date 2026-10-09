@@ -493,7 +493,7 @@
   }
   /* the English meaning fades in as soon as speaking ends (black, before the red) */
   .caption.pre-meaning .caption-meaning { animation: fade-in 200ms ease-out both; }
-  /* a wrong answer's caption stays black until its picture is 55% in (redNow()) */
+  /* a wrong answer's caption stays black until its picture is 50% in (redNow()) */
   .caption.red-hold .caption-meaning, .caption.red-hold .caption-word { color: #1a1a1a !important; }
   /* ...so when the picture comes, both lines just turn red and shake */
   .stage.won-play .caption.enter.pre-shown .caption-meaning,
@@ -1341,7 +1341,7 @@
       // a first picture fades in over the whole painting time (in step with the red edges)
       state.s = first ? [easeInOut(t), easeInOut(stage(t, 0.05, 0.95))]
                       : [easeOut(stage(t, 0.28, 0.5)), easeInOut(stage(t, 0.34, 0.62))];
-      if (onAlmost && state.s[0] >= 0.55) { onAlmost(); onAlmost = null; }   // the picture is 55% in
+      if (onAlmost && state.s[0] >= 0.5) { onAlmost(); onAlmost = null; }   // the picture is 50% in
     }, alive, onStart);
     if (onAlmost && alive()) onAlmost();
   }
@@ -1370,7 +1370,7 @@
     draw(); washHandoff();   // the canvas draws the grey now; hide the SVG wash in the same frame
     await tween(settings.revealTime * 1000, (t) => {
       state.reveal.t = t;
-      if (onAlmost && t >= 0.55) { onAlmost(); onAlmost = null; }   // the picture is 55% in
+      if (onAlmost && t >= 0.5) { onAlmost(); onAlmost = null; }   // the picture is 50% in
     }, alive, onStart);
     if (onAlmost && alive()) onAlmost();
     if (!alive()) return;
@@ -1864,7 +1864,7 @@
     const greyLeft = reveal === "fade" && (washShown || washExit) ? settings.loadFade * settings.loadStart : 0;
     const painted = reveal !== "fade" && washShown ? Math.max(0, washPainted() - performance.now()) / 1000 : 0;
     const edgeSec = (greyLeft + painted + (reveal === "fade" ? settings.paintTime : settings.revealTime)) / 1.1;
-    // its caption stays black (red-hold) until the picture is 55% in, then turns red and shakes (by request)
+    // its caption stays black (red-hold) until the picture is 50% in, then turns red and shakes (by request)
     stageEl.style.setProperty("--red-delay", "0ms");
     showHeard(text, key);
     if (wrong && !reduceMotion) caption.classList.add("red-hold");
@@ -1891,7 +1891,7 @@
         handoff = true;
       }
     }
-    // a wrong answer's caption turns red and shakes "no" once its picture is 55% in
+    // a wrong answer's caption turns red and shakes "no" once its picture is 50% in
     const almost = wrong ? () => { redNow(); shakeNo(); } : null;
     await (handoff ? revealPaint(key, REVEALS.indexOf(reveal), null, almost) : paint(key, null, almost));
     setState("idle");
