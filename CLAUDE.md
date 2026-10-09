@@ -122,10 +122,13 @@ the older full watercolors, no longer used by the page.
     its edge goes paler and blurs out into the paper (CSS blur on `.blob`,
     `--listen-blur`, default 3.5u; Adjust → Voice visual → Edge blur while listening).
   - While listening, Looks: **Smudges** (default): five watercolor smudges,
-    each its own shape, bloom in one after another on top of the blob (growing
-    and turning into place, `.blob-smudges`, `#mwash0-2` filters), drift and swell
-    with the voice; colour in Adjust → Mic smudges (Light blue default, Aqua,
-    Perplexity, Indigo, or hue/saturation/lightness/strength). The other looks
+    each its own shape, stacked on top of each other in the centre of the blob
+    (largest first), bloom in one after another (growing and turning into
+    place, `.blob-smudges`, `#mwash0-2` filters), drift a little and swell
+    with the voice; light grey layering by default (hsl 30 5% 74%). Colour in
+    Adjust → Mic smudges (Light gray default, Light blue, Aqua, Perplexity,
+    Indigo, or hue/saturation/lightness/strength). Settings key is now
+    `papa-settings-v9` (the v8 blue smudge colour is dropped on migration). The other looks
     fill the shape with five blurred pastel drops (clipped to it): Swirl
     (clockwise, about one lap per 30s), Marble, Ripples; or Ellipses. Motion is
     slow. Saved look key `papa-look-v3`.
