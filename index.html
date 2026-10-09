@@ -1575,8 +1575,11 @@
   async function finish(text) {
     stopWaves();
     const key = classify(text || "");
-    showHeard(text, key);
-    if (key === "pope" || key === "potato") wrongOn(); else wrongOff();
+    const wrong = key === "pope" || key === "potato";
+    // a wrong answer's red (edges, red shaking caption) waits for its picture
+    // to start painting in; everything else shows straight away
+    if (!wrong) showHeard(text, key);
+    wrongOff();
     if (!key) { endTakeEmpty(); setState("idle"); return; }
     // correct answer: the button goes straight from listening to the "next" arrow
     if (key === "dad") voice.toggleAttribute("data-next", true);
@@ -1588,6 +1591,7 @@
       washOff(ms);
       await new Promise((r) => setTimeout(r, reduceMotion ? 0 : ms * 0.5));
     }
+    if (wrong) { showHeard(text, key); wrongOn(); }
     await paint(key);
     setState("idle");
     if (key === "dad") voice.setAttribute("aria-label", "Next word");

@@ -98,7 +98,10 @@ user double-clicks it on their Mac.
   glare of the blue sweeps across it once, starting 0.5s after the word appears (`.caption.shine`).
   For the Pope and the potato (wrong answers) there is no glare: the caption
   starts black and quickly changes to the red, which stays (`.caption.redden`).
-- Wrong answer (the Pope or the potato): **Edges** only. A soft colour creeps
+- Wrong answer (the Pope or the potato): **Edges** only. It waits for the picture: the
+  red edges and the red, shaking caption start only when the picture starts
+  painting in (after the first-picture wash's half fade), never over the grey
+  wash (by request); until then the live transcript stays in black. A soft colour creeps
   in evenly along every side (eased in many small steps) while both caption
   lines appear (no rise) and shake straight away "no"; the voice button turns 70% opaque so the colour shows
   through. Adjust → Wrong answer: Edge hue (0–360°, default 354° = soft strawberry
