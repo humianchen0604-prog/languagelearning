@@ -2043,29 +2043,43 @@
     const fake = (now) => speaking ? syntheticVoice("la papa", t0)((now - t0) % 1.2 + t0) : [0.05, 0.05, 0.05, 0.05, 0.05];
     startWaves(fake);
     rec.onspeechstart = () => { speaking = true; t0 = performance.now() / 1000; };
-    rec.onspeechend = () => { speaking = false; exitWash(); };   // the word is said: the grey starts leaving now
     const me = rec;
+    // the take ends with this transcript (a final result, or a recognised interim one)
+    const settle = (text) => {
+      if (rec !== me) return;
+      gotResult = true; rec = null; clearTimeout(nudge);
+      try { me.stop(); } catch (err) {}
+      releaseMic();
+      finish(text);
+    };
+    // Some browsers keep listening (or never send a final result) after a short
+    // word, which left the page stuck listening: once the speaker has stopped,
+    // use the last recognised word, or ask the recogniser to wrap up.
+    let lastHit = "", nudge = 0;
+    const wrapUp = () => {
+      exitWash();   // the word is said: the grey starts leaving now
+      clearTimeout(nudge);
+      nudge = setTimeout(() => {
+        if (rec !== me) return;
+        if (lastHit) settle(lastHit);
+        else { try { me.stop(); } catch (err) {} }
+      }, 700);
+    };
+    rec.onspeechend = () => { speaking = false; wrapUp(); };
     rec.onresult = (e) => {
       if (rec !== me) return;   // this take already finished (e.g. Dad from an interim result)
       const r = e.results[e.results.length - 1];
+      const alts = [];
+      for (let j = 0; j < r.length; j++) alts.push(r[j].transcript);
+      const hit = alts.find((t) => classify(t));
       if (!r.isFinal) {
-        showLive(r[0].transcript);
+        showLive(alts[0]);
+        if (hit) lastHit = hit;
         // Dad starts painting as soon as "papá" is recognised (by request), without waiting for the final result
-        for (let j = 0; j < r.length; j++) if (classify(r[j].transcript) === "dad") {
-          gotResult = true;
-          const take = rec; rec = null; try { take.stop(); } catch (err) {}
-          releaseMic();
-          finish(r[j].transcript);
-          return;
-        }
+        if (hit && classify(hit) === "dad") settle(hit);
         return;
       }
-      gotResult = true;
-      let pick = r[0].transcript;
-      for (let j = 0; j < r.length; j++) if (classify(r[j].transcript)) { pick = r[j].transcript; break; }
-      const take = rec; rec = null; try { take.stop(); } catch (err) {}
-      releaseMic();
-      finish(pick);
+      settle(hit || alts[0]);
     };
     rec.onerror = (e) => {
       if (["not-allowed", "service-not-allowed", "audio-capture", "network"].includes(e.error)) {
@@ -2074,18 +2088,23 @@
         say.hidden = false;
       }
     };
-    rec.onend = () => { if (!gotResult) { stopListening(); showCaption("none", "No te escuché. Tap the mic and try again.", ""); } };
+    rec.onend = () => {
+      if (rec !== me || gotResult) return;
+      if (lastHit) { settle(lastHit); return; }   // ended without a final result: use what it heard
+      clearTimeout(nudge);
+      stopListening(); showCaption("none", "No te escuché. Tap the mic and try again.", "");
+    };
     try { rec.start(); } catch (e) { stopListening(); say.hidden = false; return; }
     // Drive the ellipses from the real volume when the mic level is available
     const real = await micLevel();
-    if (real && voice.dataset.state === "listening") { level = real; watchSpeechEnd(real); }
+    if (real && voice.dataset.state === "listening" && rec === me) { level = real; watchSpeechEnd(real, wrapUp); }
   }
 
   /* Follow the speaker's own voice from the microphone: once they have spoken
      and gone quiet for a moment, the word is said, so the grey starts leaving
      now (the picture and the red follow it), instead of waiting for the
      recogniser's later "speech end"/result signals. */
-  function watchSpeechEnd(read) {
+  function watchSpeechEnd(read, done = exitWash) {
     let heard = false, quietAt = 0;
     const tick = () => {
       if (voice.dataset.state !== "listening") return;
@@ -2093,7 +2112,7 @@
       if (v > 0.16) { heard = true; quietAt = 0; }                 // voice
       else if (heard && v < 0.07) {                                 // quiet after speaking
         if (!quietAt) quietAt = now;
-        else if (now - quietAt > 220) { exitWash(); return; }
+        else if (now - quietAt > 220) { done(); return; }
       }
       requestAnimationFrame(tick);
     };

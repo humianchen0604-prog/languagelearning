@@ -56,6 +56,13 @@ claude.ai/claudeusercontent (the artifact) or a page with `?adjust`, which
 brings the tools back anywhere.
 
 - Real speech: Chrome or Safari via `localhost`, using `webkitSpeechRecognition` with `es-MX`.
+  A take never waits on the recogniser forever (the user saw it stuck
+  listening with "papá" on screen): `listen()` ends it with `settle()` on a
+  final result, on an interim one that says Dad, 700ms after the speaker
+  stops (`wrapUp()`, from the volume or `onspeechend`) using the last
+  recognised word (or `stop()` to make the recogniser wrap up), or on
+  `onend` with the last recognised word. Tested with a fake recogniser for
+  interim-only, final-only, no-final and silent takes.
 - No speech API, or the mic is refused: tapping the mic shows three tap-words.
   The Adjust panel's "Try a word" buttons run the whole sequence without speaking.
 - The published claude.ai artifact can't use the microphone, so it always uses
