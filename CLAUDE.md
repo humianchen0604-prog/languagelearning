@@ -48,7 +48,18 @@ cd papa && python3 -m http.server 8000   # mic needs http(s), not file://
 - Title in SF Pro (system font stack `--sf`): "Translate" Light 20px at 40%
   black, y 130; "Dad" Regular 28px `#302e2a`, y 158.
   Before the first word (and after "next") the title sits 60u above the vertical
-  centre of the page (`.stage[data-intro]`); it glides up to y 130 when a picture appears.
+  centre of the page (`.stage[data-intro]`); it glides up to y 130 as soon as
+  the mic is pressed (`beginTake()`), and goes back if the take ends with no picture.
+- Listening wash: while listening, six translucent watercolor layers bloom in
+  one after another where the picture will appear (`svg.smudge`, 250 × 300u
+  centred on (199, 378), about the Dad portrait's size). Each is a wobbly blob
+  (`blobPath`) with a ragged, pigment-rimmed edge (`#wash0-2` filters),
+  multiplied over the others; they drift slowly and swell a little with the
+  voice. When speaking ends they wash away over the painting time while the
+  picture paints in (`washOn()` / `washOff(ms)`). Any picture from the last take fades
+  when the mic is pressed. Adjust → Listening wash: presets Light blue
+  (default, hsl 205 75% 68%), Aqua, Perplexity (#20808D-ish), Indigo, plus hue,
+  saturation, lightness and strength sliders (moving one previews the wash).
 - Pictures: watercolor cut-outs drawn by a WebGL canvas covering y 90–590 at
   full width (normal blending, so the Bleed layer stays behind it), each in its box (`PICTURES` in the script).
 - Caption: meaning in SF Pro Light 16px at 80%, y 541; Spanish in Regular 28px,
@@ -75,7 +86,7 @@ cd papa && python3 -m http.server 8000   # mic needs http(s), not file://
   (about 85 × 70); the tap-word chips sit below it.
 - Adjust panel: a column beside the phone at ≥980px wide, otherwise a bottom
   sheet behind an "Adjust" button. It holds Try a word, Paper (tooth size, tooth
-  depth, warmth: 0 = `#fafafa` default, 1 = `#f5f2ee`), Painting time, and Voice visual.
+  depth, warmth: 0 = `#fafafa` default, 1 = `#f5f2ee`), Painting time, Wrong answer, Listening wash, and Voice visual.
 
 ## Pictures
 
@@ -102,7 +113,8 @@ the older full watercolors, no longer used by the page.
   - Single **pebble** (outline tilted 12° clockwise; the icons stay upright), near-white grey `#efeeec`, soft watercolor edge.
   - Listening: satellite blobs slide out and merge via a gooey SVG filter
     (`#blob-goo`) into a wide shape that swells with volume. It stays grey and
-    its edge goes paler.
+    its edge goes paler and blurs out into the paper (CSS blur on `.blob`,
+    `--listen-blur`, default 3.5u; Adjust → Voice visual → Edge blur while listening).
   - Inside while listening: five large, blurred, light pastel drops fill the
     shape (clipped to it). Looks: **Swirl** (default; clockwise, about one lap
     per 30s), Marble, Ripples, Ellipses. Motion is slow.
@@ -119,7 +131,8 @@ the older full watercolors, no longer used by the page.
   patches; a pen-stroke/hatching reveal of the subject.
 - Fading the old picture out before painting the next.
 - A blue listening state; a rounded-square or speckled/grainy pad; Bean and Cloud
-  blob shapes; a "watercolor smudges" look.
+  blob shapes; a "watercolor smudges" look for the voice blob (smudges are
+  used for the listening wash in the picture spot instead).
 - Mottled/fibrous paper grain; a tiled paper texture.
 - Earlier, pre-Figma look (now replaced by the Figma design): Gaegu
   handwriting, the hand-drawn close X, "Translate: Dad" on one line, the
