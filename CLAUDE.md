@@ -237,7 +237,12 @@ the older full watercolors, no longer used by the page.
   (ease-in-out), in step with the wrong-answer edges. The correct answer
   (Dad) comes in faster, over 0.7s whatever the painting / reveal time
   (`DAD_SEC`, passed to `paint()` / `revealPaint()` as a speed; by request,
-  it felt too slow; first tried at half the time, ~0.5s). `tween()` starts its
+  it felt too slow; first tried at half the time, ~0.5s). It also starts 40%
+  sooner after the word (`DAD_LEAD` 0.6, by request): the demo result comes
+  102ms after the word instead of 170ms; Underpainting's colour starts at
+  8.2% of the reveal (not 13.6%) and its grey is gone by 14.4% (not 24%),
+  via the shader's `uLead`; with Fade, the picture starts once the grey is
+  42% out instead of 70% (`washLead` in `exitWash()`). `tween()` starts its
   clock on the first drawn frame (a first-time texture upload used to stall
   it, so a wrong answer's picture, usually the first of a session, jumped in
   partway and felt harsher than Dad's); the red and the shake start on that

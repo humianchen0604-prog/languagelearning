@@ -1099,6 +1099,7 @@
     // first-picture reveal styles (uMode 1-10): the grey wash (tWash, in
     // uBox) turns into the picture over uT 0..1; uC is the picture's centre
     uniform float uMode, uT, uTime;
+    uniform float uLead;   // Underpainting's start offsets (1, or DAD_LEAD for Dad: 40% sooner)
     uniform vec4 uGrey, uBox;
     uniform vec2 uC;
 
@@ -1133,11 +1134,13 @@
         vec2 d = q - c;
         float wav = sin(d.x * 9. + sin(d.y * 7.) * 1.6) * sin(d.y * 8. + sin(d.x * 6.) * 1.4) + .5 * sin(d.x * 4. - d.y * 5. + 1.);
         float f = length(d) * 2.6 + .2 + wav * .12;
-        // the grey fades out first (by t .24); the colour starts soaking in a little after (from t .136)
-        float ti = clamp((t - .136) / .864, 0., 1.);
+        // the grey fades out first (by t .24); the colour starts soaking in a little after (from t .136),
+        // both 40% sooner for Dad (uLead)
+        float st = .136 * uLead;
+        float ti = clamp((t - st) / (1. - st), 0., 1.);
         float r = max(smoothstep(f - .35, f, ti * 2.2), smoothstep(.85, 1., ti));
         vec4 im = pic(v, smoothstep(.35, 1., ti)) * r;
-        o = over(im, g * (1. - smoothstep(0., .24, t)));
+        o = over(im, g * (1. - smoothstep(0., .24 * uLead, t)));
       } else if (uMode < 2.5) {     // 2 wet-into-wet bloom from the centre, pushing the grey out
         float f = length(q - c) * 2.4 + (fbm(q * 6. + 3.) - .45) * .9;
         float front = t * 2. - .1;
@@ -1231,7 +1234,7 @@
     const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
     const loc = gl.getAttribLocation(prog, "p"); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-    [...TEX_UNITS, "uS", "uOut", "uMode", "uT", "uTime", "uGrey", "uBox", "uC"].forEach((k) => uni[k] = gl.getUniformLocation(prog, k));
+    [...TEX_UNITS, "uS", "uOut", "uMode", "uT", "uTime", "uLead", "uGrey", "uBox", "uC"].forEach((k) => uni[k] = gl.getUniformLocation(prog, k));
     TEX_UNITS.forEach((k, i) => { gl.uniform1i(uni[k], i); tex[k] = gl.createTexture(); });
     return true;
   })();
@@ -1320,6 +1323,7 @@
 
   let paintToken = 0;
   const DAD_SEC = 0.7;   // Dad's picture comes in over 0.7s, whatever the painting / reveal time
+  const DAD_LEAD = 0.6;  // and starts 40% sooner after the word (by request)
   async function paint(key, onStart, onAlmost, speed = 1) {
     const token = ++paintToken, alive = () => token === paintToken;
     const prev = state.current;
@@ -1365,6 +1369,7 @@
     bind("A", layers); bind("B", layers); upload("tGlow", layers.glow);
     const [r, g, b] = hslRgb(30, 0.05, settings.loadLight);
     gl.uniform4f(uni.uGrey, r, g, b, Math.min(1, 0.7 * settings.loadAlpha));
+    gl.uniform1f(uni.uLead, key === "dad" ? DAD_LEAD : 1);
     gl.uniform4f(uni.uBox, 67 / 402, (245 - AREA.y) / AREA.h, 264 / 402, 250 / AREA.h);   // the SVG wash's box (keep in step with .smudge)
     const [bl, bt, bw, bh] = PICTURES[key].box;
     gl.uniform2f(uni.uC, (bl + bw / 2) / 402, (bt + bh / 2 - AREA.y) / AREA.h);
@@ -1727,7 +1732,7 @@
   function beginTake() {
     const gliding = stageEl.hasAttribute("data-intro");
     stageEl.removeAttribute("data-intro");
-    clearTimeout(washPreview); clearTimeout(washDelay); washExit = null; washHurry = false;
+    clearTimeout(washPreview); clearTimeout(washDelay); washExit = null; washHurry = false; washLead = 1;
     // a picture from the last take (e.g. a wrong answer) fades out and the grey
     // wash comes back, so every new picture is generated the same way. When the
     // title is gliding up, the wash waits until it is 90% of the way there.
@@ -1749,7 +1754,7 @@
   let washExit = null;
   const sleep = (ms) => new Promise((r) => setTimeout(r, reduceMotion ? 0 : ms));
   // hurry (a wrong answer): leave at once, even mid fade-in, or skip a wash not yet shown
-  let washHurry = false;
+  let washHurry = false, washLead = 1;
   function exitWash(hurry = false) {
     if (hurry) washHurry = true;
     if (washExit) return washExit;
@@ -1761,7 +1766,8 @@
       while (!washHurry && performance.now() < washPainted()) await sleep(30);
       const ms = settings.loadFade * 1000;
       washOff(ms);
-      await sleep(ms * settings.loadStart);
+      // the picture may start once the grey is this far out (sooner for Dad: washLead, set by finish())
+      while (!reduceMotion && performance.now() < washOffAt + ms * settings.loadStart * washLead) await sleep(16);
     })();
     return washExit;
   }
@@ -1885,6 +1891,7 @@
       wrongOn(edgeSec);
     }
     if (reveal === "fade") {
+      if (key === "dad") washLead = DAD_LEAD;   // Dad's picture follows the grey 40% sooner
       if (washShown || washExit || washDelay) await exitWash(wrong);   // the grey is gone (it may have started leaving as the word was ~95% said)
     } else {
       washNow();
@@ -1969,7 +1976,8 @@
     // and the result follows a moment later
     const said = 250 + (syl.length - 1) * 300 + 180;
     liveTimers.push(setTimeout(exitWash, said));
-    simTimer = setTimeout(() => finish(phrase), said + 170);
+    // (Dad's result comes 40% sooner: DAD_LEAD)
+    simTimer = setTimeout(() => finish(phrase), said + Math.round(170 * (classify(phrase) === "dad" ? DAD_LEAD : 1)));
   }
   document.querySelectorAll("[data-say]").forEach((b) => b.addEventListener("click", (e) => { e.stopPropagation(); simulate(b.dataset.say); }));
 
