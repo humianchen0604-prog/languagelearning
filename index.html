@@ -590,6 +590,7 @@
   .file-btn { display: inline-flex; align-items: center; gap: 6px; width: max-content; }
   .file-btn input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
   .note { margin: 0; color: var(--ink-soft); font-size: 12px; }
+  .save-text { width: 100%; box-sizing: border-box; font: 11px/1.4 ui-monospace, Menlo, monospace; color: var(--panel-ink); background: transparent; border: 1px solid var(--panel-line); border-radius: 8px; padding: 8px; resize: vertical; }
   .hue-strip {
     height: 6px;
     border-radius: 3px;
@@ -854,19 +855,20 @@
   <section class="group">
     <h3>Mic smudges (listening)</h3>
     <div class="seg" id="washPresets">
-      <button type="button" data-wash="gray" aria-pressed="true">Light gray</button>
+      <button type="button" data-wash="dad" aria-pressed="true">Dad blue</button>
+      <button type="button" data-wash="gray" aria-pressed="false">Light gray</button>
       <button type="button" data-wash="sky" aria-pressed="false">Light blue</button>
       <button type="button" data-wash="aqua" aria-pressed="false">Aqua</button>
       <button type="button" data-wash="perplexity" aria-pressed="false">Perplexity</button>
       <button type="button" data-wash="indigo" aria-pressed="false">Indigo</button>
     </div>
-    <div class="row"><label for="washHue">Hue</label><output for="washHue"></output><input id="washHue" type="range" min="0" max="360" step="1" value="30"></div>
+    <div class="row"><label for="washHue">Hue</label><output for="washHue"></output><input id="washHue" type="range" min="0" max="360" step="1" value="196"></div>
     <div class="hue-strip" aria-hidden="true"></div>
-    <div class="row"><label for="washSat">Saturation</label><output for="washSat"></output><input id="washSat" type="range" min="0" max="1" step="0.01" value="0.05"></div>
-    <div class="row"><label for="washLight">Lightness</label><output for="washLight"></output><input id="washLight" type="range" min="0.2" max="0.97" step="0.01" value="0.88"></div>
-    <div class="row"><label for="washAlpha">Strength</label><output for="washAlpha"></output><input id="washAlpha" type="range" min="0" max="2" step="0.01" value="1"></div>
+    <div class="row"><label for="washSat">Saturation</label><output for="washSat"></output><input id="washSat" type="range" min="0" max="1" step="0.01" value="0.6"></div>
+    <div class="row"><label for="washLight">Lightness</label><output for="washLight"></output><input id="washLight" type="range" min="0.2" max="0.97" step="0.01" value="0.78"></div>
+    <div class="row"><label for="washAlpha">Colour density</label><output for="washAlpha"></output><input id="washAlpha" type="range" min="0" max="3" step="0.01" value="1"></div>
     <div class="row"><label for="msmSoft">Edge softness</label><output for="msmSoft"></output><input id="msmSoft" type="range" min="0" max="8" step="0.1" value="3.5"></div>
-    <p class="note">Shown with Voice visual → Smudges.</p>
+    <p class="note">Shown with Voice visual → Smudges. Moving a slider previews them on the button.</p>
   </section>
 
   <section class="group">
@@ -890,6 +892,13 @@
     <div class="row"><label for="listenBlur">Edge blur while listening</label><output for="listenBlur"></output><input id="listenBlur" type="range" min="0" max="10" step="0.1" value="3.5"></div>
   </section>
 
+  <section class="group">
+    <h3>Save</h3>
+    <div class="seg"><button type="button" id="saveSettings">Save settings</button></div>
+    <p class="note" id="saveNote">Saves every setting above as a file (papa-settings.json) and copies it, so you can send it to Claude to make them the defaults.</p>
+    <textarea class="save-text" id="saveText" readonly hidden rows="8" aria-label="Saved settings"></textarea>
+  </section>
+
 </aside>
 
 <script>
@@ -898,11 +907,15 @@
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   /* ---------------- Settings (remembered per browser) ---------------- */
-  const KEY = "papa-settings-v14";
+  const KEY = "papa-settings-v15";
   const ids = ["toothSize", "toothDepth", "warmth", "paintTime", "edgeHue", "edgeAlpha", "edgeTime", "washHue", "washSat", "washLight", "washAlpha", "listenBlur", "loadLight", "loadAlpha", "loadFade", "msmSoft", "loadBlur", "loadPaint", "edgeTex"];
   let saved = {};
   try {
     saved = JSON.parse(localStorage.getItem(KEY) || "null");
+    if (!saved) {   // v15: mic smudges are Dad's blue by default
+      saved = JSON.parse(localStorage.getItem("papa-settings-v14") || "null");
+      if (saved) ["washHue", "washSat", "washLight"].forEach((k) => delete saved[k]);
+    }
     if (!saved) {   // v14: the defined wavy edge with a denser rim is back (Edge rim 100%)
       saved = JSON.parse(localStorage.getItem("papa-settings-v13") || "null");
       if (saved) delete saved.edgeTex;
@@ -1152,7 +1165,7 @@
   function apply(id) {
     if (["toothSize", "toothDepth", "warmth"].includes(id)) applyPaper();
     if (id === "edgeHue" || id === "edgeAlpha" || id === "edgeTime" || id === "edgeTex") applyEdges();
-    if (id.startsWith("wash")) markWashPreset();
+    if (id.startsWith("wash") || id === "msmSoft") { if (id.startsWith("wash")) markWashPreset(); previewMic(); }
     if (id.startsWith("load")) previewWash();
     if (id === "listenBlur") applyListenBlur();
     if (id === "msmSoft") applyMsmSoft();
@@ -1342,8 +1355,17 @@
     // the edge goes paler while listening, and back as the blob settles
     blobRim.setAttribute("flood-opacity", (0.32 - 0.22 * e).toFixed(3));
   }
+  // Adjust: show the mic smudges for a moment while their sliders move
+  let micPreviewUntil = 0;
+  function previewMic() {
+    if (voice.dataset.state !== "idle" || look !== "smudges") return;
+    const now = performance.now() / 1000;
+    if (now > micPreviewUntil) listenAt = now;
+    micPreviewUntil = now + 1.8;
+    kickBlob();
+  }
   function blobTick() {
-    const target = voice.dataset.state === "listening" ? 1 : 0;
+    const target = voice.dataset.state === "listening" || performance.now() / 1000 < micPreviewUntil ? 1 : 0;
     spread = reduceMotion ? target : spread + (target - spread) * 0.09;
     renderBlob();
     if (target === 1 || Math.abs(target - spread) > 0.002) blobRaf = requestAnimationFrame(blobTick);
@@ -1389,7 +1411,7 @@
      fades away completely, then the picture paints in. Between pictures
      there is no wash (the old dissolve). */
   const smudge = $("#smudge"), washFill = $("#washFill"), revA = $("#revA"), revB = $("#revB");
-  const WASH_PRESETS = { gray: [30, 0.05, 0.88], sky: [205, 0.75, 0.68], aqua: [180, 0.6, 0.56], perplexity: [186, 0.63, 0.4], indigo: [230, 0.75, 0.66] };
+  const WASH_PRESETS = { dad: [196, 0.6, 0.78], gray: [30, 0.05, 0.88], sky: [205, 0.75, 0.68], aqua: [180, 0.6, 0.56], perplexity: [186, 0.63, 0.4], indigo: [230, 0.75, 0.66] };
   let washShown = false, washVis = 0, washFrom = 0, washOnAt = 0, washOffAt = 0, washOffMs = 1, washRaf = 0;
   const FRONT = 0.14;   // width of the soft paint front (fraction of the diagonal)
   function washPainted() { return washOnAt + settings.loadPaint * 1000; }   // when the paint-in ends
@@ -1677,6 +1699,30 @@
     }
     if (speechWorks) listen();
     else say.hidden = !say.hidden;
+  });
+
+  /* ---------------- Save settings ----------------
+     Downloads every Adjust setting (plus the voice look) as JSON and copies
+     it, and shows it in the panel as a fallback, so the user can send their
+     tuned version to Claude to become the defaults. */
+  $("#saveSettings").addEventListener("click", async () => {
+    const text = JSON.stringify({ prototype: "Papá o la papa", savedAt: new Date().toISOString(), look, settings: { ...settings } }, null, 2);
+    const ta = $("#saveText");
+    ta.value = text; ta.hidden = false;
+    let copied = false, downloaded = false;
+    try { await navigator.clipboard.writeText(text); copied = true; } catch (e) {
+      try { ta.select(); copied = document.execCommand("copy"); } catch (e2) {}
+    }
+    try {
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob([text], { type: "application/json" }));
+      a.download = "papa-settings.json";
+      document.body.append(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+      downloaded = true;
+    } catch (e) {}
+    $("#saveNote").textContent = (downloaded ? "Saved papa-settings.json" : "Saved") + (copied ? " and copied it." : ".") +
+      " Send the file (or paste the text below) to Claude to make these the defaults.";
   });
 
   /* ---------------- Panel toggle (narrow screens) ---------------- */

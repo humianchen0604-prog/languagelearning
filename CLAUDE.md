@@ -119,6 +119,14 @@ user double-clicks it on their Mac.
   sheet behind an "Adjust" button. It holds Try a word, Paper (tooth size, tooth
   depth, warmth: 0 = `#fafafa` default, 1 = `#f5f2ee`), Painting time, Wrong answer, Mic smudges, First-picture wash, and Voice visual.
 
+## Saving tuned settings
+
+Adjust → Save → **Save settings** downloads `papa-settings.json` (every
+slider's value plus the voice look), copies it, and shows it in the panel.
+When the user sends one, make those values the defaults: set each input's
+`value` attribute (and the look's default), then bump the settings key so the
+new defaults show.
+
 ## Pictures
 
 `assets/{potato,pope,dad}-cutout.png` are split from the user's
@@ -152,10 +160,12 @@ the older full watercolors, no longer used by the page.
     watercolor smudges (`PEBBLE.radii`, jittered), stacked in its centre
     largest first, bloom in one after another on top (growing and turning a
     little into place, `.blob-smudges`, `#mwash0-2` filters), drift slightly
-    and swell with the voice. Light grey layering by default (hsl 30 5% 88%),
-    with soft, blurred-out edges (Edge softness, default 3.5). Adjust → Mic
-    smudges: Light gray default, Light blue, Aqua, Perplexity, Indigo, or
-    hue/saturation/lightness/strength. Settings key `papa-settings-v14` (older
+    and swell with the voice. Light blue in the hue of Dad's glare by default
+    ("Dad blue", hsl 196 60% 78%), with soft, blurred-out edges (Edge
+    softness, default 3.5). Adjust → Mic smudges: Dad blue (default), Light
+    gray, Light blue, Aqua, Perplexity, Indigo, or hue/saturation/lightness,
+    Colour density (0–300%, default 100%) and Edge softness. Moving one of
+    these sliders previews the smudges on the button for ~2s (`previewMic()`). Settings key `papa-settings-v15` (older
     wash and smudge values are dropped on migration so new defaults show). The other looks
     fill the shape with five blurred pastel drops (clipped to it): Swirl
     (clockwise, about one lap per 30s), Marble, Ripples; or Ellipses. Motion is
