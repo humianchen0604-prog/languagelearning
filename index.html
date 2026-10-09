@@ -1866,7 +1866,11 @@
       // the edges run 1.1x faster than the picture: they finish a little before it does
       const greyLeft = reveal === "fade" && (washShown || washExit) ? settings.loadFade * settings.loadStart : 0;
       const painted = reveal !== "fade" && washShown ? Math.max(0, washPainted() - performance.now()) / 1000 : 0;
-      wrongOn((greyLeft + painted + (reveal === "fade" ? settings.paintTime : settings.revealTime)) / 1.1);
+      const edgeSec = (greyLeft + painted + (reveal === "fade" ? settings.paintTime : settings.revealTime)) / 1.1;
+      wrongOn(edgeSec);
+      // the caption shakes "no" a quarter of the way into the red edges' animation
+      const won = stageEl;
+      setTimeout(() => { if (won.hasAttribute("data-won")) shakeNo(); }, reduceMotion ? 0 : edgeSec * 1000 * 0.25);
     }
     if (reveal === "fade") {
       if (washShown || washExit || washDelay) await exitWash(wrong);   // the grey is gone (it may have started leaving as the word was ~95% said)
@@ -1878,9 +1882,7 @@
         handoff = true;
       }
     }
-    // a wrong answer's caption shakes "no" once its picture is at least 80% in
-    const almost = wrong ? shakeNo : null;
-    await (handoff ? revealPaint(key, REVEALS.indexOf(reveal), null, almost) : paint(key, null, almost));
+    await (handoff ? revealPaint(key, REVEALS.indexOf(reveal)) : paint(key));
     setState("idle");
     if (key === "dad") voice.setAttribute("aria-label", "Next word");
   }
