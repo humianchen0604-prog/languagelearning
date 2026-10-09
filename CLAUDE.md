@@ -147,9 +147,11 @@ user double-clicks it on their Mac.
   red edges start creeping in (over the grey's exit plus the painting time, so
   they finish with the picture), and the grey wash leaves straight away, even
   mid fade-in (`exitWash(true)`, `washHurry`), so the picture follows quickly.
+  The sideways shake waits until the picture is at least 80% painted in
+  (`shakeNo()`, a WAAPI animation fired from the paint step; by request).
   A soft colour creeps
   in evenly along every side (eased in many small steps) ; the word turns red, the English meaning fades in at 40ms
-  (200ms) and both shake at 300ms (the `pre-meaning`/`pre-shown` classes are
+  (200ms), and both shake once the picture is 80% in (the `pre-meaning`/`pre-shown` classes are
   left over from when it waited, now unused); the voice button turns 70% opaque so the colour shows
   through. Adjust → Wrong answer: Edge hue (0–360°, default 354° = soft strawberry
   red hsl(354 70% 62%); it was 16°, a tomato red, until the user asked for strawberry), Edge strength (0–250%), and a Show wrong answer button.

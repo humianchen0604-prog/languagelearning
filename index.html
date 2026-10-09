@@ -478,25 +478,25 @@
     68% { transform: translateX(calc(4 * var(--u))); }
     84% { transform: translateX(calc(-2 * var(--u))); }
   }
-  /* wrong answers don't rise: they appear and shake straight away */
-  /* order: the Spanish word shows (turning red), then the English meaning
-     fades in above it, then both shake "no" together */
+  /* wrong answers don't rise: the Spanish word turns red and the English
+     meaning fades in at once; both shake "no" (shakeNo(), keyframes above)
+     only once the picture is at least 80% painted in */
   .stage.won-play .caption.enter .caption-word {
-    animation: fade-in 120ms ease-out both, redden 0.35s ease-out both, no-shake 560ms ease-out 300ms both;
+    animation: fade-in 120ms ease-out both, redden 0.35s ease-out both;
   }
   .stage.won-play .caption.enter .caption-meaning {
-    animation: fade-in 200ms ease-out 40ms both, redden 0.35s ease-out both, no-shake 560ms ease-out 300ms both;
+    animation: fade-in 200ms ease-out 40ms both, redden 0.35s ease-out both;
   }
   /* typed out live already: it just turns red, then shakes with the meaning */
   .stage.won-play .caption.enter.from-live .caption-word {
-    animation: redden 0.35s ease-out both, no-shake 560ms ease-out 300ms both;
+    animation: redden 0.35s ease-out both;
   }
   /* the English meaning fades in as soon as speaking ends (black, before the red) */
   .caption.pre-meaning .caption-meaning { animation: fade-in 200ms ease-out both; }
   /* ...so when the picture comes, both lines just turn red and shake */
   .stage.won-play .caption.enter.pre-shown .caption-meaning,
   .stage.won-play .caption.enter.pre-shown .caption-word {
-    animation: redden 0.35s ease-out both, no-shake 560ms ease-out 120ms both;
+    animation: redden 0.35s ease-out both;
   }
 
   /* with a wrong answer the voice button turns a little see-through,
@@ -1319,7 +1319,7 @@
   }
 
   let paintToken = 0;
-  async function paint(key, onStart) {
+  async function paint(key, onStart, onAlmost) {
     const token = ++paintToken, alive = () => token === paintToken;
     const prev = state.current;
     const [layers, before] = await Promise.all([layersFor(key), prev ? layersFor(prev) : null]);
@@ -1342,7 +1342,9 @@
       // a first picture fades in over the whole painting time (in step with the red edges)
       state.s = first ? [easeInOut(t), easeInOut(stage(t, 0.05, 0.95))]
                       : [easeOut(stage(t, 0.28, 0.5)), easeInOut(stage(t, 0.34, 0.62))];
+      if (onAlmost && state.s[0] >= 0.8) { onAlmost(); onAlmost = null; }   // the picture is 80% in
     }, alive, onStart);
+    if (onAlmost && alive()) onAlmost();
   }
 
   /* First picture with a reveal style: the canvas takes over drawing the grey
@@ -1353,7 +1355,7 @@
     const k = (n) => (n + h / 30) % 12, a = s * Math.min(l, 1 - l);
     return [0, 8, 4].map((n) => l - a * Math.max(-1, Math.min(k(n) - 3, 9 - k(n), 1)));
   }
-  async function revealPaint(key, mode, onStart) {
+  async function revealPaint(key, mode, onStart, onAlmost) {
     const token = ++paintToken, alive = () => token === paintToken;
     const layers = await layersFor(key);
     if (!alive()) return;
@@ -1367,7 +1369,11 @@
     gl.uniform2f(uni.uC, (bl + bw / 2) / 402, (bt + bh / 2 - AREA.y) / AREA.h);
     state.current = key; state.out = 1; state.s = [0, 0]; state.reveal = { mode, t: 0 };
     draw(); washHandoff();   // the canvas draws the grey now; hide the SVG wash in the same frame
-    await tween(settings.revealTime * 1000, (t) => { state.reveal.t = t; }, alive, onStart);
+    await tween(settings.revealTime * 1000, (t) => {
+      state.reveal.t = t;
+      if (onAlmost && t >= 0.8) { onAlmost(); onAlmost = null; }
+    }, alive, onStart);
+    if (onAlmost && alive()) onAlmost();
     if (!alive()) return;
     state.reveal = null; state.s = [1, 1]; draw();
   }
@@ -1831,8 +1837,16 @@
   }
   // leaving: the red goes with the old picture (850ms), before the grey wash comes in
   function wrongOff() { if (stageEl.hasAttribute("data-won")) edgeMs(0.85); stageEl.toggleAttribute("data-won", false); stageEl.classList.remove("won-play"); }
+  // both caption lines shake "no" sideways (the no-shake keyframes, played from script
+  // so it can wait for the picture)
+  function shakeNo() {
+    if (reduceMotion) return;
+    const u = stageEl.getBoundingClientRect().width / 402;
+    const kf = [0, -9, 8, -6, 4, -2, 0].map((x, i) => ({ transform: `translateX(${(x * u).toFixed(2)}px)`, offset: [0, .15, .32, .5, .68, .84, 1][i] }));
+    [capMeaning, capWord].forEach((el) => el.animate(kf, { duration: 560, easing: "ease-out" }));
+  }
   $("#wrongReplay").addEventListener("click", () => {
-    if (state.current === "pope" || state.current === "potato") wrongOn();   // replay on the wrong answer showing
+    if (state.current === "pope" || state.current === "potato") { wrongOn(); shakeNo(); }   // replay on the wrong answer showing
     else simulate("el papa");
   });
 
@@ -1865,7 +1879,9 @@
         handoff = true;
       }
     }
-    await (handoff ? revealPaint(key, REVEALS.indexOf(reveal)) : paint(key));
+    // a wrong answer's caption shakes "no" once its picture is at least 80% in
+    const almost = wrong ? shakeNo : null;
+    await (handoff ? revealPaint(key, REVEALS.indexOf(reveal), null, almost) : paint(key, null, almost));
     setState("idle");
     if (key === "dad") voice.setAttribute("aria-label", "Next word");
   }
