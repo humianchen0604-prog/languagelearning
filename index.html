@@ -2102,18 +2102,45 @@
     if (!silent) { stopWaves(); setState("idle"); endTakeEmpty(); }
   }
 
+  /* A web page can't switch the microphone on by itself: the browser asks
+     first (until it's allowed for the site in the browser's settings). So
+     that its permission panel doesn't cut into the animation, a take only
+     starts its visuals once the recogniser is actually listening (onstart),
+     unless the mic is already known to be allowed. */
+  let micReady = false, starting = false;
+  try {
+    navigator.permissions.query({ name: "microphone" }).then((p) => {
+      micReady = p.state === "granted";
+      p.onchange = () => { micReady = p.state === "granted"; };
+    }).catch(() => {});
+  } catch (e) {}
+
   async function listen() {
     gotResult = false;
-    setState("listening");
-    showCaption(null);
-    beginTake();
     rec = new SR();
     rec.lang = "es-MX"; rec.interimResults = true; rec.maxAlternatives = 5; rec.continuous = false;
     let speaking = false, t0 = 0;
     const fake = (now) => speaking ? syntheticVoice("la papa", t0)((now - t0) % 1.2 + t0) : [0.05, 0.05, 0.05, 0.05, 0.05];
-    startWaves(fake);
     rec.onspeechstart = () => { speaking = true; t0 = performance.now() / 1000; };
     const me = rec;
+    // the visuals start here: at once if the mic is allowed, else when listening begins
+    let begun = false;
+    const begin = () => {
+      if (begun || rec !== me) return;
+      begun = true; starting = false; micReady = true;
+      setState("listening");
+      showCaption(null);
+      beginTake();
+      startWaves(fake);
+      cap = setTimeout(() => { if (rec !== me) return; if (lastHit) settle(lastHit); else { try { me.stop(); } catch (err) {} } }, 8000);
+      // Drive the ellipses from the real volume when the mic level is available.
+      // Not on iPhone/iPad: opening the mic a second time alongside speech
+      // recognition left later takes deaf there (only the first word worked).
+      if (!IOS) micLevel().then((real) => {
+        if (real && voice.dataset.state === "listening" && rec === me) { level = real; watchSpeechEnd(real, wrapUp); }
+      });
+    };
+    rec.onstart = begin;
     // the take ends with this transcript (a final result, or a recognised interim one)
     const settle = (text) => {
       if (rec !== me) return;
@@ -2128,9 +2155,7 @@
     // Some browsers keep listening (or never send a final result) after a short
     // word, which left the page stuck listening: once the speaker has stopped,
     // use the last recognised word, or ask the recogniser to wrap up.
-    let lastHit = "", nudge = 0, idle = 0;
-    // and never listen for more than 8s
-    const cap = setTimeout(() => { if (rec !== me) return; if (lastHit) settle(lastHit); else { try { me.stop(); } catch (err) {} } }, 8000);
+    let lastHit = "", nudge = 0, idle = 0, cap = 0;   // (cap: never listen for more than 8s)
     const wrapUp = () => {
       exitWash();   // the word is said: the grey starts leaving now
       clearTimeout(nudge);
@@ -2143,6 +2168,7 @@
     rec.onspeechend = () => { speaking = false; wrapUp(); };
     rec.onresult = (e) => {
       if (rec !== me) return;   // this take already finished (e.g. Dad from an interim result)
+      begin();
       const r = e.results[e.results.length - 1];
       const alts = [];
       for (let j = 0; j < r.length; j++) alts.push(r[j].transcript);
@@ -2162,6 +2188,7 @@
     };
     rec.onerror = (e) => {
       if (rec !== me) return;   // an earlier take's recogniser winding down
+      starting = false;
       if (["not-allowed", "service-not-allowed", "audio-capture", "network"].includes(e.error)) {
         speechUnavailable("Listening isn't allowed here, so the mic shows these three words to tap instead.");
         stopListening();
@@ -2170,16 +2197,13 @@
     };
     rec.onend = () => {
       if (rec !== me || gotResult) return;
+      if (!begun) { starting = false; stopListening(true); return; }   // never got going (e.g. the permission panel was dismissed)
       if (lastHit) { settle(lastHit); return; }   // ended without a final result: use what it heard
       clearTimeout(nudge); clearTimeout(idle); clearTimeout(cap);
       stopListening(); showCaption("none", "No te escuché. Tap the mic and try again.", "");
     };
-    try { rec.start(); } catch (e) { stopListening(); say.hidden = false; return; }
-    // Drive the ellipses from the real volume when the mic level is available.
-    // Not on iPhone/iPad: opening the mic a second time alongside speech
-    // recognition left later takes deaf there (only the first word worked).
-    const real = IOS ? null : await micLevel();
-    if (real && voice.dataset.state === "listening" && rec === me) { level = real; watchSpeechEnd(real, wrapUp); }
+    if (micReady) begin(); else starting = true;
+    try { rec.start(); } catch (e) { starting = false; stopListening(); say.hidden = false; return; }
   }
 
   /* Follow the speaker's own voice from the microphone: once they have spoken
@@ -2210,7 +2234,7 @@
       else { clearTimeout(simTimer); liveTimers.forEach(clearTimeout); stopWaves(); setState("idle"); showCaption(null); endTakeEmpty(); }
       return;
     }
-    if (speechWorks) listen();
+    if (speechWorks) { if (!starting) listen(); }   // (waiting on the browser's permission panel)
     else say.hidden = !say.hidden;
   });
 

@@ -83,6 +83,15 @@ tuning still works.
   second time for the volume (`micLevel()`), which can leave later takes
   deaf there. Tested with a fake recogniser: three takes in a row on Chrome
   and with an iPhone user agent, with and without final results.
+- The user asked to switch the mic on without the browser's permission panel
+  ("it's interrupting my animation flow"). No page can do that; the panel
+  only stops once the mic is allowed for the site (iPhone: Safari's aA menu →
+  Website Settings → Microphone → Allow). So a take waits: its visuals
+  (`begin()` in `listen()`: listening state, title glide, wash, waves, the 8s
+  cap, the volume meter) start on the recogniser's `onstart`, i.e. after the
+  panel is answered, or at once when `navigator.permissions` already says
+  the mic is granted (`micReady`). A dismissed panel leaves the page as it
+  was; taps while waiting are ignored (`starting`).
 - No speech API, or the mic is refused: tapping the mic shows three tap-words.
   The Adjust panel's "Try a word" buttons run the whole sequence without speaking.
 - The published claude.ai artifact can't use the microphone, so it always uses
