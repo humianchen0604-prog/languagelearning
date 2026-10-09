@@ -98,14 +98,15 @@ user double-clicks it on their Mac.
   lines appear (no rise) and shake straight away "no"; the voice button turns 70% opaque so the colour shows
   through. Adjust → Wrong answer: Edge hue (0–360°, default 16° = soft red
   hsl(16 70% 62%)), Edge strength (0–250%), and a Show wrong answer button.
-  It is painted like a watercolor wash that dried (the user's reference: a
-  pink wash with a denser rim): the colour is sheer and uneven, deepening
-  toward the screen's edge, and ends in a gently wavy, defined edge with a
-  denser rim of pigment along it. CSS `filter: url(#edge-bloom)` on `.w-edges`
-  uses the gradient as a distance map (smoothed, warped), and `edgeTable()`
-  turns distance into the wash (`#ebTable`). Edge rim slider (0–250%, default
-  100%) sets how dense the rim is. Zig-zag fibres along the edge were tried
-  and rejected ("not the ziggy zaggy effect"). Edge time
+  It reads as watercolor: the colour is sheer and uneven (patchy pigment),
+  deepening toward the screen's edge, with a gently wavy shape, and it fades
+  out GRADUALLY toward the inside (no edge line; the user asked for this
+  after a version with a defined edge and dense rim). CSS `filter:
+  url(#edge-bloom)` on `.w-edges` uses the gradient as a distance map
+  (smoothed, warped), and `edgeTable()` turns distance into the wash
+  (`#ebTable`). Edge rim slider (0–250%, default 100%) adds a soft, slightly
+  denser band where the colour thins out. Tried and rejected: zig-zag fibres
+  along the edge; a defined wavy edge with a dense rim. Edge time
   (0.2–6s, default 1s) sets how long the edges take to creep in.
   The stage carries `data-won`; `.won-play` replays the shake. It clears when
   listening starts again or Dad is said. (Rise, Shake, Bleed, Ripples,

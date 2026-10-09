@@ -1149,16 +1149,17 @@
     if (id === "listenBlur") applyListenBlur();
     if (id === "msmSoft") applyMsmSoft();
   }
-  // distance (0 inside .. 1 at the screen's edge) → wash: nothing inside the
-  // edge line, a dense rim right at it fading into sheer colour, then the
-  // colour slowly deepening toward the screen's edge
+  // distance (0 inside .. 1 at the screen's edge) → wash: the colour fades
+  // out gradually toward the inside (no hard edge line), deepening toward
+  // the screen's edge, with a soft, slightly denser band (Edge rim) where it
+  // thins out. The warp and uneven pigment still make it read as watercolor.
   function edgeTable(rim) {
-    const E = 0.09, out = [];
+    const out = [];
     for (let k = 0; k <= 40; k++) {
       const n = k / 40;
-      if (n < E) { out.push(0); continue; }
-      const body = 0.08 + 0.92 * Math.pow((n - E) / (1 - E), 1.4);
-      out.push(Math.min(1, body + rim * 0.75 * Math.exp(-(n - E) / 0.05)).toFixed(3));
+      const fade = n * n * (3 - 2 * n);                        // smooth start from nothing
+      const band = rim * 0.14 * Math.exp(-Math.pow((n - 0.22) / 0.1, 2)) * Math.min(1, n / 0.12);
+      out.push(Math.min(1, Math.pow(fade, 1.15) + band).toFixed(3));
     }
     return out.join(" ");
   }
