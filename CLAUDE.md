@@ -1,19 +1,22 @@
-# Papá o la Papa: notes for Claude
+# Papá o la papa: notes for Claude
 
 One-screen phone prototype. The screen says **"Translate / Dad"**; the person
 says it in Spanish and whatever they actually pronounced is painted onto the
 page in watercolor, with a caption:
 
-| Heard          | Paints     | Caption (meaning / Spanish, from Figma) | Colour   |
+| Heard          | Paints     | Caption (meaning / Spanish)             | Colour   |
 |----------------|------------|------------------------------------------|----------|
-| el Papa        | the Pope   | the Pope / El papa                       | #c14d1f  |
-| la papa / papa | a potato   | the potato / La papá                     | #c14d1f  |
-| papá           | Dad        | the Dad / El papá                        | #2f88a6  |
+| el papa        | the Pope   | the Pope / El papa                       | #c14d1f  |
+| la papa / papa | a potato   | the potato / La papa                     | #c14d1f  |
+| papá           | Dad        | the dad / El papá                        | #2f88a6  |
+
+Spanish spelling: "papa" (Pope, potato) is lowercase, as Spanish writes titles;
+"papá" with the accent is dad. Figma's "La papá" for the potato was a typo.
 
 The design source is Figma file `UAgpMOHbjQMcWBCS4qVhg9` ("Side-project"):
 main screen node `109:254` (potato state), Pope `92:1380`, Dad `92:1399`.
 
-The point is the near-miss: people trying to say "papá" often say "el Papa" or
+The point is the near-miss: people trying to say "papá" often say "el papa" or
 "la papa" first. Classification is in `classify()`, which checks every speech
 alternative.
 
@@ -44,6 +47,8 @@ cd papa && python3 -m http.server 8000   # mic needs http(s), not file://
   No close button: the main Figma frame has none.
 - Title in SF Pro (system font stack `--sf`): "Translate" Light 20px at 40%
   black, y 130; "Dad" Regular 28px `#302e2a`, y 158.
+  Before the first word (and after "next") the title sits in the vertical centre
+  of the page (`.stage[data-intro]`); it glides up to y 130 when a picture appears.
 - Pictures: watercolor cut-outs drawn by a WebGL canvas covering y 90–590 at
   full width (normal blending, so the Bleed layer stays behind it), each in its box (`PICTURES` in the script).
 - Caption: meaning in SF Pro Light 16px at 80%, y 541; Spanish in Regular 28px,

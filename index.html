@@ -1,5 +1,5 @@
 <meta charset="utf-8">
-<title>Papá o la Papa</title>
+<title>Papá o la papa</title>
 <style>
   /* Layout: the Figma "Potato" frame (Side-project, node 109:254), a
      402 × 874 phone screen (1u = 100cqw / 402) scaled to fit; the Adjust
@@ -124,6 +124,12 @@
     font: inherit;
     z-index: 3;
   }
+  /* Before the first word: "Translate / Dad" sits in the vertical centre of
+     the page (block ~61u tall, centred on y 437); it glides up to its place
+     at the top when the first picture appears. */
+  .prompt { transition: translate 750ms var(--ease-in-out); }
+  .stage[data-intro] .prompt { translate: 0 calc(276 * var(--u)); }
+  @media (prefers-reduced-motion: reduce) { .prompt { transition: none; } }
   .prompt-label {
     font-family: var(--sf);
     font-weight: 300;
@@ -595,7 +601,7 @@
 
 <div class="shell">
   <main class="phone" aria-label="Say “Dad” in Spanish">
-    <div class="stage">
+    <div class="stage" data-intro>
       <!-- Page colour; the paper's texture is laid over everything at the end -->
       <div class="paper" id="paper" aria-hidden="true"></div>
       <!-- Six blobs traced from the watercolor strip; the first is the current word -->
@@ -640,9 +646,9 @@
           </g></svg>
         </span>
         <span class="next" aria-hidden="true">
-          <svg viewBox="0 0 40 30" fill="none" stroke="var(--mic-ink)" stroke-linecap="round" stroke-linejoin="round"><g filter="url(#pencil)">
-            <path d="M4.5 15.4C12 14.8 22 15.2 33.6 15" stroke-width="2.3" />
-            <path d="M5.4 16.6C13 16 21.6 16.4 31.4 16.2" stroke-width="0.8" opacity="0.6" />
+          <svg viewBox="0 0 40 30" fill="none" stroke="var(--mic-ink)" stroke-linecap="round" stroke-linejoin="round"><g filter="url(#pencil)" transform="translate(-4 0)">
+            <path d="M13 15.3C19 14.9 26 15.2 33.6 15" stroke-width="2.3" />
+            <path d="M13.8 16.5C20 16.1 25.6 16.4 31.4 16.2" stroke-width="0.8" opacity="0.6" />
             <path d="M24.2 6.4C27.6 9.4 31 12.4 34.4 15.2C31.2 18 27.8 21.2 24.6 24" stroke-width="2.3" />
             <path d="M25.6 8.2C28.4 10.6 30.8 12.8 33 15" stroke-width="0.8" opacity="0.6" />
           </g></svg>
@@ -656,7 +662,7 @@
       <p class="caption" id="caption" aria-live="polite"><span class="caption-meaning"></span><span class="caption-word"></span></p>
 
       <div class="say" id="say" hidden>
-        <button type="button" data-say="el Papa">el Papa</button>
+        <button type="button" data-say="el papa">el papa</button>
         <button type="button" data-say="la papa">la papa</button>
         <button type="button" data-say="papá">papá</button>
       </div>
@@ -676,7 +682,7 @@
   <section class="group">
     <h3>Try a word</h3>
     <div class="try" id="try">
-      <button type="button" data-say="el Papa">el Papa</button>
+      <button type="button" data-say="el papa">el papa</button>
       <button type="button" data-say="la papa">la papa</button>
       <button type="button" data-say="papá">papá</button>
     </div>
@@ -968,11 +974,12 @@
   applyPaper();
 
   /* ---------------- Words ---------------- */
-  // Captions as written in the Figma frames: meaning, then the Spanish
+  // Captions: meaning, then the Spanish. Spanish writes "papa" (Pope, potato)
+  // in lowercase; "papá" with the accent is dad.
   const CAPTION = {
-    potato: ["the potato", "La papá"],
+    potato: ["the potato", "La papa"],
     pope:   ["the Pope", "El papa"],
-    dad:    ["the Dad", "El papá"],
+    dad:    ["the dad", "El papá"],
   };
   function classify(raw) {
     const text = raw.normalize("NFC").trim();
@@ -1178,12 +1185,13 @@
   function wrongOff() { stageEl.toggleAttribute("data-won", false); stageEl.classList.remove("won-play"); }
   $("#wrongReplay").addEventListener("click", () => {
     if (state.current === "pope" || state.current === "potato") wrongOn();   // replay on the wrong answer showing
-    else simulate("el Papa");
+    else simulate("el papa");
   });
 
   async function finish(text) {
     stopWaves();
     const key = classify(text || "");
+    if (key) stageEl.removeAttribute("data-intro");   // the title moves up for the picture
     showHeard(text, key);
     if (key === "pope" || key === "potato") wrongOn(); else wrongOff();
     if (!key) { setState("idle"); return; }
@@ -1205,6 +1213,7 @@
     setState("idle");
     wrongOff();
     showCaption(null);
+    stageEl.setAttribute("data-intro", "");             // next word: title back in the centre
     steps[step].removeAttribute("aria-current");
     step = (step + 1) % steps.length;
     steps[step].setAttribute("aria-current", "step");

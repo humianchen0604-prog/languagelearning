@@ -1,11 +1,11 @@
-# Papá o la Papa
+# Papá o la papa
 
 A one-screen prototype (design: Figma "Side-project"): the screen says **Translate / Dad**, and you say it in Spanish.
 What you actually pronounce gets painted onto the page in watercolor, with a caption:
 
 | You say   | It paints  |
 |-----------|------------|
-| el Papa   | the Pope   |
+| el papa   | the Pope   |
 | la papa   | a potato   |
 | papá      | Dad        |
 
