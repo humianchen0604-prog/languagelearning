@@ -1,8 +1,14 @@
 #!/bin/sh
-# Papá o la papa: serve this folder on localhost and open it in Chrome.
+# Papá o la papa: get the latest version, serve this folder on localhost and open it in Chrome.
 # On a Mac, double-click this file in Finder (or run ./start.command in Terminal).
 # Close the window, or press Ctrl+C, to stop.
 cd "$(dirname "$0")" || exit 1
+
+# get the latest changes from GitHub first (skipped quietly if offline or not a git clone)
+if command -v git >/dev/null 2>&1 && [ -d .git ]; then
+  echo "Getting the latest version…"
+  git pull --ff-only --quiet 2>/dev/null && echo "Up to date." || echo "Couldn't update (offline?), opening the copy you have."
+fi
 
 # first free port from 8000 up
 PORT=8000

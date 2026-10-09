@@ -30,6 +30,11 @@ Everything lives in `index.html` (no build step). Assets are in `assets/`.
 ```sh
 python3 -m http.server 8000   # mic needs http(s), not file://
 ```
+**The user views the prototype on localhost on their Mac, not the claude.ai
+artifact (by request): push changes to `main` here and tell them to
+double-click `start.command` (it runs `git pull` first) or reload the page.
+Don't republish the artifact unless they ask.**
+
 `start.command` does the same (first free port from 8000) and opens Chrome; the
 user double-clicks it on their Mac.
 
