@@ -150,14 +150,13 @@ user double-clicks it on their Mac.
   red edges start creeping in (over the grey's exit plus the painting time, so
   they finish with the picture), and the grey wash leaves straight away, even
   mid fade-in (`exitWash(true)`, `washHurry`), so the picture follows quickly.
-  The caption stays black until it starts shaking, then turns red: both
-  happen 25% of the way into the red edges' animation (`--red-delay`, by
-  request; it was 15% before). The sideways shake starts a quarter of the way into the red edges'
-  animation (`shakeNo()`, a WAAPI animation; by request; before that it waited
-  for the picture to be 80% in).
+  The caption stays black (`.red-hold`) until the picture is 90% painted in,
+  then turns red (`redNow()`, 350ms) and shakes sideways (`shakeNo()`) at the
+  same moment, for both wrong answers (by request; earlier tries: at once,
+  15%/25% into the red edges, 80% of the picture).
   A soft colour creeps
   in evenly along every side (eased in many small steps) ; the word turns red, the English meaning fades in at 40ms
-  (200ms), and both shake 25% into the red edges' animation (the `pre-meaning`/`pre-shown` classes are
+  (200ms), and both turn red and shake once the picture is 90% in (the `pre-meaning`/`pre-shown` classes are
   left over from when it waited, now unused); the voice button turns 70% opaque so the colour shows
   through. Adjust → Wrong answer: Edge hue (0–360°, default 354° = soft strawberry
   red hsl(354 70% 62%); it was 16°, a tomato red, until the user asked for strawberry), Edge strength (0–250%), and a Show wrong answer button.

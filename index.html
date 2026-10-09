@@ -493,6 +493,8 @@
   }
   /* the English meaning fades in as soon as speaking ends (black, before the red) */
   .caption.pre-meaning .caption-meaning { animation: fade-in 200ms ease-out both; }
+  /* a wrong answer's caption stays black until its picture is 90% in (redNow()) */
+  .caption.red-hold .caption-meaning, .caption.red-hold .caption-word { color: #1a1a1a !important; }
   /* ...so when the picture comes, both lines just turn red and shake */
   .stage.won-play .caption.enter.pre-shown .caption-meaning,
   .stage.won-play .caption.enter.pre-shown .caption-word {
@@ -1339,7 +1341,7 @@
       // a first picture fades in over the whole painting time (in step with the red edges)
       state.s = first ? [easeInOut(t), easeInOut(stage(t, 0.05, 0.95))]
                       : [easeOut(stage(t, 0.28, 0.5)), easeInOut(stage(t, 0.34, 0.62))];
-      if (onAlmost && state.s[0] >= 0.8) { onAlmost(); onAlmost = null; }   // the picture is 80% in
+      if (onAlmost && state.s[0] >= 0.9) { onAlmost(); onAlmost = null; }   // the picture is 90% in
     }, alive, onStart);
     if (onAlmost && alive()) onAlmost();
   }
@@ -1368,7 +1370,7 @@
     draw(); washHandoff();   // the canvas draws the grey now; hide the SVG wash in the same frame
     await tween(settings.revealTime * 1000, (t) => {
       state.reveal.t = t;
-      if (onAlmost && t >= 0.8) { onAlmost(); onAlmost = null; }
+      if (onAlmost && t >= 0.9) { onAlmost(); onAlmost = null; }   // the picture is 90% in
     }, alive, onStart);
     if (onAlmost && alive()) onAlmost();
     if (!alive()) return;
@@ -1790,7 +1792,7 @@
   let liveText = "", wasLive = false;
   function showLive(text) {
     text = (text || "").trimStart();
-    if (caption.dataset.key !== "live") { liveText = ""; caption.classList.remove("shine", "redden", "enter", "from-live", "pre-meaning", "pre-shown"); capMeaning.textContent = ""; capWord.textContent = ""; }
+    if (caption.dataset.key !== "live") { liveText = ""; caption.classList.remove("shine", "redden", "enter", "from-live", "pre-meaning", "pre-shown", "red-hold"); capMeaning.textContent = ""; capWord.textContent = ""; }
     caption.dataset.key = "live";
     let keep = 0;
     while (keep < liveText.length && keep < text.length && liveText[keep] === text[keep]) keep++;
@@ -1807,7 +1809,7 @@
     wasLive = false; liveText = "";
     caption.dataset.key = key || "none";
     // restart the glare each time Dad is said
-    caption.classList.remove("shine", "redden", "enter", "from-live", "pre-meaning", "pre-shown"); void caption.offsetWidth;
+    caption.classList.remove("shine", "redden", "enter", "from-live", "pre-meaning", "pre-shown", "red-hold"); void caption.offsetWidth;
     if (CAPTION[key]) caption.classList.add("enter");   // results animate in; live transcripts don't
     if (fromLive) caption.classList.add("from-live");
     // (Dad's glare across the caption was removed by request; the .shine styles stay unused)
@@ -1836,6 +1838,13 @@
   function wrongOff() { if (stageEl.hasAttribute("data-won")) edgeMs(0.85); stageEl.toggleAttribute("data-won", false); stageEl.classList.remove("won-play"); }
   // both caption lines shake "no" sideways (the no-shake keyframes, played from script
   // so it can wait for the picture)
+  // the held-black caption of a wrong answer turns red (350ms)
+  function redNow() {
+    if (!caption.classList.contains("red-hold")) return;
+    const from = [capMeaning, capWord].map((el) => getComputedStyle(el).color);
+    caption.classList.remove("red-hold");
+    [capMeaning, capWord].forEach((el, i) => el.animate([{ color: from[i] }, { color: getComputedStyle(el).color }], { duration: 350, easing: "ease-out" }));
+  }
   function shakeNo() {
     if (reduceMotion) return;
     const u = stageEl.getBoundingClientRect().width / 402;
@@ -1855,9 +1864,10 @@
     const greyLeft = reveal === "fade" && (washShown || washExit) ? settings.loadFade * settings.loadStart : 0;
     const painted = reveal !== "fade" && washShown ? Math.max(0, washPainted() - performance.now()) / 1000 : 0;
     const edgeSec = (greyLeft + painted + (reveal === "fade" ? settings.paintTime : settings.revealTime)) / 1.1;
-    // its caption turns red only as it starts shaking, 25% of the way into the edges' animation (by request)
-    stageEl.style.setProperty("--red-delay", wrong && !reduceMotion ? Math.round(edgeSec * 250) + "ms" : "0ms");
+    // its caption stays black (red-hold) until the picture is 90% in, then turns red and shakes (by request)
+    stageEl.style.setProperty("--red-delay", "0ms");
     showHeard(text, key);
+    if (wrong && !reduceMotion) caption.classList.add("red-hold");
     wrongOff();
     if (!key) { endTakeEmpty(); setState("idle"); return; }
     // correct answer: the button goes straight from listening to the "next" arrow
@@ -1870,9 +1880,6 @@
     // until the picture has finished fading in.
     if (wrong) {
       wrongOn(edgeSec);
-      // the caption shakes "no" a quarter of the way into the red edges' animation
-      const won = stageEl;
-      setTimeout(() => { if (won.hasAttribute("data-won")) shakeNo(); }, reduceMotion ? 0 : edgeSec * 1000 * 0.25);
     }
     if (reveal === "fade") {
       if (washShown || washExit || washDelay) await exitWash(wrong);   // the grey is gone (it may have started leaving as the word was ~95% said)
@@ -1884,7 +1891,9 @@
         handoff = true;
       }
     }
-    await (handoff ? revealPaint(key, REVEALS.indexOf(reveal)) : paint(key));
+    // a wrong answer's caption turns red and shakes "no" once its picture is 90% in
+    const almost = wrong ? () => { redNow(); shakeNo(); } : null;
+    await (handoff ? revealPaint(key, REVEALS.indexOf(reveal), null, almost) : paint(key, null, almost));
     setState("idle");
     if (key === "dad") voice.setAttribute("aria-label", "Next word");
   }
