@@ -437,6 +437,11 @@
   .stage[data-wfx="scribble"].won-play .w-scribble path + path { animation-delay: 620ms; animation-duration: 380ms; }
   .stage[data-wfx="scribble"][data-won]:not(.won-play) .w-scribble path { stroke-dashoffset: 0; }
 
+  /* With any wrong answer the voice button turns a little see-through,
+     so the red shows through it */
+  .voice { transition: width 520ms var(--ease-out), transform 160ms var(--ease-out), opacity 500ms var(--ease-out); }
+  .stage[data-won] .voice { opacity: 0.7; }
+
   /* 7 · Blush: the voice button flushes pink and shakes "no" */
   .stage[data-wfx="blush"][data-won] .blob > g { fill: #f2cfc3; }
   .stage[data-wfx="blush"].won-play .voice { animation: no-shake 520ms ease-out both; }

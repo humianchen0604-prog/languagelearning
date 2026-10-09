@@ -59,7 +59,8 @@ cd papa && python3 -m http.server 8000   # mic needs http(s), not file://
   (red rings out of the voice button), Scribble (pencil correction mark across
   the word), Blush (voice button flushes pink and shakes). The stage carries
   `data-wfx` and `data-won`; `.won-play` replays one-shot motion. They clear when
-  listening starts again or Dad is said.
+  listening starts again or Dad is said. While a wrong answer shows, the voice button
+  is 70% opaque so the red shows through it.
 - Voice blob centred at (201, 674.5), 20% smaller than the Figma pebble
   (about 85 × 70); the tap-word chips sit below it.
 - Adjust panel: a column beside the phone at ≥980px wide, otherwise a bottom
