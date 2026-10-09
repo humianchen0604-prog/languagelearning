@@ -50,6 +50,10 @@ cd papa && python3 -m http.server 8000   # mic needs http(s), not file://
   Before the first word (and after "next") the title sits 60u above the vertical
   centre of the page (`.stage[data-intro]`); it glides up to y 130 as soon as
   the mic is pressed (`beginTake()`), and goes back if the take ends with no picture.
+- Opening (on load, once): the progress dots pop in left to right, "Translate"
+  then "Dad" rise 14u with a blur that clears, then the voice blob blooms in
+  (scale 0.8, blur) and the mic appears; about 1.2s in all (`open-*` keyframes,
+  backwards fill only so the elements' own styles take over afterwards).
 - Listening wash: while listening, six translucent watercolor layers bloom in
   one after another where the picture will appear (`svg.smudge`, 250 × 300u
   centred on (199, 378), about the Dad portrait's size). Each is a wobbly blob
