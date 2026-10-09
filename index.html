@@ -18,6 +18,7 @@
     --blob-idle: #efeeec;            /* voice blob before speaking: near-white grey */
     --mic-ink: #7f7d7a;              /* mic: soft pencil grey */
     --blob-listen: #e9e8e5;          /* voice blob while listening: a touch deeper grey */
+    --blob-next: #d5edf6;            /* after Dad (correct): a light blue from Dad's glare, behind the "next" arrow */
     --blob-grey: #e7e6e4;            /* Grey look while listening: the resting #efeeec, 3.5% darker (Adjust) */
     --panel: #fbf9f6;
     --panel-line: #e2dbd2;
@@ -256,7 +257,9 @@
   .voice[data-state="listening"] .blob > g { fill: var(--blob-listen); fill-opacity: 0.85; }
   /* Grey look: while listening the whole button just turns 8% darker grey (no icon) */
   .voice[data-look="grey"][data-state="listening"] .blob > g { fill: var(--blob-grey); fill-opacity: 1; }
-  .voice[data-look="grey"][data-state="listening"] .blob { filter: none; }   /* stays inside the pebble's own edge, no blur */
+  .voice[data-look="grey"][data-state="listening"] .blob { filter: none; }
+  /* correct answer: the grey fades to light blue as the "next" arrow appears */
+  .voice[data-next]:not([data-state="listening"]) .blob > g { fill: var(--blob-next); fill-opacity: 1; transition-duration: 700ms; }   /* stays inside the pebble's own edge, no blur */
 
   .mic, .waves {
     position: absolute;

@@ -205,6 +205,8 @@ the older full watercolors, no longer used by the page.
   - Processing (while the picture paints): no loading indicator; the mic stays.
   - The mic uses the **pencil** filter in `--mic-ink #7f7d7a`. The mic
     capsule is filled with that ink at 48% on white; the icon is about 19 × 25u.
+  - After Dad (correct) the button's grey fades to a light blue from Dad's
+    glare (`--blob-next: #d5edf6`, 700ms) as the arrow appears.
   - After Dad (correct) the mic swaps straight from listening to a pencil "next" arrow that nudges right once (`.next`,
     `data-next` on the button). Tapping it fades the picture and caption out,
     moves the progress dot on, and brings the mic back (`goNext()`).
