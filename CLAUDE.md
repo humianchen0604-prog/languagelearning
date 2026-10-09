@@ -80,7 +80,8 @@ user double-clicks it on their Mac.
   turned into a pigment mask `assets/loading-wash.png`, white = paint) filling
   a grey rect (`#washFill`, hsl 30 5% L), revealed by a radial gradient (centre
   out) with a brushy, displaced front (`#revealMask`, `revA`/`revB` stop offsets driven
-  in `renderWash()`). Box 300 × 284u centred on (199, 370).
+  in `renderWash()`). Box 264 × 250u centred on (199, 370) (12% smaller than the
+  first 300 × 284, by request; `uBox` in `revealPaint()` must match `.smudge`).
   When speaking ends it first finishes painting, then loosens, blurs and fades
   out; the picture starts painting in when the fade is 85% through (Adjust →
   Picture starts at), so the two barely overlap. History: waiting for a full
