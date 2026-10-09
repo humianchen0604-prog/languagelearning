@@ -354,7 +354,8 @@
       linear-gradient(to right, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.260)) 0.00%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.208)) 2.64%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.156)) 5.61%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.112)) 8.91%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.078)) 12.21%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.052)) 15.51%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.033)) 18.81%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.018)) 22.11%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.009)) 25.41%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.003)) 28.71%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.000)) 33.00%),
       linear-gradient(to left, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.260)) 0.00%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.208)) 2.64%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.156)) 5.61%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.112)) 8.91%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.078)) 12.21%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.052)) 15.51%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.033)) 18.81%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.018)) 22.11%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.009)) 25.41%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.003)) 28.71%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.000)) 33.00%);
     transform: scale(1.25);
-    transition: opacity 500ms var(--ease-out), transform 900ms var(--ease-out);
+    /* creeps in over the same time the picture takes to paint (Painting time) */
+    transition: opacity var(--paint-ms, 1000ms) var(--ease-out), transform var(--paint-ms, 1000ms) var(--ease-out);
   }
   .stage[data-won] .w-edges { opacity: 1; transform: none; }
 
@@ -672,7 +673,7 @@
 
   <section class="group">
     <h3>Painting</h3>
-    <div class="row"><label for="paintTime">Painting time</label><output for="paintTime"></output><input id="paintTime" type="range" min="0.8" max="6" step="0.1" value="2.2"></div>
+    <div class="row"><label for="paintTime">Painting time</label><output for="paintTime"></output><input id="paintTime" type="range" min="0.5" max="6" step="0.1" value="1"></div>
   </section>
 
   <section class="group">
@@ -701,12 +702,12 @@
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   /* ---------------- Settings (remembered per browser) ---------------- */
-  const KEY = "papa-settings-v7";
+  const KEY = "papa-settings-v8";
   const ids = ["toothSize", "toothDepth", "warmth", "paintTime", "edgeHue", "edgeAlpha"];
   let saved = {};
   try {
     saved = JSON.parse(localStorage.getItem(KEY) || "null");
-    if (!saved) { saved = JSON.parse(localStorage.getItem("papa-settings-v6") || "{}"); delete saved.warmth; }
+    if (!saved) { saved = JSON.parse(localStorage.getItem("papa-settings-v7") || "{}"); delete saved.paintTime; }
   } catch (e) { saved = {}; }
   const settings = {};
   const fmt = (id, v) => id === "paintTime" ? v.toFixed(1) + " s" : id === "edgeHue" ? Math.round(v) + "°" : id === "toothSize" ? Math.pow(2, v).toFixed(2) + "×" : Math.round(v * 100) + "%";
@@ -935,12 +936,13 @@
 
   function apply(id) {
     if (["toothSize", "toothDepth", "warmth"].includes(id)) applyPaper();
-    if (id === "edgeHue" || id === "edgeAlpha") applyEdges();
+    if (id === "edgeHue" || id === "edgeAlpha" || id === "paintTime") applyEdges();
   }
   function applyEdges() {
     const st = document.querySelector(".stage");
     st.style.setProperty("--edge-h", settings.edgeHue);
     st.style.setProperty("--edge-a", settings.edgeAlpha);
+    st.style.setProperty("--paint-ms", Math.round(settings.paintTime * 1000) + "ms");
   }
   applyEdges();
   applyPaper();

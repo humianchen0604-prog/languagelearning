@@ -58,7 +58,8 @@ cd papa && python3 -m http.server 8000   # mic needs http(s), not file://
   in evenly along every side (eased in many small steps) while both caption
   lines shake "no"; the voice button turns 70% opaque so the colour shows
   through. Adjust → Wrong answer: Edge hue (0–360°, default 16° = soft red
-  hsl(16 70% 62%)), Edge strength (0–250%), and a Show wrong answer button.
+  hsl(16 70% 62%)), Edge strength (0–250%), and a Show wrong answer button. The edges
+  creep in over the Painting time, so both move together.
   The stage carries `data-won`; `.won-play` replays the shake. It clears when
   listening starts again or Dad is said. (Rise, Shake, Bleed, Ripples,
   Scribble and Blush were tried and dropped; they're in git history.)
@@ -88,7 +89,7 @@ the older full watercolors, no longer used by the page.
   (0 = smooth), warmth.
 - **Painting**: a new picture fades in from a blurred copy and comes into focus.
   When the word changes, the old picture dissolves while the new one fades in.
-  Painting time is adjustable (default 2.2s).
+  Painting time is adjustable (default 1s).
 - **Voice blob** (kept from before the Figma pass):
   - Single **pebble** (outline tilted 22° clockwise; the mic stays upright), near-white grey `#efeeec`, soft watercolor edge.
   - Listening: satellite blobs slide out and merge via a gooey SVG filter
