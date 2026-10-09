@@ -121,7 +121,8 @@ user double-clicks it on their Mac.
   (about 85 × 70); the tap-word chips sit below it.
 - Adjust panel: a column beside the phone at ≥980px wide, otherwise a bottom
   sheet behind an "Adjust" button. It holds Restart prototype (reloads the page;
-  settings are kept), Try a word, Paper (tooth size, tooth
+  settings are kept; also an always-visible "↺ Restart prototype" button at
+  the window's bottom left, `.restart-fab`), Try a word, Paper (tooth size, tooth
   depth, warmth: 0 = `#fafafa` default, 1 = `#f5f2ee`), Painting time, Wrong answer, Mic smudges, First-picture wash, and Voice visual.
 
 ## Saving tuned settings
@@ -161,8 +162,10 @@ the older full watercolors, no longer used by the page.
     `--listen-blur`, default 3.5u; Adjust → Voice visual → Edge blur while listening).
   - While listening, Looks: **Grey** (default, by request): the button keeps
     its resting pebble shape and size and just turns 8% darker grey
-    (`--blob-grey: #dcdbd9`, from `#efeeec`), with the listening edge blur and
-    no icon. Saved look key `papa-look-v4`.
+    (`--blob-grey: #dcdbd9`, from `#efeeec`), contained in the pebble's own
+    edge (no listening blur), no icon; the shape wiggles (wobblier outline)
+    and twirls back and forth a little (±~15°) so it reads as listening.
+    Saved look key `papa-look-v4`.
   - **Smudges** (was the default before Grey): the button keeps its
     resting pebble shape and size (no satellites, no widening; the user
     dropped the wide "snake" shape for this look). Eight pebble-shaped

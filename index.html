@@ -256,6 +256,7 @@
   .voice[data-state="listening"] .blob > g { fill: var(--blob-listen); fill-opacity: 0.85; }
   /* Grey look: while listening the whole button just turns 8% darker grey (no icon) */
   .voice[data-look="grey"][data-state="listening"] .blob > g { fill: var(--blob-grey); fill-opacity: 1; }
+  .voice[data-look="grey"][data-state="listening"] .blob { filter: none; }   /* stays inside the pebble's own edge, no blur */
 
   .mic, .waves {
     position: absolute;
@@ -521,6 +522,21 @@
     box-shadow: 0 6px 18px -10px rgb(60 40 20 / 0.4);
   }
   .adjust-toggle:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  /* always-visible Restart, bottom left (the Adjust panel has one too) */
+  .restart-fab {
+    position: fixed;
+    left: 16px;
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    z-index: 20;
+    font: 600 13px/1 var(--ui);
+    color: var(--panel-ink);
+    background: var(--panel);
+    border: 1px solid var(--panel-line);
+    border-radius: 999px;
+    padding: 10px 14px;
+    cursor: pointer;
+  }
+  .restart-fab:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 
   .panel {
     position: fixed;
@@ -824,6 +840,7 @@
   </main>
 </div>
 
+<button class="restart-fab" id="restartFab" type="button">↺ Restart prototype</button>
 <button class="adjust-toggle" id="adjustToggle" type="button" aria-controls="panel" aria-expanded="false">Adjust</button>
 
 <aside class="panel" id="panel" aria-label="Adjust">
@@ -1368,7 +1385,10 @@
     const lv = levels.reduce((a, b) => a + b, 0) / levels.length;
     phase += dt * (0.22 + lv * 0.45);
     const e = easeBlob(spread);
-    blobMain.setAttribute("d", blobPath(PEBBLE.radii, 32 * (1 + lv * 0.08), 28 * (1 + lv * 0.1), PEBBLE.rot, 0.035 * e, now));
+    // Grey look: the same pebble, wiggling and twirling a little while listening
+    const grey = look === "grey";
+    const rot = PEBBLE.rot + (grey ? e * (11 * Math.sin(now * 1.3) + 5 * Math.sin(now * 2.9 + 1)) : 0);
+    blobMain.setAttribute("d", blobPath(PEBBLE.radii, 32 * (1 + lv * 0.08), 28 * (1 + lv * 0.1), rot, (grey ? 0.065 : 0.035) * e, grey ? now * 1.4 : now));
     const es = look === "smudges" || look === "grey" ? 0 : e;   // Smudges and Grey keep the resting pebble shape (no satellites)
     sats.forEach((el, i) => {
       const e = es;
@@ -1732,6 +1752,7 @@
   /* Restart: back to the opening screen (first word, empty page, opening
      animation). Settings live in localStorage, so a reload keeps them. */
   $("#restart").addEventListener("click", () => location.reload());
+  $("#restartFab").addEventListener("click", () => location.reload());
 
   /* ---------------- Save settings ----------------
      Downloads every Adjust setting (plus the voice look) as JSON and copies
