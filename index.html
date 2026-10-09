@@ -158,25 +158,24 @@
     pointer-events: none;
   }
   /* ---------- First-picture wash ----------
-     When the page is still empty (the first word, or after "next"), very
-     watery, soft grey watercolor layers bloom where the picture will appear,
-     larger than the portrait, from the moment the mic is pressed. When the
-     picture is ready they soften and fade away to show it. Between pictures
-     there is no wash: the old picture dissolves into the new one as before.
-     Each layer is multiplied over the others, like glazes. */
+     When the page is still empty (the first word, or after "next"), a soft
+     grey watercolor wash (the user's watercolor, assets/loading-wash.png)
+     paints itself in where the picture will appear, from the top left to the
+     bottom right, from the moment the mic is pressed. When speaking ends it
+     fades away completely, then the picture paints in. Between pictures there
+     is no wash: the old picture dissolves into the new one as before. */
   .smudge {
     position: absolute;
-    left: calc(39 * var(--u));
-    top: calc(178 * var(--u));
-    width: calc(320 * var(--u));
-    height: calc(384 * var(--u));
+    left: calc(49 * var(--u));
+    top: calc(228 * var(--u));
+    width: calc(300 * var(--u));
+    height: calc(284 * var(--u));
     z-index: 1;
     overflow: visible;
     pointer-events: none;
     mix-blend-mode: multiply;
     opacity: 0;
   }
-  .smudge .wash { mix-blend-mode: multiply; }
   /* Mic smudges (Voice visual → Smudges): watercolor smudges of different
      shapes bloom in on top of the voice blob while listening. Same box as
      .blob but outside it, so the listening edge blur doesn't soften them. */
@@ -435,6 +434,7 @@
       linear-gradient(to right, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.260)) 0.00%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.208)) 2.64%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.156)) 5.61%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.112)) 8.91%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.078)) 12.21%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.052)) 15.51%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.033)) 18.81%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.018)) 22.11%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.009)) 25.41%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.003)) 28.71%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.000)) 33.00%),
       linear-gradient(to left, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.260)) 0.00%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.208)) 2.64%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.156)) 5.61%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.112)) 8.91%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.078)) 12.21%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.052)) 15.51%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.033)) 18.81%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.018)) 22.11%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.009)) 25.41%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.003)) 28.71%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.000)) 33.00%);
     transform: scale(1.25);
+    filter: url(#edge-bloom);   /* zig-zag watercolor fibres where the colour meets the paper */
     /* creeps in over Edge time (Adjust → Wrong answer) */
     transition: opacity var(--edge-ms, 1000ms) var(--ease-out), transform var(--edge-ms, 1000ms) var(--ease-out);
   }
@@ -656,6 +656,29 @@
     <feComposite in2="rim" operator="in" result="rimC" />
     <feMerge><feMergeNode in="body" /><feMergeNode in="rimC" /></feMerge>
   </filter>
+  <!-- Wrong answer edges: the same soft gradient, but where the colour meets
+       the paper it bleeds out in fine, zig-zag fibres with a darker feathered
+       tideline, like a watercolor bloom drying. Fibres run in from each side
+       (horizontal ones for the left/right edges, vertical for top/bottom). -->
+  <filter id="edge-bloom" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+    <!-- the tideline: a band where the colour thins out into the paper -->
+    <feComponentTransfer in="SourceGraphic" result="amp"><feFuncA type="linear" slope="3.85" /></feComponentTransfer>
+    <feComponentTransfer in="amp" result="bandA"><feFuncA type="table" tableValues="0 0.3 0.9 1 0.8 0.5 0.28 0.14 0.07 0.03 0.01 0 0 0 0 0 0 0 0 0 0" /></feComponentTransfer>
+    <!-- fine, uneven fibres: horizontal ones fray the left/right edges, vertical ones the top/bottom -->
+    <feTurbulence type="fractalNoise" baseFrequency="0.01 0.32" numOctaves="3" seed="3" result="nx" />
+    <feColorMatrix in="nx" type="matrix" values="1.8 0 0 0 -0.4  0 0 0 0 0.5  0 0 0 0 0  0 0 0 0 1" result="fx" />
+    <feTurbulence type="fractalNoise" baseFrequency="0.32 0.01" numOctaves="3" seed="8" result="ny" />
+    <feColorMatrix in="ny" type="matrix" values="0 0 0 0 0.5  1.8 0 0 0 -0.4  0 0 0 0 0  0 0 0 0 1" result="fy" />
+    <feDisplacementMap class="eb-d" in="bandA" in2="fx" scale="26" xChannelSelector="R" yChannelSelector="G" result="b1" />
+    <feDisplacementMap class="eb-d" in="b1" in2="fy" scale="26" xChannelSelector="R" yChannelSelector="G" result="b2" />
+    <!-- patchy, like pigment that dried unevenly -->
+    <feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="2" seed="21" result="patch" />
+    <feColorMatrix in="patch" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  2.2 0 0 0 -0.55" result="patchA" />
+    <feComposite in="b2" in2="patchA" operator="in" result="band" />
+    <feFlood id="ebRim" flood-color="hsl(16 62% 52%)" flood-opacity="0.2" />
+    <feComposite in2="band" operator="in" result="rim" />
+    <feMerge><feMergeNode in="SourceGraphic" /><feMergeNode in="rim" /></feMerge>
+  </filter>
 </svg>
 
 <div class="shell">
@@ -676,41 +699,8 @@
       <h1 class="prompt"><span class="prompt-label">Translate</span><span class="prompt-word">Dad</span></h1>
 
       <!-- Listening: layered watercolor washes where the picture will appear -->
-      <svg class="smudge" id="smudge" viewBox="-125 -150 250 300" aria-hidden="true" focusable="false">
+      <svg class="smudge" id="smudge" viewBox="0 0 629 595" preserveAspectRatio="none" aria-hidden="true" focusable="false">
         <defs>
-          <filter id="wash0" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
-            <feTurbulence type="fractalNoise" baseFrequency="0.016" numOctaves="3" seed="3" result="warp" />
-            <feDisplacementMap in="SourceGraphic" in2="warp" scale="28" xChannelSelector="R" yChannelSelector="G" result="shape" />
-            <feGaussianBlur in="shape" stdDeviation="4.5" result="soft" />
-            <feGaussianBlur in="shape" stdDeviation="8" result="inner" />
-            <!-- pigment pools at the edge: the wash minus a blurred copy of itself -->
-            <feComposite in="soft" in2="inner" operator="arithmetic" k2="1.3" k3="-0.45" result="rim" />
-            <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="2" seed="11" result="grain" />
-            <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  1 0 0 0 0.4" result="grainA" />
-            <feComposite in="rim" in2="grainA" operator="in" />
-          </filter>
-          <filter id="wash1" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
-            <feTurbulence type="fractalNoise" baseFrequency="0.016" numOctaves="3" seed="8" result="warp" />
-            <feDisplacementMap in="SourceGraphic" in2="warp" scale="34" xChannelSelector="R" yChannelSelector="G" result="shape" />
-            <feGaussianBlur in="shape" stdDeviation="4.5" result="soft" />
-            <feGaussianBlur in="shape" stdDeviation="8" result="inner" />
-            <!-- pigment pools at the edge: the wash minus a blurred copy of itself -->
-            <feComposite in="soft" in2="inner" operator="arithmetic" k2="1.3" k3="-0.45" result="rim" />
-            <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="2" seed="23" result="grain" />
-            <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  1 0 0 0 0.4" result="grainA" />
-            <feComposite in="rim" in2="grainA" operator="in" />
-          </filter>
-          <filter id="wash2" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
-            <feTurbulence type="fractalNoise" baseFrequency="0.016" numOctaves="3" seed="15" result="warp" />
-            <feDisplacementMap in="SourceGraphic" in2="warp" scale="24" xChannelSelector="R" yChannelSelector="G" result="shape" />
-            <feGaussianBlur in="shape" stdDeviation="4.5" result="soft" />
-            <feGaussianBlur in="shape" stdDeviation="8" result="inner" />
-            <!-- pigment pools at the edge: the wash minus a blurred copy of itself -->
-            <feComposite in="soft" in2="inner" operator="arithmetic" k2="1.3" k3="-0.45" result="rim" />
-            <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="2" seed="31" result="grain" />
-            <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  1 0 0 0 0.4" result="grainA" />
-            <feComposite in="rim" in2="grainA" operator="in" />
-          </filter>
           <!-- the same watercolor edge at the voice blob's scale (mic smudges) -->
           <filter id="mwash0" x="-40%" y="-40%" width="180%" height="180%" color-interpolation-filters="sRGB">
             <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="3" seed="4" result="warp" />
@@ -742,9 +732,23 @@
             <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  1 0 0 0 0.4" result="grainA" />
             <feComposite in="rim" in2="grainA" operator="in" />
           </filter>
+          <!-- the paint front: a diagonal gradient (top left to bottom right) with a ragged, brushy edge -->
+          <linearGradient id="revealGrad" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="629" y2="595">
+            <stop id="revA" offset="0" stop-color="#fff" /><stop id="revB" offset="0" stop-color="#000" />
+          </linearGradient>
+          <filter id="revealEdge" filterUnits="userSpaceOnUse" x="-80" y="-80" width="789" height="755">
+            <feTurbulence type="fractalNoise" baseFrequency="0.011" numOctaves="3" seed="6" result="n" />
+            <feDisplacementMap in="SourceGraphic" in2="n" scale="80" xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+          <mask id="revealMask" maskUnits="userSpaceOnUse" x="-80" y="-80" width="789" height="755">
+            <rect x="-80" y="-80" width="789" height="755" fill="url(#revealGrad)" filter="url(#revealEdge)" />
+          </mask>
+          <!-- the watercolor's pigment (white = paint) -->
+          <mask id="pigmentMask" maskUnits="userSpaceOnUse" x="0" y="0" width="629" height="595">
+            <image href="assets/loading-wash.png" x="0" y="0" width="629" height="595" preserveAspectRatio="none" />
+          </mask>
         </defs>
-        <path class="wash" filter="url(#wash0)" /><path class="wash" filter="url(#wash1)" /><path class="wash" filter="url(#wash2)" />
-        <path class="wash" filter="url(#wash1)" /><path class="wash" filter="url(#wash0)" /><path class="wash" filter="url(#wash2)" />
+        <g mask="url(#revealMask)"><rect id="washFill" width="629" height="595" fill="#b5b3b0" mask="url(#pigmentMask)" /></g>
       </svg>
 
       <div class="frame" id="frame">
@@ -842,6 +846,7 @@
     <div class="hue-strip" aria-hidden="true"></div>
     <div class="row"><label for="edgeAlpha">Edge strength</label><output for="edgeAlpha"></output><input id="edgeAlpha" type="range" min="0" max="2.5" step="0.01" value="1"></div>
     <div class="row"><label for="edgeTime">Edge time</label><output for="edgeTime"></output><input id="edgeTime" type="range" min="0.2" max="6" step="0.1" value="1"></div>
+    <div class="row"><label for="edgeTex">Edge texture</label><output for="edgeTex"></output><input id="edgeTex" type="range" min="0" max="2.5" step="0.01" value="1"></div>
     <div class="seg"><button type="button" id="wrongReplay">Show wrong answer</button></div>
   </section>
 
@@ -865,10 +870,11 @@
 
   <section class="group">
     <h3>First-picture wash</h3>
-    <div class="row"><label for="loadLight">Grey lightness</label><output for="loadLight"></output><input id="loadLight" type="range" min="0.4" max="0.98" step="0.01" value="0.9"></div>
+    <div class="row"><label for="loadPaint">Paint-in time</label><output for="loadPaint"></output><input id="loadPaint" type="range" min="0.5" max="6" step="0.1" value="2.2"></div>
+    <div class="row"><label for="loadLight">Grey lightness</label><output for="loadLight"></output><input id="loadLight" type="range" min="0.3" max="0.95" step="0.01" value="0.7"></div>
     <div class="row"><label for="loadAlpha">Strength</label><output for="loadAlpha"></output><input id="loadAlpha" type="range" min="0" max="2" step="0.01" value="1"></div>
     <div class="row"><label for="loadFade">Fade out</label><output for="loadFade"></output><input id="loadFade" type="range" min="0.3" max="4" step="0.1" value="1"></div>
-    <div class="row"><label for="loadBlur">Blur</label><output for="loadBlur"></output><input id="loadBlur" type="range" min="0" max="20" step="0.5" value="9"></div>
+    <div class="row"><label for="loadBlur">Blur</label><output for="loadBlur"></output><input id="loadBlur" type="range" min="0" max="20" step="0.5" value="0"></div>
   </section>
 
   <section class="group">
@@ -891,11 +897,15 @@
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   /* ---------------- Settings (remembered per browser) ---------------- */
-  const KEY = "papa-settings-v11";
-  const ids = ["toothSize", "toothDepth", "warmth", "paintTime", "edgeHue", "edgeAlpha", "edgeTime", "washHue", "washSat", "washLight", "washAlpha", "listenBlur", "loadLight", "loadAlpha", "loadFade", "msmSoft", "loadBlur"];
+  const KEY = "papa-settings-v12";
+  const ids = ["toothSize", "toothDepth", "warmth", "paintTime", "edgeHue", "edgeAlpha", "edgeTime", "washHue", "washSat", "washLight", "washAlpha", "listenBlur", "loadLight", "loadAlpha", "loadFade", "msmSoft", "loadBlur", "loadPaint", "edgeTex"];
   let saved = {};
   try {
     saved = JSON.parse(localStorage.getItem(KEY) || "null");
+    if (!saved) {   // v12: the first-picture wash is the painted watercolor (new grey and blur defaults)
+      saved = JSON.parse(localStorage.getItem("papa-settings-v11") || "null");
+      if (saved) ["loadLight", "loadAlpha", "loadBlur"].forEach((k) => delete saved[k]);
+    }
     if (!saved) {   // v11: a much lighter, blurrier first-picture wash with a shorter fade
       saved = JSON.parse(localStorage.getItem("papa-settings-v10") || "null");
       if (saved) ["loadLight", "loadAlpha", "loadFade", "washHue", "washSat", "washLight", "washAlpha", "msmSoft"].forEach((k) => delete saved[k]);
@@ -906,7 +916,7 @@
     }
   } catch (e) { saved = {}; }
   const settings = {};
-  const fmt = (id, v) => id === "paintTime" || id === "edgeTime" || id === "loadFade" ? v.toFixed(1) + " s" : id === "edgeHue" || id === "washHue" ? Math.round(v) + "°" : id === "listenBlur" || id === "msmSoft" || id === "loadBlur" ? v.toFixed(1) + " px" : id === "toothSize" ? Math.pow(2, v).toFixed(2) + "×" : Math.round(v * 100) + "%";
+  const fmt = (id, v) => id === "paintTime" || id === "edgeTime" || id === "loadFade" || id === "loadPaint" ? v.toFixed(1) + " s" : id === "edgeHue" || id === "washHue" ? Math.round(v) + "°" : id === "listenBlur" || id === "msmSoft" || id === "loadBlur" ? v.toFixed(1) + " px" : id === "toothSize" ? Math.pow(2, v).toFixed(2) + "×" : Math.round(v * 100) + "%";
   function persist() { try { localStorage.setItem(KEY, JSON.stringify(settings)); } catch (e) {} }
 
   ids.forEach((id) => {
@@ -1132,7 +1142,7 @@
 
   function apply(id) {
     if (["toothSize", "toothDepth", "warmth"].includes(id)) applyPaper();
-    if (id === "edgeHue" || id === "edgeAlpha" || id === "edgeTime") applyEdges();
+    if (id === "edgeHue" || id === "edgeAlpha" || id === "edgeTime" || id === "edgeTex") applyEdges();
     if (id.startsWith("wash")) markWashPreset();
     if (id.startsWith("load")) previewWash();
     if (id === "listenBlur") applyListenBlur();
@@ -1143,6 +1153,11 @@
     st.style.setProperty("--edge-h", settings.edgeHue);
     st.style.setProperty("--edge-a", settings.edgeAlpha);
     st.style.setProperty("--edge-ms", Math.round(settings.edgeTime * 1000) + "ms");
+    // the fibres' length and the tideline follow Edge texture; the tideline takes the edge hue, a little deeper
+    document.querySelectorAll("#edge-bloom .eb-d").forEach((d) => d.setAttribute("scale", (26 * settings.edgeTex).toFixed(1)));
+    const rim = document.getElementById("ebRim");
+    rim.setAttribute("flood-color", `hsl(${settings.edgeHue} 62% 52%)`);
+    rim.setAttribute("flood-opacity", Math.min(1, 0.32 * settings.edgeTex * settings.edgeAlpha).toFixed(3));
   }
   function applyListenBlur() { document.querySelector(".stage").style.setProperty("--listen-blur", settings.listenBlur); }
   applyEdges();
@@ -1342,44 +1357,28 @@
   function stopWaves() { cancelAnimationFrame(waveRaf); level = () => 0; levels = [0, 0, 0, 0, 0]; }
 
   /* ---------------- First-picture wash ----------------
-     Six translucent, watery grey watercolor layers in the picture's spot
-     (larger than the portrait), each a wobbly blob (blobPath) with a ragged,
-     faintly rimmed edge (#wash0-2 filters). Only when the page has no
-     picture yet: they bloom in one after another when the mic is pressed,
-     drift slowly and swell a little with the voice; when the picture is
-     ready they loosen, soften and fade away to show it (Adjust → Fade out).
-     Between pictures there is no wash (the old dissolve). */
-  const smudge = $("#smudge"), washEls = [...smudge.querySelectorAll(".wash")];
-  // [x, y, rx, ry, rotation°, lightness shift, hue shift, opacity]  (viewBox units, 250 × 300)
-  const WASH = [
-    [0, 6, 104, 128, -8, 12, 0, 0.32],
-    [-26, -28, 72, 90, 18, 3, -10, 0.38],
-    [28, 28, 68, 86, -24, 0, 12, 0.36],
-    [6, -6, 48, 60, 30, -10, 4, 0.4],
-    [-36, 56, 34, 42, 0, -4, 20, 0.32],
-    [42, -58, 28, 34, 10, 6, -16, 0.3],
-  ];
-  const washRadii = WASH.map((_, i) => Array.from({ length: 9 }, (_, k) => 0.88 + 0.24 * hash(i * 12.9898 + k * 78.233)));
+     The user's watercolor (assets/loading-wash.png, its pigment as a mask)
+     filled with a soft grey, painted in from the top left to the bottom
+     right by a brushy diagonal front (#revealMask) over Paint-in time. Only
+     when the page has no picture yet, from the moment the mic is pressed;
+     when speaking ends (and it has finished painting) it loosens, blurs and
+     fades away completely, then the picture paints in. Between pictures
+     there is no wash (the old dissolve). */
+  const smudge = $("#smudge"), washFill = $("#washFill"), revA = $("#revA"), revB = $("#revB");
   const WASH_PRESETS = { gray: [30, 0.05, 0.88], sky: [205, 0.75, 0.68], aqua: [180, 0.6, 0.56], perplexity: [186, 0.63, 0.4], indigo: [230, 0.75, 0.66] };
-  let washShown = false, washVis = 0, washFrom = 0, washOnAt = 0, washOffAt = 0, washOffMs = 1, washRaf = 0, washLv = 0;
+  let washShown = false, washVis = 0, washFrom = 0, washOnAt = 0, washOffAt = 0, washOffMs = 1, washRaf = 0;
+  const FRONT = 0.14;   // width of the soft paint front (fraction of the diagonal)
+  function washPainted() { return washOnAt + settings.loadPaint * 1000; }   // when the paint-in ends
 
   function renderWash(nowMs) {
-    const t = nowMs / 1000;
-    const lv = levels.reduce((a, b) => a + b, 0) / levels.length;
-    washLv += (lv - washLv) * 0.12;
-    const h = 30, s = 0.05, l = settings.loadLight, a = settings.loadAlpha;   // a faintly warm grey
-    const loosen = 1 + (1 - washVis) * 0.1;           // spreads a little as it fades
-    WASH.forEach(([x, y, rx, ry, rot, dl, dh, al], i) => {
-      const bloom = reduceMotion ? 1 : easeOut(Math.min(1, Math.max(0, (nowMs - washOnAt - i * 150) / 1100)));
-      const k = (0.55 + 0.45 * bloom) * (1 + washLv * (i % 2 ? 0.08 : 0.05)) * loosen;
-      const cx = x + Math.sin(t * 0.5 + i * 1.7) * 6, cy = y + Math.cos(t * 0.42 + i * 2.3) * 6;
-      const el = washEls[i];
-      el.setAttribute("d", blobPath(washRadii[i], rx * k, ry * k, rot + Math.sin(t * 0.3 + i) * 8, 0.035, t * 0.3 + i * 2));
-      el.setAttribute("transform", `translate(${cx.toFixed(2)} ${cy.toFixed(2)})`);
-      el.setAttribute("fill", `hsl(${(h + dh * 0.3).toFixed(1)} ${(s * 100).toFixed(1)}% ${(Math.min(0.97, Math.max(0.05, l + dl * 0.6 / 100)) * 100).toFixed(1)}%)`);
-      el.setAttribute("fill-opacity", Math.min(1, al * 0.7 * a * bloom).toFixed(3));
-    });
+    const p = reduceMotion ? 1 : Math.min(1, Math.max(0, (nowMs - washOnAt) / (settings.loadPaint * 1000)));
+    const f = -FRONT + (1 + 2 * FRONT) * (0.5 - 0.5 * Math.cos(Math.PI * p));   // eases in and out
+    revA.setAttribute("offset", Math.min(1, Math.max(0, f)).toFixed(4));
+    revB.setAttribute("offset", Math.min(1, Math.max(0, f + FRONT)).toFixed(4));
+    washFill.setAttribute("fill", `hsl(30 5% ${(settings.loadLight * 100).toFixed(1)}%)`);   // a faintly warm grey
+    washFill.setAttribute("fill-opacity", Math.min(1, 0.7 * settings.loadAlpha).toFixed(3));
     smudge.style.opacity = washVis.toFixed(3);
+    smudge.style.scale = (1 + (1 - washVis) * 0.04).toFixed(4);   // loosens a little as it fades
     // blurred out as a whole (Adjust → Blur), and more as it fades
     const blur = settings.loadBlur + (washShown || reduceMotion ? 0 : (1 - washVis) * 8);
     smudge.style.filter = blur > 0 ? `blur(calc(${blur.toFixed(2)} * var(--u)))` : "";
@@ -1408,7 +1407,7 @@
     if (voice.dataset.state !== "idle" || state.current) return;
     washOn();
     clearTimeout(washPreview);
-    washPreview = setTimeout(() => { if (voice.dataset.state !== "listening") washOff(900); }, 1400);
+    washPreview = setTimeout(() => { if (voice.dataset.state !== "listening") washOff(900); }, settings.loadPaint * 1000 + 700);
   }
   const presetBtns = [...document.querySelectorAll("#washPresets button")];
   function markWashPreset() {
@@ -1513,7 +1512,9 @@
     // correct answer: the button goes straight from listening to the "next" arrow
     if (key === "dad") voice.toggleAttribute("data-next", true);
     setState("processing");
-    if (washShown) {   // first picture: the grey wash fades away completely, then the picture paints in
+    if (washShown) {   // first picture: the grey wash finishes painting, fades away completely, then the picture paints in
+      const left = washPainted() - performance.now();
+      if (left > 0 && !reduceMotion) await new Promise((r) => setTimeout(r, left));
       const ms = settings.loadFade * 1000;
       washOff(ms);
       await new Promise((r) => setTimeout(r, reduceMotion ? 0 : ms));

@@ -57,20 +57,21 @@ user double-clicks it on their Mac.
   (scale 0.8, blur) and the mic appears; about 1.2s in all (`open-*` keyframes,
   backwards fill only so the elements' own styles take over afterwards).
 - First-picture wash: only when the page has no picture yet (first word,
-  after "next", after a miss), very watery soft grey watercolor layers bloom
-  where the picture will appear as soon as the mic is pressed (`svg.smudge`,
-  320 × 384u centred on (199, 370), larger than the portrait). Each is a wobbly
-  blob (`blobPath`) with a ragged, faint-rimmed edge (`#wash0-2` filters),
-  multiplied over the others; they drift slowly and swell a little with the
-  voice. Very light grey (lightness 0.9) and blurred out as a whole (CSS blur,
-  default 9u). When speaking ends they loosen, blur more and fade out
-  completely FIRST; only then does the picture paint in (the user asked for
-  this order: no picture showing together with the grey wash; `finish()`
-  awaits the fade). `washOn()` / `washOff(ms)`. Adjust → First-picture wash:
-  grey lightness, strength, fade-out time (default 1s), blur.
+  after "next", after a miss), a soft grey watercolor paints itself in where
+  the picture will appear, from the top left to the bottom right, as soon as
+  the mic is pressed. It is the user's watercolor (`assets/loading-wash-source.png`,
+  turned into a pigment mask `assets/loading-wash.png`, white = paint) filling
+  a grey rect (`#washFill`, hsl 30 5% L), revealed by a diagonal gradient with
+  a brushy, displaced front (`#revealMask`, `revA`/`revB` stop offsets driven
+  in `renderWash()`). Box 300 × 284u centred on (199, 370).
+  When speaking ends it first finishes painting, then loosens, blurs and fades
+  out completely; only then does the picture paint in (the user asked for this
+  order: no picture showing together with the grey wash; `finish()` awaits it).
+  Adjust → First-picture wash: paint-in time (default 2.2s), grey lightness
+  (0.7), strength, fade-out time (1s), blur (0).
   Between pictures there is NO wash: the old picture stays while listening and
   dissolves into the new one (the original effect; the user asked to keep it).
-  A blue wash in the picture spot for every take was tried and dropped.
+  Tried and dropped: a blue wash for every take; six layered grey blob washes.
 - Pictures: watercolor cut-outs drawn by a WebGL canvas covering y 90–590 at
   full width (normal blending, so the Bleed layer stays behind it), each in its box (`PICTURES` in the script).
 - Caption: meaning in SF Pro Light 16px at 80%, y 541; Spanish in Regular 28px,
@@ -88,7 +89,11 @@ user double-clicks it on their Mac.
   in evenly along every side (eased in many small steps) while both caption
   lines appear (no rise) and shake straight away "no"; the voice button turns 70% opaque so the colour shows
   through. Adjust → Wrong answer: Edge hue (0–360°, default 16° = soft red
-  hsl(16 70% 62%)), Edge strength (0–250%), and a Show wrong answer button. Edge time
+  hsl(16 70% 62%)), Edge strength (0–250%), and a Show wrong answer button.
+  Where the colour thins out into the paper it frays into fine zig-zag
+  watercolor fibres with a patchy, slightly deeper tideline (CSS `filter:
+  url(#edge-bloom)` on `.w-edges`; the gradient's shape is unchanged). Edge
+  texture slider (0–250%, default 100%) sets fibre length and tideline strength. Edge time
   (0.2–6s, default 1s) sets how long the edges take to creep in.
   The stage carries `data-won`; `.won-play` replays the shake. It clears when
   listening starts again or Dad is said. (Rise, Shake, Bleed, Ripples,
@@ -135,7 +140,7 @@ the older full watercolors, no longer used by the page.
     and swell with the voice. Light grey layering by default (hsl 30 5% 88%),
     with soft, blurred-out edges (Edge softness, default 3.5). Adjust → Mic
     smudges: Light gray default, Light blue, Aqua, Perplexity, Indigo, or
-    hue/saturation/lightness/strength. Settings key `papa-settings-v11` (older
+    hue/saturation/lightness/strength. Settings key `papa-settings-v12` (older
     wash and smudge values are dropped on migration so new defaults show). The other looks
     fill the shape with five blurred pastel drops (clipped to it): Swirl
     (clockwise, about one lap per 30s), Marble, Ripples; or Ellipses. Motion is
