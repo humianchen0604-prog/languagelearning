@@ -103,7 +103,14 @@
      (up to 60u each) run off the screen. A shorter screen scales it down a
      little instead (754u = the design without those margins). */
   @media (max-width: 600px) {
-    html, body { background: var(--paper-now, var(--paper)); }
+    html, body {
+      background-color: var(--paper-now, var(--paper));
+      background-image: var(--grain-shade, none), var(--grain-light, none);
+      background-blend-mode: multiply, screen;
+      background-size: 100vw max(100lvh, 100dvh);
+      background-attachment: fixed;
+      min-height: max(100lvh, 100dvh);
+    }
     .shell { height: 100dvh; display: block; }
     /* the paper covers the largest viewport (100lvh: Safari's bars retracted
        or floating over the page), so no strip at the bottom is left bare;
@@ -1125,6 +1132,10 @@
     const url = (svg) => `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
     $("#grainShade").style.backgroundImage = url(shade);
     $("#grainLight").style.backgroundImage = url(light);
+    // phones: the page background carries the same paper (colour and tooth), so
+    // any strip Safari leaves outside the page's own layers looks the same
+    document.documentElement.style.setProperty("--grain-shade", url(shade));
+    document.documentElement.style.setProperty("--grain-light", url(light));
     $("#paper").style.backgroundColor = hex;
     document.querySelector(".phone").style.background = hex;
     // phones: whatever shows around the page (and Safari's bars) is the same paper colour
@@ -2054,6 +2065,7 @@
 
   /* ---------------- Speech recognition (es-MX) ---------------- */
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
   let speechWorks = !!SR, rec = null, stream = null, audioCtx = null, gotResult = false;
 
   function speechUnavailable(reason) {
@@ -2105,15 +2117,19 @@
     // the take ends with this transcript (a final result, or a recognised interim one)
     const settle = (text) => {
       if (rec !== me) return;
-      gotResult = true; rec = null; clearTimeout(nudge);
-      try { me.stop(); } catch (err) {}
+      gotResult = true; rec = null; clearTimeout(nudge); clearTimeout(idle); clearTimeout(cap);
+      // abort (not stop): we have the word, and the recogniser must be free
+      // straight away for the next take (Safari stayed busy and ignored it)
+      try { me.abort(); } catch (err) {}
       releaseMic();
       finish(text);
     };
     // Some browsers keep listening (or never send a final result) after a short
     // word, which left the page stuck listening: once the speaker has stopped,
     // use the last recognised word, or ask the recogniser to wrap up.
-    let lastHit = "", nudge = 0;
+    let lastHit = "", nudge = 0, idle = 0;
+    // and never listen for more than 8s
+    const cap = setTimeout(() => { if (rec !== me) return; if (lastHit) settle(lastHit); else { try { me.stop(); } catch (err) {} } }, 8000);
     const wrapUp = () => {
       exitWash();   // the word is said: the grey starts leaving now
       clearTimeout(nudge);
@@ -2133,6 +2149,10 @@
       if (!r.isFinal) {
         showLive(alts[0]);
         if (hit) lastHit = hit;
+        // no new words for a moment (Safari may never send a final result or
+        // a speech end): finish with what it heard, or ask it to wrap up
+        clearTimeout(idle);
+        idle = setTimeout(() => { if (rec !== me) return; if (lastHit) settle(lastHit); else { try { me.stop(); } catch (err) {} } }, 1000);
         // Dad starts painting as soon as "papá" is recognised (by request), without waiting for the final result
         if (hit && classify(hit) === "dad") settle(hit);
         return;
@@ -2140,6 +2160,7 @@
       settle(hit || alts[0]);
     };
     rec.onerror = (e) => {
+      if (rec !== me) return;   // an earlier take's recogniser winding down
       if (["not-allowed", "service-not-allowed", "audio-capture", "network"].includes(e.error)) {
         speechUnavailable("Listening isn't allowed here, so the mic shows these three words to tap instead.");
         stopListening();
@@ -2149,12 +2170,14 @@
     rec.onend = () => {
       if (rec !== me || gotResult) return;
       if (lastHit) { settle(lastHit); return; }   // ended without a final result: use what it heard
-      clearTimeout(nudge);
+      clearTimeout(nudge); clearTimeout(idle); clearTimeout(cap);
       stopListening(); showCaption("none", "No te escuché. Tap the mic and try again.", "");
     };
     try { rec.start(); } catch (e) { stopListening(); say.hidden = false; return; }
-    // Drive the ellipses from the real volume when the mic level is available
-    const real = await micLevel();
+    // Drive the ellipses from the real volume when the mic level is available.
+    // Not on iPhone/iPad: opening the mic a second time alongside speech
+    // recognition left later takes deaf there (only the first word worked).
+    const real = IOS ? null : await micLevel();
     if (real && voice.dataset.state === "listening" && rec === me) { level = real; watchSpeechEnd(real, wrapUp); }
   }
 

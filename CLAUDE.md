@@ -72,6 +72,15 @@ tuning still works.
   recognised word (or `stop()` to make the recogniser wrap up), or on
   `onend` with the last recognised word. Tested with a fake recogniser for
   interim-only, final-only, no-final and silent takes.
+  Repeat takes (the user on an iPhone: only the first word was detected,
+  later taps did nothing): a finished take `abort()`s its recogniser (not
+  `stop()`) so it is free at once; an old recogniser's late events and
+  errors are ignored (`rec !== me`); a take also ends 1s after the last
+  interim result (Safari may send no final result or speech end) and after
+  8s at most; and on iPhone/iPad (`IOS`) the page doesn't open the mic a
+  second time for the volume (`micLevel()`), which can leave later takes
+  deaf there. Tested with a fake recogniser: three takes in a row on Chrome
+  and with an iPhone user agent, with and without final results.
 - No speech API, or the mic is refused: tapping the mic shows three tap-words.
   The Adjust panel's "Try a word" buttons run the whole sequence without speaking.
 - The published claude.ai artifact can't use the microphone, so it always uses
@@ -92,7 +101,10 @@ tuning still works.
   edges cover `max(100lvh, 100dvh)` (the user still saw an unfilled strip at
   the bottom in Safari, whose bars float over the page), and `html`/`body`
   plus `theme-color` take the actual paper colour (`--paper-now`, set by
-  `applyPaper()`). Home Screen meta tags make
+  `applyPaper()`); `html`/`body` also carry the paper's tooth as background
+  images (`--grain-shade`/`--grain-light`, multiply/screen), so any strip
+  Safari leaves outside the page's own layers still looks like the paper
+  (the user still saw an empty bottom). Home Screen meta tags make
   it open full screen when added to the Home Screen.
 - The phone is a 402 × 874 design. Every size is `calc(N * var(--u))` with
   `--u: calc(100cqw / 402)` on `.stage`, scaled to fit. Page colour `#fafafa`
