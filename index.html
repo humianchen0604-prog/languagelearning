@@ -937,6 +937,7 @@
     <div class="row"><label for="loadLight">Grey lightness</label><output for="loadLight"></output><input id="loadLight" type="range" min="0.3" max="0.95" step="0.01" value="0.3"></div>
     <div class="row"><label for="loadAlpha">Strength</label><output for="loadAlpha"></output><input id="loadAlpha" type="range" min="0" max="2" step="0.01" value="0.1"></div>
     <div class="row"><label for="loadFade">Fade out</label><output for="loadFade"></output><input id="loadFade" type="range" min="0.3" max="4" step="0.1" value="0.5"></div>
+    <div class="row"><label for="loadStart">Picture starts at (% of the fade)</label><output for="loadStart"></output><input id="loadStart" type="range" min="0.3" max="1" step="0.01" value="0.85"></div>
     <div class="row"><label for="loadBlur">Blur</label><output for="loadBlur"></output><input id="loadBlur" type="range" min="0" max="20" step="0.5" value="0"></div>
     <p class="note">Reveal style: how the grey wash turns into the first picture.</p>
     <div class="seg" id="reveal">
@@ -989,7 +990,7 @@
 
   /* ---------------- Settings (remembered per browser) ---------------- */
   const KEY = "papa-settings-v19";
-  const ids = ["toothSize", "toothDepth", "warmth", "paintTime", "edgeHue", "edgeAlpha", "edgeTime", "washHue", "washSat", "washLight", "washAlpha", "listenBlur", "loadLight", "loadAlpha", "loadFade", "msmSoft", "loadBlur", "loadPaint", "edgeTex", "revealTime"];
+  const ids = ["toothSize", "toothDepth", "warmth", "paintTime", "edgeHue", "edgeAlpha", "edgeTime", "washHue", "washSat", "washLight", "washAlpha", "listenBlur", "loadLight", "loadAlpha", "loadFade", "msmSoft", "loadBlur", "loadPaint", "edgeTex", "revealTime", "loadStart"];
   // v19: the user's tuned settings (their Save settings file, 2026-10-09) are
   // the defaults, so values saved under older keys are dropped
   let saved = {};
@@ -1795,10 +1796,11 @@
     if (washShown) {   // first picture: the grey wash finishes painting first
       const left = washPainted() - performance.now();
       if (left > 0 && !reduceMotion) await new Promise((r) => setTimeout(r, left));
-      if (reveal === "fade") {   // Fade: the wash fades away; the picture starts halfway through, so they overlap a little
+      if (reveal === "fade") {   // Fade: the wash fades away; the picture starts near the end of that, so they barely overlap
         const ms = settings.loadFade * 1000;
         washOff(ms);
-        await new Promise((r) => setTimeout(r, reduceMotion ? 0 : ms * 0.5));
+        // the picture starts once the grey is nearly gone (Adjust → Picture starts at, default 85% of the fade)
+        await new Promise((r) => setTimeout(r, reduceMotion ? 0 : ms * settings.loadStart));
       } else handoff = true;     // the other styles turn the wash itself into the picture
     }
     if (wrong) {

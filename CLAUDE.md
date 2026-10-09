@@ -82,15 +82,16 @@ user double-clicks it on their Mac.
   out) with a brushy, displaced front (`#revealMask`, `revA`/`revB` stop offsets driven
   in `renderWash()`). Box 300 × 284u centred on (199, 370).
   When speaking ends it first finishes painting, then loosens, blurs and fades
-  out; the picture starts painting in when the fade is halfway through, so the
-  two overlap a little (the user found waiting for a full fade too long a
-  pause, and earlier didn't want them fully together; `finish()` awaits it).
+  out; the picture starts painting in when the fade is 85% through (Adjust →
+  Picture starts at), so the two barely overlap. History: waiting for a full
+  fade was too long a pause, starting at half overlapped too much; `finish()`
+  awaits it.
   Adjust → First-picture wash: paint-in time, grey lightness, strength,
   fade-out time, blur (defaults are the user's tuned values, below).
   **Reveal style** (Adjust → First-picture wash; remembered in
   `papa-reveal-v1`, included in Save settings): how the finished grey wash
   turns into the first picture. "Fade" is the wash fading out with the picture
-  starting halfway through. The ten others (the user asked for ten ideas and
+  starting near the end of the fade (85%). The ten others (the user asked for ten ideas and
   wanted to try all) hand the wash over to the WebGL painter at the moment it
   finishes painting: `revealPaint(key, mode)` draws the same grey (pigment
   texture `tWash`, colour, box `uBox`) in the shader, hides the SVG wash in the
