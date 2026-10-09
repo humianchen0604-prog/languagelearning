@@ -273,6 +273,12 @@
   .caption[data-key="pope"], .caption[data-key="potato"] { --cap: var(--say-papa); }
   .caption[data-key="dad"] { --cap: var(--say-dad); }
   .caption[data-key="none"] { --cap: color-mix(in srgb, var(--ink) 55%, transparent); }
+  /* Live: the Spanish as it's being spoken, in black, each new piece
+     fading in as it's heard */
+  .caption[data-key="live"] { --cap: #1a1a1a; }
+  .caption-word { white-space: pre; }
+  .caption-word .ch-new { display: inline-block; white-space: pre; animation: ch-in 180ms var(--ease-out) both; }
+  @keyframes ch-in { from { opacity: 0; translate: 0 calc(3 * var(--u)); filter: blur(1px); } }
   .caption-meaning {
     font-family: var(--sf);
     font-weight: 300;
@@ -319,6 +325,9 @@
   .caption.enter .caption-word    { animation: rise-in 450ms var(--ease-out) 70ms both; }
   .caption.enter.shine .caption-meaning  { animation: rise-in 450ms var(--ease-out) both, shine 1.1s var(--ease-out) both; }
   .caption.enter.shine .caption-word     { animation: rise-in 450ms var(--ease-out) 70ms both, shine 1.1s var(--ease-out) both; }
+  /* after the word was typed out live, it's already on screen: no rise,
+     the glare plays as soon as speaking ends */
+  .caption.enter.shine.from-live .caption-word { animation: shine 1.1s var(--ease-out) both; }
   .caption.enter.redden .caption-meaning,
   .caption.enter.redden .caption-word    { animation: fade-in 120ms ease-out both, redden 0.35s ease-out both; }
   @keyframes fade-in { from { opacity: 0; } }
@@ -372,6 +381,10 @@
   .stage.won-play .caption.enter .caption-meaning,
   .stage.won-play .caption.enter .caption-word {
     animation: fade-in 120ms ease-out both, redden 0.35s ease-out both, no-shake 560ms ease-out both;
+  }
+  /* typed out live already: it just turns red and shakes */
+  .stage.won-play .caption.enter.from-live .caption-word {
+    animation: redden 0.35s ease-out both, no-shake 560ms ease-out both;
   }
 
   /* with a wrong answer the voice button turns a little see-through,
@@ -1109,11 +1122,31 @@
   }
 
   /* Caption under the picture. key: a word, "none" for a miss, or null to hide */
+  /* Live caption: the Spanish typed out as it's spoken. Characters already
+     shown stay put; only the new ones fade in. */
+  let liveText = "", wasLive = false;
+  function showLive(text) {
+    text = (text || "").trimStart();
+    if (caption.dataset.key !== "live") { liveText = ""; caption.classList.remove("shine", "redden", "enter", "from-live"); capMeaning.textContent = ""; capWord.textContent = ""; }
+    caption.dataset.key = "live";
+    let keep = 0;
+    while (keep < liveText.length && keep < text.length && liveText[keep] === text[keep]) keep++;
+    if (keep < liveText.length) {          // the transcript changed earlier on: redraw the kept part plainly
+      capWord.textContent = text.slice(0, keep);
+    }
+    const added = text.slice(keep);
+    if (added) { const sp = document.createElement("span"); sp.className = "ch-new"; sp.textContent = added; capWord.append(sp); }
+    liveText = text; wasLive = !!text;
+    caption.toggleAttribute("data-show", !!text);
+  }
   function showCaption(key, meaning, word) {
+    const fromLive = wasLive && !!CAPTION[key];
+    wasLive = false; liveText = "";
     caption.dataset.key = key || "none";
     // restart the glare each time Dad is said
-    caption.classList.remove("shine", "redden", "enter"); void caption.offsetWidth;
-    if (CAPTION[key]) caption.classList.add("enter");   // results rise in; live transcripts don't
+    caption.classList.remove("shine", "redden", "enter", "from-live"); void caption.offsetWidth;
+    if (CAPTION[key]) caption.classList.add("enter");   // results animate in; live transcripts don't
+    if (fromLive) caption.classList.add("from-live");
     if (key === "dad") caption.classList.add("shine");
     if (key === "pope" || key === "potato") caption.classList.add("redden");
     capMeaning.textContent = meaning || "";
@@ -1172,13 +1205,25 @@
 
   /* Simulated take: used by the tap fallback and the Adjust panel */
   let simTimer = 0;
+  // syllables, as they'd come in while being said
+  function syllables(phrase) {
+    // a word's final consonants stay with its last syllable ("el", not "e" + "l")
+    const parts = phrase.match(/[^aeiouáéíóú]*[aeiouáéíóú]+(?:[^aeiouáéíóú\s]+(?=\s|$))?/gi) || [phrase];
+    const tail = phrase.slice(parts.join("").length);
+    if (tail) parts[parts.length - 1] += tail;
+    return parts.map((_, i) => parts.slice(0, i + 1).join(""));
+  }
+  let liveTimers = [];
   function simulate(phrase) {
     if (voice.dataset.state === "processing") return;
-    clearTimeout(simTimer);
+    clearTimeout(simTimer); liveTimers.forEach(clearTimeout); liveTimers = [];
     stopListening(true);
     say.hidden = true;
     setState("listening");
+    showCaption(null);
     startWaves(syntheticVoice(phrase, performance.now() / 1000));
+    // each syllable appears as the synthetic voice says it (~0.25s, then every 0.3s)
+    syllables(phrase).forEach((t, i) => liveTimers.push(setTimeout(() => showLive(t), 250 + i * 300)));
     simTimer = setTimeout(() => finish(phrase), 1500);
   }
   document.querySelectorAll("[data-say]").forEach((b) => b.addEventListener("click", (e) => { e.stopPropagation(); simulate(b.dataset.say); }));
@@ -1224,6 +1269,7 @@
   async function listen() {
     gotResult = false;
     setState("listening");
+    showCaption(null);
     rec = new SR();
     rec.lang = "es-MX"; rec.interimResults = true; rec.maxAlternatives = 5; rec.continuous = false;
     let speaking = false, t0 = 0;
@@ -1233,7 +1279,7 @@
     rec.onspeechend = () => { speaking = false; };
     rec.onresult = (e) => {
       const r = e.results[e.results.length - 1];
-      if (!r.isFinal) { showCaption("none", "", r[0].transcript); return; }
+      if (!r.isFinal) { showLive(r[0].transcript); return; }
       gotResult = true;
       let pick = r[0].transcript;
       for (let j = 0; j < r.length; j++) if (classify(r[j].transcript)) { pick = r[j].transcript; break; }
