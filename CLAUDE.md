@@ -123,14 +123,17 @@ the older full watercolors, no longer used by the page.
     (`#blob-goo`) into a wide shape that swells with volume. It stays grey and
     its edge goes paler and blurs out into the paper (CSS blur on `.blob`,
     `--listen-blur`, default 3.5u; Adjust → Voice visual → Edge blur while listening).
-  - While listening, Looks: **Smudges** (default): five watercolor smudges,
-    each its own shape, stacked on top of each other in the centre of the blob
-    (largest first), bloom in one after another (growing and turning into
-    place, `.blob-smudges`, `#mwash0-2` filters), drift a little and swell
-    with the voice; light grey layering by default (hsl 30 5% 74%). Colour in
-    Adjust → Mic smudges (Light gray default, Light blue, Aqua, Perplexity,
-    Indigo, or hue/saturation/lightness/strength). Settings key is now
-    `papa-settings-v9` (the v8 blue smudge colour is dropped on migration). The other looks
+  - While listening, Looks: **Smudges** (default): the button keeps its
+    resting pebble shape and size (no satellites, no widening; the user
+    dropped the wide "snake" shape for this look). Eight pebble-shaped
+    watercolor smudges (`PEBBLE.radii`, jittered), stacked in its centre
+    largest first, bloom in one after another on top (growing and turning a
+    little into place, `.blob-smudges`, `#mwash0-2` filters), drift slightly
+    and swell with the voice. Light grey layering by default (hsl 30 5% 82%),
+    with soft, blurred-out edges (Edge softness, default 2.4). Adjust → Mic
+    smudges: Light gray default, Light blue, Aqua, Perplexity, Indigo, or
+    hue/saturation/lightness/strength. Settings key `papa-settings-v10` (older
+    mic smudge colours are dropped on migration). The other looks
     fill the shape with five blurred pastel drops (clipped to it): Swirl
     (clockwise, about one lap per 30s), Marble, Ripples; or Ellipses. Motion is
     slow. Saved look key `papa-look-v3`.
