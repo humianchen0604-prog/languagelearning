@@ -251,7 +251,14 @@
   }
   .next svg { width: calc(25.3 * var(--u)); height: calc(19 * var(--u)); overflow: visible; margin-top: calc(-3 * var(--u)); }
   .voice[data-next] .mic { opacity: 0; transform: scale(0.6); filter: blur(4px); }
-  .voice[data-next][data-state="idle"] .next { opacity: 1; transform: none; filter: none; transition-delay: 120ms; }
+  .voice[data-next]:not([data-state="listening"]) .next { opacity: 1; transform: none; filter: none; transition-delay: 120ms; }
+  /* once it appears, the arrow nudges right one time: "this way" */
+  .voice[data-next]:not([data-state="listening"]) .next svg { animation: nudge 650ms var(--ease-in-out) 380ms both; }
+  @keyframes nudge {
+    0%, 100% { translate: 0 0; }
+    45%      { translate: calc(5 * var(--u)) 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { .voice .next svg { animation: none !important; } }
   .voice[data-state="listening"] .mic { opacity: 0; transform: scale(0.6); filter: blur(4px); }
   .voice[data-state="listening"] .waves { opacity: 1; transform: none; filter: none; transition-delay: 120ms; }
 
@@ -1180,10 +1187,12 @@
     showHeard(text, key);
     if (key === "pope" || key === "potato") wrongOn(); else wrongOff();
     if (!key) { setState("idle"); return; }
+    // correct answer: the button goes straight from listening to the "next" arrow
+    if (key === "dad") voice.toggleAttribute("data-next", true);
     setState("processing");
     await paint(key);
     setState("idle");
-    if (key === "dad") { voice.toggleAttribute("data-next", true); voice.setAttribute("aria-label", "Next word"); }
+    if (key === "dad") voice.setAttribute("aria-label", "Next word");
   }
 
   /* "Next" after a correct answer: clear the picture and caption, move the
