@@ -104,8 +104,9 @@ user double-clicks it on their Mac.
   after a version with a defined edge and dense rim). CSS `filter:
   url(#edge-bloom)` on `.w-edges` uses the gradient as a distance map
   (smoothed, warped), and `edgeTable()` turns distance into the wash
-  (`#ebTable`). Edge rim slider (0–250%, default 100%) adds a soft, slightly
-  denser band where the colour thins out. Tried and rejected: zig-zag fibres
+  (`#ebTable`). The inner end fades right into the page
+  colour with no visible ring (by request). Edge rim slider (0–250%, default
+  0%) can add a soft, slightly denser band where the colour thins out. Tried and rejected: zig-zag fibres
   along the edge; a defined wavy edge with a dense rim. Edge time
   (0.2–6s, default 1s) sets how long the edges take to creep in.
   The stage carries `data-won`; `.won-play` replays the shake. It clears when
@@ -153,7 +154,7 @@ the older full watercolors, no longer used by the page.
     and swell with the voice. Light grey layering by default (hsl 30 5% 88%),
     with soft, blurred-out edges (Edge softness, default 3.5). Adjust → Mic
     smudges: Light gray default, Light blue, Aqua, Perplexity, Indigo, or
-    hue/saturation/lightness/strength. Settings key `papa-settings-v12` (older
+    hue/saturation/lightness/strength. Settings key `papa-settings-v13` (older
     wash and smudge values are dropped on migration so new defaults show). The other looks
     fill the shape with five blurred pastel drops (clipped to it): Swirl
     (clockwise, about one lap per 30s), Marble, Ripples; or Ellipses. Motion is

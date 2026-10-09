@@ -847,7 +847,7 @@
     <div class="hue-strip" aria-hidden="true"></div>
     <div class="row"><label for="edgeAlpha">Edge strength</label><output for="edgeAlpha"></output><input id="edgeAlpha" type="range" min="0" max="2.5" step="0.01" value="1"></div>
     <div class="row"><label for="edgeTime">Edge time</label><output for="edgeTime"></output><input id="edgeTime" type="range" min="0.2" max="6" step="0.1" value="1"></div>
-    <div class="row"><label for="edgeTex">Edge rim</label><output for="edgeTex"></output><input id="edgeTex" type="range" min="0" max="2.5" step="0.01" value="1"></div>
+    <div class="row"><label for="edgeTex">Edge rim</label><output for="edgeTex"></output><input id="edgeTex" type="range" min="0" max="2.5" step="0.01" value="0"></div>
     <div class="seg"><button type="button" id="wrongReplay">Show wrong answer</button></div>
   </section>
 
@@ -898,11 +898,15 @@
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   /* ---------------- Settings (remembered per browser) ---------------- */
-  const KEY = "papa-settings-v12";
+  const KEY = "papa-settings-v13";
   const ids = ["toothSize", "toothDepth", "warmth", "paintTime", "edgeHue", "edgeAlpha", "edgeTime", "washHue", "washSat", "washLight", "washAlpha", "listenBlur", "loadLight", "loadAlpha", "loadFade", "msmSoft", "loadBlur", "loadPaint", "edgeTex"];
   let saved = {};
   try {
     saved = JSON.parse(localStorage.getItem(KEY) || "null");
+    if (!saved) {   // v13: no rim band by default, so the edge colour fades right into the page
+      saved = JSON.parse(localStorage.getItem("papa-settings-v12") || "null");
+      if (saved) delete saved.edgeTex;
+    }
     if (!saved) {   // v12: the first-picture wash is the painted watercolor (new grey and blur defaults)
       saved = JSON.parse(localStorage.getItem("papa-settings-v11") || "null");
       if (saved) ["loadLight", "loadAlpha", "loadBlur"].forEach((k) => delete saved[k]);
@@ -1159,7 +1163,7 @@
       const n = k / 40;
       const fade = n * n * (3 - 2 * n);                        // smooth start from nothing
       const band = rim * 0.14 * Math.exp(-Math.pow((n - 0.22) / 0.1, 2)) * Math.min(1, n / 0.12);
-      out.push(Math.min(1, Math.pow(fade, 1.15) + band).toFixed(3));
+      out.push(Math.min(1, Math.pow(fade, 1.5) + band).toFixed(3));   // eases right down to the page colour
     }
     return out.join(" ");
   }
