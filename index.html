@@ -354,10 +354,10 @@
 
   /* 1 · Rise: a red glow rising from the bottom of the screen */
   .w-rise {
-    left: -25%; right: -25%; bottom: -12%; height: 70%;
-    background: radial-gradient(ellipse 55% 80% at 50% 100%,
-      rgb(var(--wrong) / 0.42), rgb(var(--wrong) / 0.16) 48%, rgb(var(--wrong) / 0) 78%);
-    transform: translateY(35%);
+    /* wide and tall: the glow spans the whole bottom edge and fades up in eased steps */
+    left: -45%; right: -45%; bottom: -10%; height: 78%;
+    background: radial-gradient(ellipse 72% 92% at 50% 100%, rgb(var(--wrong) / 0.468) 0%, rgb(var(--wrong) / 0.384) 10%, rgb(var(--wrong) / 0.299) 20%, rgb(var(--wrong) / 0.225) 30%, rgb(var(--wrong) / 0.159) 40%, rgb(var(--wrong) / 0.108) 50%, rgb(var(--wrong) / 0.068) 60%, rgb(var(--wrong) / 0.040) 70%, rgb(var(--wrong) / 0.019) 80%, rgb(var(--wrong) / 0.007) 90%, rgb(var(--wrong) / 0.000) 100%);
+    transform: translateY(30%);
     transition: opacity 600ms var(--ease-out), transform 1100ms var(--ease-out);
   }
   .stage[data-wfx="rise"][data-won] .w-rise { opacity: 1; transform: none; }

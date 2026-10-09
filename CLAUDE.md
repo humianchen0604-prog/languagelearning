@@ -53,8 +53,8 @@ cd papa && python3 -m http.server 8000   # mic needs http(s), not file://
   For the Pope and the potato (wrong answers) there is no glare: the caption
   starts black and quickly changes to the red, which stays (`.caption.redden`).
 - Wrong-answer treatments (the Pope or the potato), picked in Adjust → "Wrong
-  answer" (saved as `papa-wfx`): Rise (red glow rising from the bottom, the
-  user's own idea), Edges (a lighter red gradient creeping in evenly along every side, eased out in small steps, while the Spanish word shakes), Shake (picture
+  answer" (saved as `papa-wfx`): Rise (a wide red glow across the whole bottom
+  edge, rising, the user's own idea), Edges (a lighter red gradient creeping in evenly along every side, eased out in small steps, while the Spanish word shakes), Shake (picture
   and caption shake "no"), Bleed (red wash on a layer under the picture, bleeding out around it), Ripples
   (red rings out of the voice button), Scribble (pencil correction mark across
   the word), Blush (voice button flushes pink and shakes). The stage carries
