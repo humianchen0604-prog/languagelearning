@@ -48,7 +48,7 @@ cd papa && python3 -m http.server 8000   # mic needs http(s), not file://
   full width (normal blending, so the Bleed layer stays behind it), each in its box (`PICTURES` in the script).
 - Caption: meaning in SF Pro Light 16px at 80%, y 541; Spanish in Regular 28px,
   y 565; colour per word (table above). A miss shows "No te entendí" and the
-  transcript in grey. Every result's caption lines fade in rising 10u with a
+  transcript in grey. The Dad caption's lines fade in rising 10u with a
   2px blur that clears (450ms, strong ease-out), the Spanish word 70ms after
   the meaning (`.caption.enter`, `rise-in`); live transcripts don't animate. When Dad is said (correct), the caption turns black and a
   glare of the blue sweeps across it once, straight away (`.caption.shine`).
@@ -56,7 +56,7 @@ cd papa && python3 -m http.server 8000   # mic needs http(s), not file://
   starts black and quickly changes to the red, which stays (`.caption.redden`).
 - Wrong answer (the Pope or the potato): **Edges** only. A soft colour creeps
   in evenly along every side (eased in many small steps) while both caption
-  lines shake "no"; the voice button turns 70% opaque so the colour shows
+  lines appear (no rise) and shake straight away "no"; the voice button turns 70% opaque so the colour shows
   through. Adjust → Wrong answer: Edge hue (0–360°, default 16° = soft red
   hsl(16 70% 62%)), Edge strength (0–250%), and a Show wrong answer button. Edge time
   (0.2–6s, default 1s) sets how long the edges take to creep in.
