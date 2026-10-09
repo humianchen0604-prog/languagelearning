@@ -53,6 +53,8 @@ user double-clicks it on their Mac.
 - The phone is a 402 × 874 design. Every size is `calc(N * var(--u))` with
   `--u: calc(100cqw / 402)` on `.stage`, scaled to fit. Page colour `#fafafa`
   (by request; Figma used `#f5f2ee`), under the paper texture; square corners (radius 0, by request).
+  Around the phone the preview background is white (`--surround: #fff`) and the
+  phone has no drop shadow (both by request).
 - Top: the progress strip (six blob shapes at 20% opacity, centred). The user
   asked for it 40% smaller than in Figma, then 10% wider gaps: 178 × 7u at y ≈ 72.
   No close button: the main Figma frame has none.
@@ -166,7 +168,10 @@ the older full watercolors, no longer used by the page.
     softness, default 3.5). Adjust → Mic smudges: Dad blue (default), Light
     gray, Light blue, Aqua, Perplexity, Indigo, or hue/saturation/lightness,
     Colour density (0–300%, default 100%) and Edge softness. Moving one of
-    these sliders previews the smudges on the button for ~2s (`previewMic()`). Settings key `papa-settings-v16` (older
+    these sliders previews the smudges on the button for ~2s (`previewMic()`).
+    While listening with Smudges, the grey button itself fades out (no grey
+    under the smudges, by request): only the blue layers of different sizes,
+    blurred, adding up (Edge softness default 5, plus half the listening blur). Settings key `papa-settings-v17` (older
     wash and smudge values are dropped on migration so new defaults show). The other looks
     fill the shape with five blurred pastel drops (clipped to it): Swirl
     (clockwise, about one lap per 30s), Marble, Ripples; or Ellipses. Motion is

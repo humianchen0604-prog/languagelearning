@@ -8,7 +8,7 @@
   :root {
     color-scheme: light;
     --paper: #fafafa;          /* page colour, under the cold-press texture */
-    --surround: #e9e4de;       /* around the phone on wide screens */
+    --surround: #ffffff;       /* around the phone on wide screens (white, by request) */
     --ink: #302e2a;            /* the word to translate */
     --ink-soft: #7a6c61;       /* panel notes */
     --seg: #c8c8c8;            /* progress blob, upcoming (shown at 20%) */
@@ -62,7 +62,7 @@
     /* square corners (the user asked for radius 0) */
     .phone {
       border-radius: 0;
-      box-shadow: 0 24px 60px -30px rgb(60 40 20 / 0.35);
+      box-shadow: none;   /* no drop shadow (by request) */
     }
   }
 
@@ -191,6 +191,8 @@
     mix-blend-mode: multiply;
   }
   .blob-smudges .msm { mix-blend-mode: multiply; }
+  .blob-smudges { transition: filter 450ms var(--ease-out); }
+  .voice[data-state="listening"] .blob-smudges { filter: blur(calc(var(--listen-blur, 3.5) * 0.5 * var(--u))); }
   .frame canvas {
     position: absolute;
     inset: 0;
@@ -237,10 +239,13 @@
     overflow: visible;
     pointer-events: none;
     mix-blend-mode: multiply;
-    transition: filter 450ms var(--ease-out);
+    transition: filter 450ms var(--ease-out), opacity 350ms var(--ease-out);
   }
   /* listening: the whole shape's edge blurs out into the paper (Adjust → Edge blur) */
   .voice[data-state="listening"] .blob { filter: blur(calc(var(--listen-blur, 3.5) * var(--u))); }
+  /* Smudges look: no grey button under the smudges while listening, just the
+     blue layers of different sizes, blurred, adding up */
+  .voice[data-look="smudges"][data-state="listening"] .blob { opacity: 0; }
   .blob > g {
     fill: var(--blob-idle);
     fill-opacity: 1;
@@ -867,7 +872,7 @@
     <div class="row"><label for="washSat">Saturation</label><output for="washSat"></output><input id="washSat" type="range" min="0" max="1" step="0.01" value="0.6"></div>
     <div class="row"><label for="washLight">Lightness</label><output for="washLight"></output><input id="washLight" type="range" min="0.2" max="0.97" step="0.01" value="0.78"></div>
     <div class="row"><label for="washAlpha">Colour density</label><output for="washAlpha"></output><input id="washAlpha" type="range" min="0" max="3" step="0.01" value="1"></div>
-    <div class="row"><label for="msmSoft">Edge softness</label><output for="msmSoft"></output><input id="msmSoft" type="range" min="0" max="8" step="0.1" value="3.5"></div>
+    <div class="row"><label for="msmSoft">Edge softness</label><output for="msmSoft"></output><input id="msmSoft" type="range" min="0" max="10" step="0.1" value="5"></div>
     <p class="note">Shown with Voice visual → Smudges. Moving a slider previews them on the button.</p>
   </section>
 
@@ -907,11 +912,15 @@
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   /* ---------------- Settings (remembered per browser) ---------------- */
-  const KEY = "papa-settings-v16";
+  const KEY = "papa-settings-v17";
   const ids = ["toothSize", "toothDepth", "warmth", "paintTime", "edgeHue", "edgeAlpha", "edgeTime", "washHue", "washSat", "washLight", "washAlpha", "listenBlur", "loadLight", "loadAlpha", "loadFade", "msmSoft", "loadBlur", "loadPaint", "edgeTex"];
   let saved = {};
   try {
     saved = JSON.parse(localStorage.getItem(KEY) || "null");
+    if (!saved) {   // v17: softer mic smudges (no grey button under them)
+      saved = JSON.parse(localStorage.getItem("papa-settings-v16") || "null");
+      if (saved) delete saved.msmSoft;
+    }
     if (!saved) {   // v16: the edge colour fades out softly on all four sides again (Edge rim 0)
       saved = JSON.parse(localStorage.getItem("papa-settings-v15") || "null");
       if (saved) delete saved.edgeTex;
