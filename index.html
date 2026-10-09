@@ -922,23 +922,23 @@
       <button type="button" data-wash="perplexity" aria-pressed="false">Perplexity</button>
       <button type="button" data-wash="indigo" aria-pressed="false">Indigo</button>
     </div>
-    <div class="row"><label for="washHue">Hue</label><output for="washHue"></output><input id="washHue" type="range" min="0" max="360" step="1" value="30"></div>
+    <div class="row"><label for="washHue">Hue</label><output for="washHue"></output><input id="washHue" type="range" min="0" max="360" step="1" value="205"></div>
     <div class="hue-strip" aria-hidden="true"></div>
-    <div class="row"><label for="washSat">Saturation</label><output for="washSat"></output><input id="washSat" type="range" min="0" max="1" step="0.01" value="0.05"></div>
-    <div class="row"><label for="washLight">Lightness</label><output for="washLight"></output><input id="washLight" type="range" min="0.2" max="0.97" step="0.01" value="0.88"></div>
-    <div class="row"><label for="washAlpha">Colour density</label><output for="washAlpha"></output><input id="washAlpha" type="range" min="0" max="3" step="0.01" value="0.2"></div>
+    <div class="row"><label for="washSat">Saturation</label><output for="washSat"></output><input id="washSat" type="range" min="0" max="1" step="0.01" value="0.75"></div>
+    <div class="row"><label for="washLight">Lightness</label><output for="washLight"></output><input id="washLight" type="range" min="0.2" max="0.97" step="0.01" value="0.68"></div>
+    <div class="row"><label for="washAlpha">Colour density</label><output for="washAlpha"></output><input id="washAlpha" type="range" min="0" max="3" step="0.01" value="0.1"></div>
     <div class="row"><label for="msmSoft">Edge softness</label><output for="msmSoft"></output><input id="msmSoft" type="range" min="0" max="10" step="0.1" value="1.5"></div>
     <p class="note">Shown with Voice visual → Smudges. Moving a slider previews them on the button.</p>
   </section>
 
   <section class="group">
     <h3>First-picture wash</h3>
-    <div class="row"><label for="loadPaint">Fade-in time</label><output for="loadPaint"></output><input id="loadPaint" type="range" min="0.1" max="3" step="0.05" value="0.45"></div>
+    <div class="row"><label for="loadPaint">Fade-in time</label><output for="loadPaint"></output><input id="loadPaint" type="range" min="0.1" max="3" step="0.05" value="0.4"></div>
     <div class="row"><label for="loadLight">Grey lightness</label><output for="loadLight"></output><input id="loadLight" type="range" min="0.3" max="0.95" step="0.01" value="0.3"></div>
-    <div class="row"><label for="loadAlpha">Strength</label><output for="loadAlpha"></output><input id="loadAlpha" type="range" min="0" max="2" step="0.01" value="0.1"></div>
+    <div class="row"><label for="loadAlpha">Strength</label><output for="loadAlpha"></output><input id="loadAlpha" type="range" min="0" max="2" step="0.01" value="0.16"></div>
     <div class="row"><label for="loadFade">Fade out</label><output for="loadFade"></output><input id="loadFade" type="range" min="0.3" max="4" step="0.1" value="0.5"></div>
-    <div class="row"><label for="loadStart">Picture starts at (% of the fade)</label><output for="loadStart"></output><input id="loadStart" type="range" min="0.3" max="1" step="0.01" value="1"></div>
-    <div class="row"><label for="loadBlur">Blur</label><output for="loadBlur"></output><input id="loadBlur" type="range" min="0" max="20" step="0.5" value="0"></div>
+    <div class="row"><label for="loadStart">Picture starts at (% of the fade)</label><output for="loadStart"></output><input id="loadStart" type="range" min="0.3" max="1" step="0.01" value="0.7"></div>
+    <div class="row"><label for="loadBlur">Blur</label><output for="loadBlur"></output><input id="loadBlur" type="range" min="0" max="20" step="0.5" value="0.5"></div>
     <p class="note">Reveal style: how the grey wash turns into the first picture.</p>
     <div class="seg" id="reveal">
       <button type="button" data-reveal="fade" aria-pressed="true">Fade</button>
@@ -953,7 +953,7 @@
       <button type="button" data-reveal="wick" aria-pressed="false">9 Wicking</button>
       <button type="button" data-reveal="strokes" aria-pressed="false">10 Brush strokes</button>
     </div>
-    <div class="row"><label for="revealTime">Reveal time</label><output for="revealTime"></output><input id="revealTime" type="range" min="0.5" max="5" step="0.05" value="1.35"></div>
+    <div class="row"><label for="revealTime">Reveal time</label><output for="revealTime"></output><input id="revealTime" type="range" min="0.5" max="5" step="0.05" value="1"></div>
     <div class="seg">
       <button type="button" class="try-reveal" data-word="papá">Try with papá</button>
       <button type="button" class="try-reveal" data-word="el papa">el papa</button>
@@ -989,21 +989,16 @@
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   /* ---------------- Settings (remembered per browser) ---------------- */
-  const KEY = "papa-settings-v23";
+  const KEY = "papa-settings-v24";
   const ids = ["toothSize", "toothDepth", "warmth", "paintTime", "edgeHue", "edgeAlpha", "washHue", "washSat", "washLight", "washAlpha", "listenBlur", "loadLight", "loadAlpha", "loadFade", "msmSoft", "loadBlur", "loadPaint", "edgeTex", "revealTime", "loadStart"];
   // v19: the user's tuned settings (their Save settings file, 2026-10-09) are
   // the defaults, so values saved under older keys are dropped
   // v20: the wash fades and scales in (Fade-in time 0.45s) instead of painting in over 1.9s
+  // v24: the user's second tuned settings file (2026-10-09 04:07) is the default,
+  // so values saved under older keys are dropped
   let saved = {};
   try {
-    saved = JSON.parse(localStorage.getItem(KEY) || "null");
-    // v23: pictures fade in 25% faster (1.5s; reveal styles 1.35s); the red edges follow
-    if (!saved) { saved = JSON.parse(localStorage.getItem("papa-settings-v22") || "null"); if (saved) { delete saved.paintTime; delete saved.revealTime; } }
-    // v22: no overlap (the picture starts once the grey is gone) and a slower 2s fade-in with the red edges
-    if (!saved) { saved = JSON.parse(localStorage.getItem("papa-settings-v21") || "null"); if (saved) { delete saved.paintTime; delete saved.loadStart; } }
-    // v21: slower picture fade-in (1.5s), and the red edges follow it (no separate Edge time)
-    if (!saved) { saved = JSON.parse(localStorage.getItem("papa-settings-v20") || "null"); if (saved) { delete saved.paintTime; delete saved.loadStart; } }
-    if (!saved) { saved = JSON.parse(localStorage.getItem("papa-settings-v19") || "{}") || {}; delete saved.loadPaint; delete saved.paintTime; }
+    saved = JSON.parse(localStorage.getItem(KEY) || "{}") || {};
   } catch (e) { saved = {}; }
   const settings = {};
   const fmt = (id, v) => id === "paintTime" || id === "edgeTime" || id === "loadPaint" ? v.toFixed(2) + " s" : id === "loadFade" || id === "revealTime" ? v.toFixed(1) + " s" : id === "edgeHue" || id === "washHue" ? Math.round(v) + "°" : id === "listenBlur" || id === "msmSoft" || id === "loadBlur" ? v.toFixed(1) + " px" : id === "toothSize" ? Math.pow(2, v).toFixed(2) + "×" : Math.round(v * 100) + "%";
@@ -1135,9 +1130,11 @@
         vec2 d = q - c;
         float wav = sin(d.x * 9. + sin(d.y * 7.) * 1.6) * sin(d.y * 8. + sin(d.x * 6.) * 1.4) + .5 * sin(d.x * 4. - d.y * 5. + 1.);
         float f = length(d) * 2.6 + .2 + wav * .12;
-        float r = max(smoothstep(f - .35, f, t * 2.2), smoothstep(.85, 1., t));
-        vec4 im = pic(v, smoothstep(.35, 1., t)) * r;
-        o = over(im, g * (1. - smoothstep(.45, 1., t)));
+        // the grey fades out first (by t .35); the colour starts soaking in a little after (from t .2)
+        float ti = clamp((t - .2) / .8, 0., 1.);
+        float r = max(smoothstep(f - .35, f, ti * 2.2), smoothstep(.85, 1., ti));
+        vec4 im = pic(v, smoothstep(.35, 1., ti)) * r;
+        o = over(im, g * (1. - smoothstep(0., .35, t)));
       } else if (uMode < 2.5) {     // 2 wet-into-wet bloom from the centre, pushing the grey out
         float f = length(q - c) * 2.4 + (fbm(q * 6. + 3.) - .45) * .9;
         float front = t * 2. - .1;
@@ -1866,8 +1863,10 @@
     // away (even mid fade-in) so the picture follows quickly. The edges take
     // until the picture has finished fading in.
     if (wrong) {
+      // the edges run 1.1x faster than the picture: they finish a little before it does
       const greyLeft = reveal === "fade" && (washShown || washExit) ? settings.loadFade * settings.loadStart : 0;
-      wrongOn(greyLeft + (reveal === "fade" ? settings.paintTime : settings.revealTime));
+      const painted = reveal !== "fade" && washShown ? Math.max(0, washPainted() - performance.now()) / 1000 : 0;
+      wrongOn((greyLeft + painted + (reveal === "fade" ? settings.paintTime : settings.revealTime)) / 1.1);
     }
     if (reveal === "fade") {
       if (washShown || washExit || washDelay) await exitWash(wrong);   // the grey is gone (it may have started leaving as the word was ~95% said)
@@ -2062,15 +2061,15 @@
 
   /* Reveal style for the first picture (remembered per browser). Picking one,
      or a Try button, starts over from an empty page and plays a take. */
-  let reveal = "fade";
+  let reveal = "underpaint";   // the user's tuned default
   // v2: back to Fade by default, so the grey is gone before the picture (the other styles blend them)
-  try { reveal = localStorage.getItem("papa-reveal-v2") || reveal; } catch (e) {}
-  if (!REVEALS.includes(reveal)) reveal = "fade";
+  try { reveal = localStorage.getItem("papa-reveal-v3") || reveal; } catch (e) {}
+  if (!REVEALS.includes(reveal)) reveal = "underpaint";
   const revealBtns = [...document.querySelectorAll("#reveal button")];
   function setReveal(r) {
     reveal = r;
     revealBtns.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.reveal === r)));
-    try { localStorage.setItem("papa-reveal-v2", r); } catch (e) {}
+    try { localStorage.setItem("papa-reveal-v3", r); } catch (e) {}
   }
   setReveal(reveal);
   function tryReveal(word) {

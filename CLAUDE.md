@@ -103,7 +103,7 @@ user double-clicks it on their Mac.
   Adjust → First-picture wash: fade-in time, grey lightness, strength,
   fade-out time, blur (defaults are the user's tuned values, below).
   **Reveal style** (Adjust → First-picture wash; remembered in
-  `papa-reveal-v2`, default Fade, included in Save settings; only Fade keeps
+  `papa-reveal-v3`, default Underpainting (the user's tuned file), included in Save settings; only Fade keeps
   the grey and the picture strictly apart, the other ten blend them by design): how the finished grey wash
   turns into the first picture. "Fade" is the wash fading out completely, then
   the picture. The ten others (the user asked for ten ideas and
@@ -111,8 +111,8 @@ user double-clicks it on their Mac.
   finishes painting: `revealPaint(key, mode)` draws the same grey (pigment
   texture `tWash`, colour, box `uBox`) in the shader, hides the SVG wash in the
   same frame (`washHandoff()`; pixel-checked: within 1–2 levels), then plays
-  `uMode` 1–10 over Reveal time (default 1.35s, 25% faster than the first 1.8s): 1 Underpainting (colour soaks
-  into the grey from the inside; its front is a smooth sine warp, as noise
+  `uMode` 1–10 over Reveal time (default 1.35s, 25% faster than the first 1.8s): 1 Underpainting (the grey fades out first, by
+  35% of the reveal, and the colour soaks in from the inside starting at 20%; its front is a smooth sine warp, as noise
   showed grid lines), 2 Bloom (wet-into-wet from the centre with a
   grey rim pushed out), 3 Brush pass (second diagonal stroke wipes grey,
   reveals picture), 4 Glazing (four even glazes deepen the colour, lights
@@ -183,12 +183,14 @@ user double-clicks it on their Mac.
 
 ## Saving tuned settings
 
-Current defaults are the user's own tuned file (2026-10-09), settings key
-`papa-settings-v23` (v19 plus the 0.45s fade-in, 1.5s painting time, 1.35s reveal time and no overlap): tooth size −1.49, tooth depth 0.27, warmth 0.1, painting
-time 1.5s, edge hue 354, edge strength 1.36, edge rim 0; mic
-smudges hue 30 / sat 0.05 / light 0.88 / density 0.2 / softness 1.5; listening
-blur 3.5, listening grey 3.5%; first-picture wash lightness 0.3, strength 0.1,
-fade 0.5s, blur 0, fade-in 0.45s; voice look Grey.
+Current defaults are the user's second tuned file (2026-10-09 04:07),
+settings key `papa-settings-v24`: tooth size −1.49, tooth depth 0.27, warmth
+0.1, painting time 1.5s, edge hue 354, edge strength 1.36, edge rim 0; mic
+smudges hue 205 / sat 0.75 / light 0.68 / density 0.1 / softness 1.5;
+listening blur 3.5; first-picture wash lightness 0.3, strength 0.16, fade
+0.5s, blur 0.5, fade-in 0.4s, picture starts at 70% of the fade, reveal time
+1s; voice look Pebble (`grey`); reveal style Underpainting. The red edges
+run 1.1× faster than the picture (by request; they finish just before it).
 
 Adjust → Save → **Save settings** downloads `papa-settings.json` (every
 slider's value plus the voice look and reveal style), copies it, and shows it in the panel.
