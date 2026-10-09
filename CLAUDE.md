@@ -86,6 +86,25 @@ user double-clicks it on their Mac.
   pause, and earlier didn't want them fully together; `finish()` awaits it).
   Adjust → First-picture wash: paint-in time, grey lightness, strength,
   fade-out time, blur (defaults are the user's tuned values, below).
+  **Reveal style** (Adjust → First-picture wash; remembered in
+  `papa-reveal-v1`, included in Save settings): how the finished grey wash
+  turns into the first picture. "Fade" is the wash fading out with the picture
+  starting halfway through. The ten others (the user asked for ten ideas and
+  wanted to try all) hand the wash over to the WebGL painter at the moment it
+  finishes painting: `revealPaint(key, mode)` draws the same grey (pigment
+  texture `tWash`, colour, box `uBox`) in the shader, hides the SVG wash in the
+  same frame (`washHandoff()`; pixel-checked: within 1–2 levels), then plays
+  `uMode` 1–10 over Reveal time (default 1.8s): 1 Underpainting (colour soaks
+  into the grey from the inside), 2 Bloom (wet-into-wet from the centre with a
+  grey rim pushed out), 3 Brush pass (second diagonal stroke wipes grey,
+  reveals picture), 4 Glazing (four even glazes deepen the colour, lights
+  first), 5 Settling (pale larger blot settles, sharpens, gains colour),
+  6 Drying edges (wet wavering edges firm up, tideline flash), 7 Granulation
+  (speckles into the paper's tooth, darkest first), 8 Blotting (tissue patches
+  lift the grey), 9 Wicking (colour creeps in from the outline, `tGlow` = a
+  40px-blurred copy as depth), 10 Brush strokes (five soft strokes, the last
+  over the middle). Every mode ends exactly on the sharp picture. Picking a
+  style, or the Try buttons, empties the page and plays a take (`tryReveal()`).
   Between pictures there is NO wash: the old picture stays while listening and
   dissolves into the new one (the original effect; the user asked to keep it).
   Tried and dropped: a blue wash for every take; six layered grey blob washes.
@@ -149,7 +168,7 @@ blur 3.5, listening grey 3.5%; first-picture wash lightness 0.3, strength 0.1,
 fade 0.5s, blur 0, paint-in 1.9s; voice look Grey.
 
 Adjust → Save → **Save settings** downloads `papa-settings.json` (every
-slider's value plus the voice look), copies it, and shows it in the panel.
+slider's value plus the voice look and reveal style), copies it, and shows it in the panel.
 When the user sends one, make those values the defaults: set each input's
 `value` attribute (and the look's default), then bump the settings key so the
 new defaults show.

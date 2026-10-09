@@ -938,6 +938,26 @@
     <div class="row"><label for="loadAlpha">Strength</label><output for="loadAlpha"></output><input id="loadAlpha" type="range" min="0" max="2" step="0.01" value="0.1"></div>
     <div class="row"><label for="loadFade">Fade out</label><output for="loadFade"></output><input id="loadFade" type="range" min="0.3" max="4" step="0.1" value="0.5"></div>
     <div class="row"><label for="loadBlur">Blur</label><output for="loadBlur"></output><input id="loadBlur" type="range" min="0" max="20" step="0.5" value="0"></div>
+    <p class="note">Reveal style: how the grey wash turns into the first picture.</p>
+    <div class="seg" id="reveal">
+      <button type="button" data-reveal="fade" aria-pressed="true">Fade</button>
+      <button type="button" data-reveal="underpaint" aria-pressed="false">1 Underpainting</button>
+      <button type="button" data-reveal="bloom" aria-pressed="false">2 Bloom</button>
+      <button type="button" data-reveal="brush" aria-pressed="false">3 Brush pass</button>
+      <button type="button" data-reveal="glaze" aria-pressed="false">4 Glazing</button>
+      <button type="button" data-reveal="settle" aria-pressed="false">5 Settling</button>
+      <button type="button" data-reveal="dry" aria-pressed="false">6 Drying edges</button>
+      <button type="button" data-reveal="granulate" aria-pressed="false">7 Granulation</button>
+      <button type="button" data-reveal="blot" aria-pressed="false">8 Blotting</button>
+      <button type="button" data-reveal="wick" aria-pressed="false">9 Wicking</button>
+      <button type="button" data-reveal="strokes" aria-pressed="false">10 Brush strokes</button>
+    </div>
+    <div class="row"><label for="revealTime">Reveal time</label><output for="revealTime"></output><input id="revealTime" type="range" min="0.5" max="5" step="0.1" value="1.8"></div>
+    <div class="seg">
+      <button type="button" class="try-reveal" data-word="papá">Try with papá</button>
+      <button type="button" class="try-reveal" data-word="el papa">el papa</button>
+      <button type="button" class="try-reveal" data-word="la papa">la papa</button>
+    </div>
   </section>
 
   <section class="group">
@@ -969,7 +989,7 @@
 
   /* ---------------- Settings (remembered per browser) ---------------- */
   const KEY = "papa-settings-v19";
-  const ids = ["toothSize", "toothDepth", "warmth", "paintTime", "edgeHue", "edgeAlpha", "edgeTime", "washHue", "washSat", "washLight", "washAlpha", "listenBlur", "loadLight", "loadAlpha", "loadFade", "msmSoft", "loadBlur", "loadPaint", "edgeTex"];
+  const ids = ["toothSize", "toothDepth", "warmth", "paintTime", "edgeHue", "edgeAlpha", "edgeTime", "washHue", "washSat", "washLight", "washAlpha", "listenBlur", "loadLight", "loadAlpha", "loadFade", "msmSoft", "loadBlur", "loadPaint", "edgeTex", "revealTime"];
   // v19: the user's tuned settings (their Save settings file, 2026-10-09) are
   // the defaults, so values saved under older keys are dropped
   let saved = {};
@@ -977,7 +997,7 @@
     saved = JSON.parse(localStorage.getItem(KEY) || "{}") || {};
   } catch (e) { saved = {}; }
   const settings = {};
-  const fmt = (id, v) => id === "paintTime" || id === "edgeTime" || id === "loadFade" || id === "loadPaint" ? v.toFixed(1) + " s" : id === "edgeHue" || id === "washHue" ? Math.round(v) + "°" : id === "listenBlur" || id === "msmSoft" || id === "loadBlur" ? v.toFixed(1) + " px" : id === "toothSize" ? Math.pow(2, v).toFixed(2) + "×" : Math.round(v * 100) + "%";
+  const fmt = (id, v) => id === "paintTime" || id === "edgeTime" || id === "loadFade" || id === "loadPaint" || id === "revealTime" ? v.toFixed(1) + " s" : id === "edgeHue" || id === "washHue" ? Math.round(v) + "°" : id === "listenBlur" || id === "msmSoft" || id === "loadBlur" ? v.toFixed(1) + " px" : id === "toothSize" ? Math.pow(2, v).toFixed(2) + "×" : Math.round(v * 100) + "%";
   function persist() { try { localStorage.setItem(KEY, JSON.stringify(settings)); } catch (e) {} }
 
   ids.forEach((id) => {
@@ -1060,18 +1080,133 @@
 
   const VERT = `attribute vec2 p; varying vec2 v; void main(){ v = vec2(p.x*.5+.5, .5-p.y*.5); gl_Position = vec4(p,0.,1.); }`;
   const FRAG = `
+    #ifdef GL_FRAGMENT_PRECISION_HIGH
+    precision highp float;
+    #else
     precision mediump float;
+    #endif
     varying vec2 v;
-    uniform sampler2D tSharpA, tSoftA, tSharpB, tSoftB;
+    uniform sampler2D tSharpA, tSoftA, tSharpB, tSoftB, tGlow, tWash;
     uniform vec2 uS;       // new picture: fade, focus
     uniform float uOut;    // old picture leaving
+    // first-picture reveal styles (uMode 1-10): the grey wash (tWash, in
+    // uBox) turns into the picture over uT 0..1; uC is the picture's centre
+    uniform float uMode, uT, uTime;
+    uniform vec4 uGrey, uBox;
+    uniform vec2 uC;
+
+    float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
+    float noise(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3. - 2. * f);
+      return mix(mix(hash(i), hash(i + vec2(1., 0.)), f.x), mix(hash(i + vec2(0., 1.)), hash(i + vec2(1., 1.)), f.x), f.y); }
+    float fbm(vec2 p){ float s = 0., a = .5; for (int k = 0; k < 4; k++) { s += a * noise(p); p *= 2.03; a *= .5; } return s; }
+    float lum(vec3 c){ return dot(c, vec3(.299, .587, .114)); }
+    vec3 unpre(vec4 c){ return c.a > .001 ? c.rgb / c.a : vec3(0.); }
+    vec4 over(vec4 top, vec4 bot){ return top + bot * (1. - top.a); }
+    vec4 pic(vec2 uv, float focus){ return mix(texture2D(tSoftB, uv), texture2D(tSharpB, uv), focus); }
+    vec4 greyAt(vec2 uv){
+      vec2 w = (uv - uBox.xy) / uBox.zw;
+      if (w.x < 0. || w.y < 0. || w.x > 1. || w.y > 1.) return vec4(0.);
+      float p = texture2D(tWash, w).r * uGrey.a;
+      return vec4(uGrey.rgb * p, p);
+    }
+
     void main(){
       vec4 a = texture2D(tSharpA, v) * (1. - uOut);
-      vec4 b = mix(texture2D(tSoftB, v), texture2D(tSharpB, v), uS.y) * uS.x;
-      gl_FragColor = b + a * (1. - b.a);
+      if (uMode < .5) {
+        vec4 b = mix(texture2D(tSoftB, v), texture2D(tSharpB, v), uS.y) * uS.x;
+        gl_FragColor = b + a * (1. - b.a);
+        return;
+      }
+      float t = clamp(uT, 0., 1.);
+      vec2 q = vec2(v.x * .804, v.y), c = vec2(uC.x * .804, uC.y);   // equal units across and down
+      vec4 g = greyAt(v), o;
+      if (uMode < 1.5) {            // 1 underpainting: colour soaks into the grey from the inside
+        float f = length(q - c) * 2.6 + fbm(q * 4.5) * .5;
+        float r = max(smoothstep(f - .35, f, t * 2.2), smoothstep(.85, 1., t));
+        vec4 im = pic(v, smoothstep(.35, 1., t)) * r;
+        o = over(im, g * (1. - smoothstep(.45, 1., t)));
+      } else if (uMode < 2.5) {     // 2 wet-into-wet bloom from the centre, pushing the grey out
+        float f = length(q - c) * 2.4 + (fbm(q * 6. + 3.) - .45) * .9;
+        float front = t * 2. - .1;
+        float r = max(smoothstep(f - .12, f + .02, front), smoothstep(.85, 1., t));
+        float rim = exp(-pow((f - front) / .06, 2.)) * (1. - t);
+        vec4 im = pic(v, smoothstep(.3, 1., t)) * r;
+        o = over(im, g * ((1. - r) + rim * 1.3) * (1. - smoothstep(.75, 1., t)));
+      } else if (uMode < 3.5) {     // 3 a second brush pass, top left to bottom right, wiping the grey
+        float d = v.x * .55 + v.y * .45 + (fbm(vec2(v.x * 3. - v.y * 2., v.y * 3. + v.x * 14.)) - .45) * .14;
+        float front = .12 + t * .88;
+        float r = max(1. - smoothstep(front - .05, front + .05, d), smoothstep(.9, 1., t));
+        vec4 im = pic(v, clamp((front - d) * 3.5, 0., 1.)) * r;
+        o = over(im, g * (1. - r));
+      } else if (uMode < 4.5) {     // 4 glazing: a pale glaze of everything, then mid tones, then darks
+        vec4 s4 = pic(v, smoothstep(.15, .8, t));
+        vec3 col = unpre(s4);
+        float tg = t >= 1. ? 1. : (floor(t * 4.) + smoothstep(.15, .85, fract(t * 4.))) / 4.;
+        // each glaze deepens everything; light tones are done first, darks need every glaze
+        vec3 glazed = mix(vec3(1.), col, clamp(tg * 1.3 - (1. - lum(col)) * .3, 0., 1.));
+        float al = s4.a * smoothstep(0., .25, t);
+        o = over(vec4(glazed * al, al), g * (1. - smoothstep(0., .45, t)));
+      } else if (uMode < 5.5) {     // 5 pigment settling: a pale, slightly larger blot settles and sharpens
+        float e = 1. - (1. - t) * (1. - t);
+        vec2 uv = uC + (v - uC) / (1. + .08 * (1. - e));
+        vec4 s4 = pic(uv, smoothstep(.1, 1., t));
+        vec3 col = unpre(s4);
+        vec3 pale = mix(mix(vec3(lum(col)), col, .4), vec3(1.), .3);
+        col = mix(pale, col, e);
+        float al = s4.a * smoothstep(0., .35, t);
+        o = over(vec4(col * al, al), g * (1. - smoothstep(.05, .7, t)));
+      } else if (uMode < 6.5) {     // 6 drying edges: wet, wavering edges firm up, with a tideline flash
+        float wet = 1. - smoothstep(0., .85, t);
+        vec2 wob = vec2(fbm(v * 8. + uTime * .6), fbm(v * 8. - uTime * .5 + 7.)) - .45;
+        vec2 uv = v + wob * .02 * wet;
+        vec4 so = texture2D(tSoftB, uv), s4 = mix(so, texture2D(tSharpB, uv), 1. - wet);
+        float rim = exp(-pow((so.a - .5) / .2, 2.)) * smoothstep(.3, .6, t) * (1. - smoothstep(.7, 1., t));
+        vec3 col = unpre(s4) * (1. - .35 * rim);
+        float al = s4.a * smoothstep(0., .3, t);
+        o = over(vec4(col * al, al), g * (1. - smoothstep(0., .5, t)));
+      } else if (uMode < 7.5) {     // 7 granulation: speckles fill into the paper's tooth, darkest first
+        vec4 sh = texture2D(tSharpB, v);
+        float n = noise(v * vec2(110., 137.)) * .55 + fbm(v * 22.) * .5;
+        float th = t * 1.45 - .2 + (1. - lum(unpre(sh))) * .25;
+        float r = t >= 1. ? 1. : smoothstep(n - .11, n + .11, th);
+        vec4 im = sh * r + texture2D(tSoftB, v) * (1. - r) * .35 * smoothstep(0., .6, t);   // a soft haze under the grains
+        o = over(im, g * (1. - smoothstep(.3, 1., t)));
+      } else if (uMode < 8.5) {     // 8 blotting: tissue-like patches lift the grey, the picture shows in them
+        float n = fbm(v * 9. + 11.);
+        float front = t * 1.15 - .05;
+        float h = smoothstep(n - .07, n + .07, front);
+        float edge = exp(-pow((n - front) / .03, 2.)) * (1. - t);
+        vec4 im = pic(v, smoothstep(.2, 1., t)) * h;
+        o = over(im, g * ((1. - h) + edge * .6));
+      } else if (uMode < 9.5) {     // 9 wicking: colour creeps in from the picture's outline toward its middle
+        float f = texture2D(tGlow, v).a + (fbm(v * 14.) - .45) * .25;
+        float front = t * 1.35 - .1;
+        float r = 1. - smoothstep(front - .06, front + .06, f);
+        vec4 im = pic(v, .65 + .35 * t) * r;   // fairly sharp, so it doesn't halo past the outline
+        o = over(im, g * (1. - smoothstep(.4, 1., t)) * (1. - r * .8));
+      } else {                      // 10 loose brush strokes in different directions, the last over the middle
+        float m = 0.;
+        for (int k = 0; k < 5; k++) {
+          float fk = float(k);
+          float ang = fk * 1.13 + .4;
+          vec2 dir = vec2(cos(ang), sin(ang)), nrm = vec2(-dir.y, dir.x);
+          float off = fk > 3.5 ? 0. : (hash(vec2(fk, 7.)) - .5) * .32;
+          float wide = fk > 3.5 ? .14 : .085;
+          vec2 p = q - c - nrm * off;
+          float across = abs(dot(p, nrm)) + (fbm(q * 18. + fk) - .45) * .04;
+          float along = dot(p, dir) / .45 + (fbm(q * 7. - fk) - .45) * .3;
+          float tk = clamp((t - fk * .13) / .42, 0., 1.);
+          float paint = 1. - smoothstep(mix(-1.3, 1.3, tk) - .1, mix(-1.3, 1.3, tk) + .1, along);
+          m = max(m, paint * (1. - smoothstep(wide * .7, wide, across)));
+        }
+        m = max(m, smoothstep(.82, 1., t));
+        vec4 im = pic(v, smoothstep(.3, 1., t)) * m;
+        o = over(im, g * (1. - m));
+      }
+      gl_FragColor = o;
     }`;
 
-  const TEX_UNITS = ["tSharpA", "tSoftA", "tSharpB", "tSoftB"];
+  const TEX_UNITS = ["tSharpA", "tSoftA", "tSharpB", "tSoftB", "tGlow", "tWash"];
   let prog, uni = {}, tex = {};
   const glOk = !!gl && (() => {
     const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { console.warn(gl.getShaderInfoLog(s)); return null; } return s; };
@@ -1083,7 +1218,7 @@
     const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
     const loc = gl.getAttribLocation(prog, "p"); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-    [...TEX_UNITS, "uS", "uOut"].forEach((k) => uni[k] = gl.getUniformLocation(prog, k));
+    [...TEX_UNITS, "uS", "uOut", "uMode", "uT", "uTime", "uGrey", "uBox", "uC"].forEach((k) => uni[k] = gl.getUniformLocation(prog, k));
     TEX_UNITS.forEach((k, i) => { gl.uniform1i(uni[k], i); tex[k] = gl.createTexture(); });
     return true;
   })();
@@ -1125,11 +1260,14 @@
   const cache = {};
   function layersFor(key) {
     const pic = PICTURES[key];
-    if (!cache[key]) cache[key] = loadImage(pic.src).then((img) => ({ sharp: layer(img, pic.box, 0), soft: layer(img, pic.box, 14) }));
+    // glow: very blurred, for the Wicking reveal (how deep inside the picture a point is)
+    if (!cache[key]) cache[key] = loadImage(pic.src).then((img) => ({ sharp: layer(img, pic.box, 0), soft: layer(img, pic.box, 14), glow: layer(img, pic.box, 40) }));
     return cache[key];
   }
 
-  const state = { s: [0, 0], out: 1, current: null };
+  const state = { s: [0, 0], out: 1, current: null, reveal: null };
+  // the grey wash's pigment, for reveal styles that turn the wash into the picture
+  if (glOk) loadImage("assets/loading-wash.png").then((img) => upload("tWash", img)).catch(() => {});
   function sizeCanvas() {
     const r = canvas.getBoundingClientRect(), dpr = Math.min(devicePixelRatio || 1, 2);
     canvas.width = Math.max(2, Math.round(r.width * dpr)); canvas.height = Math.max(2, Math.round(r.height * dpr));
@@ -1142,6 +1280,9 @@
     if (!state.current) return;
     gl.uniform2f(uni.uS, ...state.s);
     gl.uniform1f(uni.uOut, state.out);
+    const R = state.reveal;
+    gl.uniform1f(uni.uMode, R ? R.mode : 0);
+    if (R) { gl.uniform1f(uni.uT, R.t); gl.uniform1f(uni.uTime, (performance.now() / 1000) % 1000); }
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
 
@@ -1166,6 +1307,7 @@
     const prev = state.current;
     const [layers, before] = await Promise.all([layersFor(key), prev ? layersFor(prev) : null]);
     if (!alive()) return;
+    state.reveal = null;
     canvas.setAttribute("aria-label", PICTURES[key].label);
     if (!glOk) { // no WebGL: show the picture plainly
       const ctx = canvas.getContext("2d");
@@ -1185,6 +1327,33 @@
     }, alive);
   }
 
+  /* First picture with a reveal style: the canvas takes over drawing the grey
+     wash (same pigment, colour and place as the SVG wash) and turns it into
+     the picture in one of ten painterly ways (Adjust → Reveal style). */
+  const REVEALS = ["fade", "underpaint", "bloom", "brush", "glaze", "settle", "dry", "granulate", "blot", "wick", "strokes"];
+  function hslRgb(h, s, l) {
+    const k = (n) => (n + h / 30) % 12, a = s * Math.min(l, 1 - l);
+    return [0, 8, 4].map((n) => l - a * Math.max(-1, Math.min(k(n) - 3, 9 - k(n), 1)));
+  }
+  async function revealPaint(key, mode) {
+    const token = ++paintToken, alive = () => token === paintToken;
+    const layers = await layersFor(key);
+    if (!alive()) return;
+    if (!glOk) { washHandoff(); return paint(key); }
+    canvas.setAttribute("aria-label", PICTURES[key].label);
+    bind("A", layers); bind("B", layers); upload("tGlow", layers.glow);
+    const [r, g, b] = hslRgb(30, 0.05, settings.loadLight);
+    gl.uniform4f(uni.uGrey, r, g, b, Math.min(1, 0.7 * settings.loadAlpha));
+    gl.uniform4f(uni.uBox, 49 / 402, (228 - AREA.y) / AREA.h, 300 / 402, 284 / AREA.h);   // the SVG wash's box
+    const [bl, bt, bw, bh] = PICTURES[key].box;
+    gl.uniform2f(uni.uC, (bl + bw / 2) / 402, (bt + bh / 2 - AREA.y) / AREA.h);
+    state.current = key; state.out = 1; state.s = [0, 0]; state.reveal = { mode, t: 0 };
+    draw(); washHandoff();   // the canvas draws the grey now; hide the SVG wash in the same frame
+    await tween(settings.revealTime * 1000, (t) => { state.reveal.t = t; }, alive);
+    if (!alive()) return;
+    state.reveal = null; state.s = [1, 1]; draw();
+  }
+
   /* Fade the picture on the page away (for "next") */
   async function clearPicture() {
     const key = state.current;
@@ -1192,7 +1361,7 @@
     const token = ++paintToken, alive = () => token === paintToken;
     if (!glOk) { const ctx = canvas.getContext("2d"); ctx && ctx.clearRect(0, 0, canvas.width, canvas.height); state.current = null; return; }
     bind("A", await layersFor(key));
-    state.s = [0, 0]; state.out = 0;
+    state.s = [0, 0]; state.out = 0; state.reveal = null;
     await tween(600, (t) => { state.out = easeInOut(t); }, alive);
     if (alive()) { state.current = null; draw(); }
   }
@@ -1487,6 +1656,11 @@
     washShown = true; washVis = 1;
     if (!washRaf) washRaf = requestAnimationFrame(washTick);
   }
+  // a reveal style takes the wash over in the picture canvas: hide the SVG one at once
+  function washHandoff() {
+    washShown = false; washVis = 0; cancelAnimationFrame(washRaf); washRaf = 0;
+    smudge.style.opacity = "0"; smudge.style.filter = "";
+  }
   function washOff(ms) {
     if (!washShown) return;
     washShown = false; washFrom = washVis; washOffAt = performance.now(); washOffMs = Math.max(1, ms);
@@ -1613,19 +1787,22 @@
     // correct answer: the button goes straight from listening to the "next" arrow
     if (key === "dad") voice.toggleAttribute("data-next", true);
     setState("processing");
-    if (washShown) {   // first picture: the grey wash finishes painting and fades away; the picture starts painting in halfway through that fade, so they overlap a little
+    let handoff = false;
+    if (washShown) {   // first picture: the grey wash finishes painting first
       const left = washPainted() - performance.now();
       if (left > 0 && !reduceMotion) await new Promise((r) => setTimeout(r, left));
-      const ms = settings.loadFade * 1000;
-      washOff(ms);
-      await new Promise((r) => setTimeout(r, reduceMotion ? 0 : ms * 0.5));
+      if (reveal === "fade") {   // Fade: the wash fades away; the picture starts halfway through, so they overlap a little
+        const ms = settings.loadFade * 1000;
+        washOff(ms);
+        await new Promise((r) => setTimeout(r, reduceMotion ? 0 : ms * 0.5));
+      } else handoff = true;     // the other styles turn the wash itself into the picture
     }
     if (wrong) {
       showHeard(text, key);
       if (preShown) caption.classList.add("pre-shown");   // already showing: just turn red and shake
       wrongOn();
     }
-    await paint(key);
+    await (handoff ? revealPaint(key, REVEALS.indexOf(reveal)) : paint(key));
     setState("idle");
     if (key === "dad") voice.setAttribute("aria-label", "Next word");
   }
@@ -1761,6 +1938,28 @@
     else say.hidden = !say.hidden;
   });
 
+  /* Reveal style for the first picture (remembered per browser). Picking one,
+     or a Try button, starts over from an empty page and plays a take. */
+  let reveal = "fade";
+  try { reveal = localStorage.getItem("papa-reveal-v1") || reveal; } catch (e) {}
+  if (!REVEALS.includes(reveal)) reveal = "fade";
+  const revealBtns = [...document.querySelectorAll("#reveal button")];
+  function setReveal(r) {
+    reveal = r;
+    revealBtns.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.reveal === r)));
+    try { localStorage.setItem("papa-reveal-v1", r); } catch (e) {}
+  }
+  setReveal(reveal);
+  function tryReveal(word) {
+    if (voice.dataset.state !== "idle") return;
+    ++paintToken; state.current = null; state.reveal = null; draw();   // empty page, straight away
+    voice.toggleAttribute("data-next", false); wrongOff(); showCaption(null);
+    stageEl.setAttribute("data-intro", "");
+    simulate(word);
+  }
+  revealBtns.forEach((b) => b.addEventListener("click", () => { setReveal(b.dataset.reveal); tryReveal("papá"); }));
+  document.querySelectorAll(".try-reveal").forEach((b) => b.addEventListener("click", () => tryReveal(b.dataset.word)));
+
   /* Restart: back to the opening screen (first word, empty page, opening
      animation). Settings live in localStorage, so a reload keeps them. */
   $("#restart").addEventListener("click", () => location.reload());
@@ -1773,7 +1972,7 @@
   // the artifact viewer offers files through its downloads capability; elsewhere it's null
   const downloadsP = window.claude && window.claude.use ? window.claude.use("downloads").catch(() => null) : Promise.resolve(null);
   $("#saveSettings").addEventListener("click", async () => {
-    const text = JSON.stringify({ prototype: "Papá o la papa", savedAt: new Date().toISOString(), look, settings: { ...settings } }, null, 2);
+    const text = JSON.stringify({ prototype: "Papá o la papa", savedAt: new Date().toISOString(), look, reveal, settings: { ...settings } }, null, 2);
     const ta = $("#saveText");
     ta.value = text; ta.hidden = false;
     let copied = false, downloaded = false;
