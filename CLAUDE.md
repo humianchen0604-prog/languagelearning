@@ -133,7 +133,9 @@ user double-clicks it on their Mac.
   y 565; colour per word (table above). A miss shows "No te entendí" and the
   transcript in grey. While speaking, the Spanish is typed out live in black, syllable by syllable
   (`showLive()`; real transcripts from the mic, or `syllables()` timed to the
-  demo voice). When speaking ends the result takes over: wrong answers turn red
+  demo voice, slowing a touch at the end: last syllable +110ms, the one before
+  +40ms). The English translation appears a moment after the word: Dad's rises
+  in at 220ms, a wrong answer's fades in at 260ms (both by request). When speaking ends the result takes over: wrong answers turn red
   and shake in place, Dad's glare plays (`.from-live`). The Dad caption's lines fade in rising 10u with a
   2px blur that clears (450ms, strong ease-out), the Spanish word 70ms after
   the meaning (`.caption.enter`, `rise-in`); live transcripts don't animate. When Dad is said (correct), the caption is black with no glare
