@@ -1528,7 +1528,7 @@
   const CAPTION = {
     potato: ["the potato", "La papa"],
     pope:   ["the Pope", "El papa"],
-    dad:    ["the dad", "El papá"],
+    dad:    ["the dad", "Papá"],   // just "Papá", no "El" (by request)
   };
   // By request: just "papa" (or "papá") is Dad; "el papa" is the Pope and
   // "la papa" the potato, accent or not (recognisers often drop or add it).
@@ -2118,9 +2118,10 @@
     const settle = (text) => {
       if (rec !== me) return;
       gotResult = true; rec = null; clearTimeout(nudge); clearTimeout(idle); clearTimeout(cap);
-      // abort (not stop): we have the word, and the recogniser must be free
-      // straight away for the next take (Safari stayed busy and ignored it)
-      try { me.abort(); } catch (err) {}
+      // stop, not abort: on iPhone abort() plays the system's louder
+      // "cancelled" dictation tone, which sounded like an error (the user
+      // asked for it quieter); late events from this recogniser are ignored
+      try { me.stop(); } catch (err) {}
       releaseMic();
       finish(text);
     };

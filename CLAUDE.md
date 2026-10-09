@@ -11,7 +11,7 @@ page in watercolor, with a caption:
 |----------------|------------|------------------------------------------|----------|
 | el papa        | the Pope   | the Pope / El papa                       | edge hue |
 | la papa        | a potato   | the potato / La papa                     | edge hue |
-| papa / papá    | Dad        | the dad / El papá                        | black    |
+| papa / papá    | Dad        | the dad / Papá                           | black    |
 
 Wrong-answer captions use the same hue as the wrong-answer edges
 (`--say-papa: hsl(var(--edge-h) 62% 46%)` on `.stage`, strawberry red by
@@ -73,8 +73,10 @@ tuning still works.
   `onend` with the last recognised word. Tested with a fake recogniser for
   interim-only, final-only, no-final and silent takes.
   Repeat takes (the user on an iPhone: only the first word was detected,
-  later taps did nothing): a finished take `abort()`s its recogniser (not
-  `stop()`) so it is free at once; an old recogniser's late events and
+  later taps did nothing): a finished take `stop()`s its recogniser (an
+  `abort()` was tried, but on iPhone it plays the louder "cancelled"
+  dictation tone, which the user heard as an error sound; the page has no
+  sounds of its own and can't set the system tones' volume); an old recogniser's late events and
   errors are ignored (`rec !== me`); a take also ends 1s after the last
   interim result (Safari may send no final result or speech end) and after
   8s at most; and on iPhone/iPad (`IOS`) the page doesn't open the mic a
