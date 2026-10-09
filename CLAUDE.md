@@ -43,6 +43,13 @@ assets/ to the scratchpad first; the Artifact tool only takes files there).**
 `start.command` does the same (first free port from 8000) and opens Chrome; the
 user double-clicks it on their Mac.
 
+**Vercel**: the user asked for a public web version with real Spanish speech.
+The repo is meant to be imported into Vercel from GitHub (static, no build;
+`vercel.json` sends `Permissions-Policy: microphone=(self)`, `.vercelignore`
+drops `start.command` and this file), so every push to `main` redeploys.
+HTTPS is all the mic and `webkitSpeechRecognition` need; no code differs from
+localhost. A viewport meta tag was added for phones.
+
 - Real speech: Chrome or Safari via `localhost`, using `webkitSpeechRecognition` with `es-MX`.
 - No speech API, or the mic is refused: tapping the mic shows three tap-words.
   The Adjust panel's "Try a word" buttons run the whole sequence without speaking.

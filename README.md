@@ -30,6 +30,15 @@ Speech recognition uses the browser's built-in Spanish (Mexico) model.
 Where it isn't available, tapping the mic shows the three words to tap instead.
 The Adjust panel tunes the paper, the image edges, painting time and the voice blob's look.
 
+## Live on the web (Vercel)
+
+The repo deploys to Vercel straight from GitHub: every push to `main` goes live
+in about a minute. Vercel serves it over HTTPS, so the microphone and Spanish
+speech recognition work there too (Chrome on a computer or Android, Safari on
+a Mac or iPhone; Firefox has no speech recognition and shows the tap words).
+`vercel.json` allows the microphone; `.vercelignore` leaves out the Mac
+launcher and the notes. There is no build step.
+
 Published preview (tap words only, no mic): https://claude.ai/artifact/MrvbqSWJfhkj1HsnJr35ku
 
 Design notes and decisions for future work: `CLAUDE.md`.
@@ -37,6 +46,7 @@ Design notes and decisions for future work: `CLAUDE.md`.
 ## Files
 
 - `start.command`: serves the folder on localhost and opens it in Chrome
+- `vercel.json`, `.vercelignore`: the Vercel deployment (static, no build)
 - `index.html`: the whole prototype (paper, icons, voice blob, WebGL watercolor painter, Adjust panel)
 - `assets/*-cutout.png`: the three pictures, split from `assets/pictures-source.webp` with a soft blur toward the bottom
 - `assets/{pope,potato,dad}.jpg` and `assets/*-mask.png`: older full watercolors (not used by the page)
