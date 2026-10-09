@@ -120,7 +120,8 @@ user double-clicks it on their Mac.
 - Voice blob centred at (201, 674.5), 20% smaller than the Figma pebble
   (about 85 × 70); the tap-word chips sit below it.
 - Adjust panel: a column beside the phone at ≥980px wide, otherwise a bottom
-  sheet behind an "Adjust" button. It holds Try a word, Paper (tooth size, tooth
+  sheet behind an "Adjust" button. It holds Restart prototype (reloads the page;
+  settings are kept), Try a word, Paper (tooth size, tooth
   depth, warmth: 0 = `#fafafa` default, 1 = `#f5f2ee`), Painting time, Wrong answer, Mic smudges, First-picture wash, and Voice visual.
 
 ## Saving tuned settings
@@ -158,7 +159,11 @@ the older full watercolors, no longer used by the page.
     (`#blob-goo`) into a wide shape that swells with volume. It stays grey and
     its edge goes paler and blurs out into the paper (CSS blur on `.blob`,
     `--listen-blur`, default 3.5u; Adjust → Voice visual → Edge blur while listening).
-  - While listening, Looks: **Smudges** (default): the button keeps its
+  - While listening, Looks: **Grey** (default, by request): the button keeps
+    its resting pebble shape and size and just turns 8% darker grey
+    (`--blob-grey: #dcdbd9`, from `#efeeec`), with the listening edge blur and
+    no icon. Saved look key `papa-look-v4`.
+  - **Smudges** (was the default before Grey): the button keeps its
     resting pebble shape and size (no satellites, no widening; the user
     dropped the wide "snake" shape for this look). Eight pebble-shaped
     watercolor smudges (`PEBBLE.radii`, jittered), stacked in its centre
@@ -176,7 +181,7 @@ the older full watercolors, no longer used by the page.
     wash and smudge values are dropped on migration so new defaults show). The other looks
     fill the shape with five blurred pastel drops (clipped to it): Swirl
     (clockwise, about one lap per 30s), Marble, Ripples; or Ellipses. Motion is
-    slow. Saved look key `papa-look-v3`.
+    slow. 
   - Processing (while the picture paints): no loading indicator; the mic stays.
   - The mic uses the **pencil** filter in `--mic-ink #7f7d7a`. The mic
     capsule is filled with that ink at 48% on white; the icon is about 19 × 25u.

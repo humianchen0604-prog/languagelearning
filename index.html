@@ -18,6 +18,7 @@
     --blob-idle: #efeeec;            /* voice blob before speaking: near-white grey */
     --mic-ink: #7f7d7a;              /* mic: soft pencil grey */
     --blob-listen: #e9e8e5;          /* voice blob while listening: a touch deeper grey */
+    --blob-grey: #dcdbd9;            /* Grey look while listening: the resting #efeeec, 8% darker */
     --panel: #fbf9f6;
     --panel-line: #e2dbd2;
     --panel-ink: #3a2c22;
@@ -223,7 +224,8 @@
   .voice:focus-visible { outline: 2px solid var(--focus); outline-offset: 4px; }
   .voice:active { transform: scale(0.96); }
   .voice[data-state="listening"] { width: calc(174.4 * var(--u)); }
-  .voice[data-look="smudges"][data-state="listening"] { width: calc(86.4 * var(--u)); }   /* stays pebble-sized */
+  .voice[data-look="smudges"][data-state="listening"],
+  .voice[data-look="grey"][data-state="listening"] { width: calc(86.4 * var(--u)); }   /* stays pebble-sized */
   .voice[data-state="processing"] { cursor: progress; }
 
   /* The blob: one organic shape of watercolor. While listening, smaller
@@ -252,6 +254,8 @@
     transition: fill 450ms var(--ease-out), fill-opacity 450ms var(--ease-out);
   }
   .voice[data-state="listening"] .blob > g { fill: var(--blob-listen); fill-opacity: 0.85; }
+  /* Grey look: while listening the whole button just turns 8% darker grey (no icon) */
+  .voice[data-look="grey"][data-state="listening"] .blob > g { fill: var(--blob-grey); fill-opacity: 1; }
 
   .mic, .waves {
     position: absolute;
@@ -762,7 +766,7 @@
         <canvas id="paint" role="img" aria-label="Picture of what was said"></canvas>
       </div>
 
-      <button class="voice" id="voice" type="button" data-state="idle" data-look="smudges" aria-label="Say “Dad” in Spanish">
+      <button class="voice" id="voice" type="button" data-state="idle" data-look="grey" aria-label="Say “Dad” in Spanish">
         <svg class="blob" viewBox="-90 -48 180 96" aria-hidden="true" focusable="false">
           <defs>
             <!-- colour drops stay inside the blob -->
@@ -824,6 +828,11 @@
 
 <aside class="panel" id="panel" aria-label="Adjust">
   <h2>Adjust</h2>
+
+  <section class="group">
+    <div class="seg"><button type="button" id="restart">Restart prototype</button></div>
+    <p class="note">Starts again from the opening screen. Your settings are kept.</p>
+  </section>
 
   <section class="group">
     <h3>Try a word</h3>
@@ -888,7 +897,8 @@
   <section class="group">
     <h3>Voice visual</h3>
     <div class="seg" id="look">
-      <button type="button" data-look="smudges" aria-pressed="true">Smudges</button>
+      <button type="button" data-look="grey" aria-pressed="true">Grey</button>
+      <button type="button" data-look="smudges" aria-pressed="false">Smudges</button>
       <button type="button" data-look="swirl" aria-pressed="false">Swirl</button>
       <button type="button" data-look="marble" aria-pressed="false">Marble</button>
       <button type="button" data-look="ripples" aria-pressed="false">Ripples</button>
@@ -1245,14 +1255,14 @@
   const voice = $("#voice"), say = $("#say");
   const caption = $("#caption"), capMeaning = caption.querySelector(".caption-meaning"), capWord = caption.querySelector(".caption-word");
   const waves = [...voice.querySelectorAll(".wave")];
-  const LOOKS = ["smudges", "swirl", "marble", "ripples", "ellipses"];
-  let look = "smudges";
-  try { look = localStorage.getItem("papa-look-v3") || look; } catch (e) {}
-  if (!LOOKS.includes(look)) look = "smudges";
+  const LOOKS = ["grey", "smudges", "swirl", "marble", "ripples", "ellipses"];
+  let look = "grey";
+  try { look = localStorage.getItem("papa-look-v4") || look; } catch (e) {}
+  if (!LOOKS.includes(look)) look = "grey";
   function setLook(l) {
     look = l; voice.dataset.look = l;
     document.querySelectorAll("#look button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.look === l)));
-    try { localStorage.setItem("papa-look-v3", l); } catch (e) {}
+    try { localStorage.setItem("papa-look-v4", l); } catch (e) {}
   }
   setLook(look);
   document.querySelectorAll("#look button").forEach((b) => b.addEventListener("click", () => setLook(b.dataset.look)));
@@ -1301,7 +1311,7 @@
     const n = dabs.length;
     dabs.forEach((el, i) => {
       const li = levels[i] || 0;
-      if (look === "ellipses" || look === "smudges" || e < 0.01) return placeDab(el, 0, 0, 0, 0, 0, 0);
+      if (look === "ellipses" || look === "smudges" || look === "grey" || e < 0.01) return placeDab(el, 0, 0, 0, 0, 0, 0);
       if (look === "swirl") {
         // clockwise (screen y points down), roughly one lap every 30 s
         const a = phase * 0.9 + (i / n) * Math.PI * 2;
@@ -1359,7 +1369,7 @@
     phase += dt * (0.22 + lv * 0.45);
     const e = easeBlob(spread);
     blobMain.setAttribute("d", blobPath(PEBBLE.radii, 32 * (1 + lv * 0.08), 28 * (1 + lv * 0.1), PEBBLE.rot, 0.035 * e, now));
-    const es = look === "smudges" ? 0 : e;   // Smudges keeps the resting pebble shape (no satellites)
+    const es = look === "smudges" || look === "grey" ? 0 : e;   // Smudges and Grey keep the resting pebble shape (no satellites)
     sats.forEach((el, i) => {
       const e = es;
       const [x, y, rx, ry] = PEBBLE.sats[i];
@@ -1718,6 +1728,10 @@
     if (speechWorks) listen();
     else say.hidden = !say.hidden;
   });
+
+  /* Restart: back to the opening screen (first word, empty page, opening
+     animation). Settings live in localStorage, so a reload keeps them. */
+  $("#restart").addEventListener("click", () => location.reload());
 
   /* ---------------- Save settings ----------------
      Downloads every Adjust setting (plus the voice look) as JSON and copies
