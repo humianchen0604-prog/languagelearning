@@ -434,7 +434,7 @@
       linear-gradient(to right, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.260)) 0.00%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.208)) 2.64%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.156)) 5.61%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.112)) 8.91%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.078)) 12.21%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.052)) 15.51%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.033)) 18.81%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.018)) 22.11%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.009)) 25.41%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.003)) 28.71%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.000)) 33.00%),
       linear-gradient(to left, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.260)) 0.00%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.208)) 2.64%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.156)) 5.61%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.112)) 8.91%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.078)) 12.21%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.052)) 15.51%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.033)) 18.81%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.018)) 22.11%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.009)) 25.41%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.003)) 28.71%, hsl(var(--edge-h) 70% 62% / calc(var(--edge-a) * 0.000)) 33.00%);
     transform: scale(1.25);
-    filter: url(#edge-bloom);   /* zig-zag watercolor fibres where the colour meets the paper */
+    filter: url(#edge-bloom);   /* painted as a dried wash: sheer colour, a wavy edge with a denser rim */
     /* creeps in over Edge time (Adjust → Wrong answer) */
     transition: opacity var(--edge-ms, 1000ms) var(--ease-out), transform var(--edge-ms, 1000ms) var(--ease-out);
   }
@@ -656,28 +656,29 @@
     <feComposite in2="rim" operator="in" result="rimC" />
     <feMerge><feMergeNode in="body" /><feMergeNode in="rimC" /></feMerge>
   </filter>
-  <!-- Wrong answer edges: the same soft gradient, but where the colour meets
-       the paper it bleeds out in fine, zig-zag fibres with a darker feathered
-       tideline, like a watercolor bloom drying. Fibres run in from each side
-       (horizontal ones for the left/right edges, vertical for top/bottom). -->
+  <!-- Wrong answer edges: the same depth in from every side, but painted like
+       a watercolor wash that dried: sheer, uneven colour that ends in a
+       gently wavy, defined edge with a denser rim of pigment along it.
+       The gradient on .w-edges is used as a distance map (n = 1 at the
+       screen's edge, 0 inside); #ebTable turns it into the wash. -->
   <filter id="edge-bloom" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
-    <!-- the tideline: a band where the colour thins out into the paper -->
-    <feComponentTransfer in="SourceGraphic" result="amp"><feFuncA type="linear" slope="3.85" /></feComponentTransfer>
-    <feComponentTransfer in="amp" result="bandA"><feFuncA type="table" tableValues="0 0.3 0.9 1 0.8 0.5 0.28 0.14 0.07 0.03 0.01 0 0 0 0 0 0 0 0 0 0" /></feComponentTransfer>
-    <!-- fine, uneven fibres: horizontal ones fray the left/right edges, vertical ones the top/bottom -->
-    <feTurbulence type="fractalNoise" baseFrequency="0.01 0.32" numOctaves="3" seed="3" result="nx" />
-    <feColorMatrix in="nx" type="matrix" values="1.8 0 0 0 -0.4  0 0 0 0 0.5  0 0 0 0 0  0 0 0 0 1" result="fx" />
-    <feTurbulence type="fractalNoise" baseFrequency="0.32 0.01" numOctaves="3" seed="8" result="ny" />
-    <feColorMatrix in="ny" type="matrix" values="0 0 0 0 0.5  1.8 0 0 0 -0.4  0 0 0 0 0  0 0 0 0 1" result="fy" />
-    <feDisplacementMap class="eb-d" in="bandA" in2="fx" scale="26" xChannelSelector="R" yChannelSelector="G" result="b1" />
-    <feDisplacementMap class="eb-d" in="b1" in2="fy" scale="26" xChannelSelector="R" yChannelSelector="G" result="b2" />
-    <!-- patchy, like pigment that dried unevenly -->
-    <feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="2" seed="21" result="patch" />
-    <feColorMatrix in="patch" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  2.2 0 0 0 -0.55" result="patchA" />
-    <feComposite in="b2" in2="patchA" operator="in" result="band" />
-    <feFlood id="ebRim" flood-color="hsl(16 62% 52%)" flood-opacity="0.2" />
-    <feComposite in2="band" operator="in" result="rim" />
-    <feMerge><feMergeNode in="SourceGraphic" /><feMergeNode in="rim" /></feMerge>
+    <feComponentTransfer in="SourceGraphic" result="amp0"><feFuncA id="ebAmp" type="linear" slope="3.85" /></feComponentTransfer>
+    <!-- smooth out the gradient's steps and round the corners, like a wash would -->
+    <feGaussianBlur in="amp0" stdDeviation="9" result="amp" />
+    <!-- a gently wavy edge, not a ruler-straight one -->
+    <feTurbulence type="fractalNoise" baseFrequency="0.0055" numOctaves="4" seed="5" result="warp" />
+    <feDisplacementMap id="ebWarp" in="amp" in2="warp" scale="52" xChannelSelector="R" yChannelSelector="G" result="wavy" />
+    <!-- keep the screen's own edges filled -->
+    <feComponentTransfer in="amp0" result="hold"><feFuncA type="table" tableValues="0 0 0 0 0 0 0 0 0.5 1 1" /></feComponentTransfer>
+    <feMerge result="n"><feMergeNode in="hold" /><feMergeNode in="wavy" /></feMerge>
+    <feComponentTransfer in="n" result="shape0"><feFuncA id="ebTable" type="table" tableValues="0 1" /></feComponentTransfer>
+    <feGaussianBlur in="shape0" stdDeviation="1.2" result="shape" />
+    <!-- uneven pigment: some areas sheerer, some denser -->
+    <feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="2" seed="21" result="patch" />
+    <feColorMatrix in="patch" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  1.1 0 0 0 0.45" result="patchA" />
+    <feComposite in="shape" in2="patchA" operator="in" result="mott" />
+    <feFlood id="ebColor" flood-color="hsl(16 70% 62%)" flood-opacity="0.3" />
+    <feComposite in2="mott" operator="in" />
   </filter>
 </svg>
 
@@ -846,7 +847,7 @@
     <div class="hue-strip" aria-hidden="true"></div>
     <div class="row"><label for="edgeAlpha">Edge strength</label><output for="edgeAlpha"></output><input id="edgeAlpha" type="range" min="0" max="2.5" step="0.01" value="1"></div>
     <div class="row"><label for="edgeTime">Edge time</label><output for="edgeTime"></output><input id="edgeTime" type="range" min="0.2" max="6" step="0.1" value="1"></div>
-    <div class="row"><label for="edgeTex">Edge texture</label><output for="edgeTex"></output><input id="edgeTex" type="range" min="0" max="2.5" step="0.01" value="1"></div>
+    <div class="row"><label for="edgeTex">Edge rim</label><output for="edgeTex"></output><input id="edgeTex" type="range" min="0" max="2.5" step="0.01" value="1"></div>
     <div class="seg"><button type="button" id="wrongReplay">Show wrong answer</button></div>
   </section>
 
@@ -1148,16 +1149,31 @@
     if (id === "listenBlur") applyListenBlur();
     if (id === "msmSoft") applyMsmSoft();
   }
+  // distance (0 inside .. 1 at the screen's edge) → wash: nothing inside the
+  // edge line, a dense rim right at it fading into sheer colour, then the
+  // colour slowly deepening toward the screen's edge
+  function edgeTable(rim) {
+    const E = 0.09, out = [];
+    for (let k = 0; k <= 40; k++) {
+      const n = k / 40;
+      if (n < E) { out.push(0); continue; }
+      const body = 0.08 + 0.92 * Math.pow((n - E) / (1 - E), 1.4);
+      out.push(Math.min(1, body + rim * 0.75 * Math.exp(-(n - E) / 0.05)).toFixed(3));
+    }
+    return out.join(" ");
+  }
   function applyEdges() {
     const st = document.querySelector(".stage");
     st.style.setProperty("--edge-h", settings.edgeHue);
     st.style.setProperty("--edge-a", settings.edgeAlpha);
     st.style.setProperty("--edge-ms", Math.round(settings.edgeTime * 1000) + "ms");
-    // the fibres' length and the tideline follow Edge texture; the tideline takes the edge hue, a little deeper
-    document.querySelectorAll("#edge-bloom .eb-d").forEach((d) => d.setAttribute("scale", (26 * settings.edgeTex).toFixed(1)));
-    const rim = document.getElementById("ebRim");
-    rim.setAttribute("flood-color", `hsl(${settings.edgeHue} 62% 52%)`);
-    rim.setAttribute("flood-opacity", Math.min(1, 0.32 * settings.edgeTex * settings.edgeAlpha).toFixed(3));
+    // the gradient becomes a distance map; Edge rim sets how dense the pigment is along the edge
+    const a = Math.max(0.01, 0.26 * settings.edgeAlpha);
+    document.getElementById("ebAmp").setAttribute("slope", (1 / a).toFixed(3));
+    document.getElementById("ebTable").setAttribute("tableValues", edgeTable(settings.edgeTex));
+    const col = document.getElementById("ebColor");
+    col.setAttribute("flood-color", `hsl(${settings.edgeHue} 70% 62%)`);
+    col.setAttribute("flood-opacity", Math.min(1, a).toFixed(3));
   }
   function applyListenBlur() { document.querySelector(".stage").style.setProperty("--listen-blur", settings.listenBlur); }
   applyEdges();
