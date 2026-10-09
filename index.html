@@ -900,7 +900,7 @@
 
   <section class="group">
     <h3>Painting</h3>
-    <div class="row"><label for="paintTime">Painting time</label><output for="paintTime"></output><input id="paintTime" type="range" min="0.5" max="6" step="0.1" value="2"></div>
+    <div class="row"><label for="paintTime">Painting time</label><output for="paintTime"></output><input id="paintTime" type="range" min="0.5" max="6" step="0.05" value="1.5"></div>
   </section>
 
   <section class="group">
@@ -953,7 +953,7 @@
       <button type="button" data-reveal="wick" aria-pressed="false">9 Wicking</button>
       <button type="button" data-reveal="strokes" aria-pressed="false">10 Brush strokes</button>
     </div>
-    <div class="row"><label for="revealTime">Reveal time</label><output for="revealTime"></output><input id="revealTime" type="range" min="0.5" max="5" step="0.1" value="1.8"></div>
+    <div class="row"><label for="revealTime">Reveal time</label><output for="revealTime"></output><input id="revealTime" type="range" min="0.5" max="5" step="0.05" value="1.35"></div>
     <div class="seg">
       <button type="button" class="try-reveal" data-word="papá">Try with papá</button>
       <button type="button" class="try-reveal" data-word="el papa">el papa</button>
@@ -989,7 +989,7 @@
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   /* ---------------- Settings (remembered per browser) ---------------- */
-  const KEY = "papa-settings-v22";
+  const KEY = "papa-settings-v23";
   const ids = ["toothSize", "toothDepth", "warmth", "paintTime", "edgeHue", "edgeAlpha", "washHue", "washSat", "washLight", "washAlpha", "listenBlur", "loadLight", "loadAlpha", "loadFade", "msmSoft", "loadBlur", "loadPaint", "edgeTex", "revealTime", "loadStart"];
   // v19: the user's tuned settings (their Save settings file, 2026-10-09) are
   // the defaults, so values saved under older keys are dropped
@@ -997,6 +997,8 @@
   let saved = {};
   try {
     saved = JSON.parse(localStorage.getItem(KEY) || "null");
+    // v23: pictures fade in 25% faster (1.5s; reveal styles 1.35s); the red edges follow
+    if (!saved) { saved = JSON.parse(localStorage.getItem("papa-settings-v22") || "null"); if (saved) { delete saved.paintTime; delete saved.revealTime; } }
     // v22: no overlap (the picture starts once the grey is gone) and a slower 2s fade-in with the red edges
     if (!saved) { saved = JSON.parse(localStorage.getItem("papa-settings-v21") || "null"); if (saved) { delete saved.paintTime; delete saved.loadStart; } }
     // v21: slower picture fade-in (1.5s), and the red edges follow it (no separate Edge time)

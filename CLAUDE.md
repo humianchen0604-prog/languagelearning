@@ -109,7 +109,7 @@ user double-clicks it on their Mac.
   finishes painting: `revealPaint(key, mode)` draws the same grey (pigment
   texture `tWash`, colour, box `uBox`) in the shader, hides the SVG wash in the
   same frame (`washHandoff()`; pixel-checked: within 1–2 levels), then plays
-  `uMode` 1–10 over Reveal time (default 1.8s): 1 Underpainting (colour soaks
+  `uMode` 1–10 over Reveal time (default 1.35s, 25% faster than the first 1.8s): 1 Underpainting (colour soaks
   into the grey from the inside; its front is a smooth sine warp, as noise
   showed grid lines), 2 Bloom (wet-into-wet from the centre with a
   grey rim pushed out), 3 Brush pass (second diagonal stroke wipes grey,
@@ -181,8 +181,8 @@ user double-clicks it on their Mac.
 ## Saving tuned settings
 
 Current defaults are the user's own tuned file (2026-10-09), settings key
-`papa-settings-v22` (v19 plus the 0.45s fade-in, 2s painting time and no overlap): tooth size −1.49, tooth depth 0.27, warmth 0.1, painting
-time 2s, edge hue 354, edge strength 1.36, edge rim 0; mic
+`papa-settings-v23` (v19 plus the 0.45s fade-in, 1.5s painting time, 1.35s reveal time and no overlap): tooth size −1.49, tooth depth 0.27, warmth 0.1, painting
+time 1.5s, edge hue 354, edge strength 1.36, edge rim 0; mic
 smudges hue 30 / sat 0.05 / light 0.88 / density 0.2 / softness 1.5; listening
 blur 3.5, listening grey 3.5%; first-picture wash lightness 0.3, strength 0.1,
 fade 0.5s, blur 0, fade-in 0.45s; voice look Grey.
@@ -213,8 +213,8 @@ the older full watercolors, no longer used by the page.
   (0 = smooth), warmth.
 - **Painting**: a new picture fades in from a blurred copy and comes into focus.
   When the word changes, the old picture dissolves while the new one fades in.
-  Painting time is adjustable (default 2s; was 1s, then 1.5s, until the user
-  asked for slower). A first picture fades in over the whole painting time
+  Painting time is adjustable (default 1.5s: 1s, then 1.5s, then 2s, then
+  25% faster again by request). A first picture fades in over the whole painting time
   (ease-in-out), in step with the wrong-answer edges. `tween()` starts its
   clock on the first drawn frame (a first-time texture upload used to stall
   it, so a wrong answer's picture, usually the first of a session, jumped in
