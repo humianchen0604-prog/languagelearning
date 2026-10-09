@@ -346,7 +346,8 @@
     background-position: 100% 0;
     -webkit-background-clip: text;
     background-clip: text;
-    /* glare: once, right away (animation set with the entrance below) */
+    /* glare: once, 0.5s after the word appears (animation set with the entrance below);
+       plain black until then */
   }
   /* starts with the glare already at the text's edge, so it shows at once */
   @keyframes shine {
@@ -394,11 +395,11 @@
   }
   .caption.enter .caption-meaning { animation: rise-in 450ms var(--ease-out) both; }
   .caption.enter .caption-word    { animation: rise-in 450ms var(--ease-out) 70ms both; }
-  .caption.enter.shine .caption-meaning  { animation: rise-in 450ms var(--ease-out) both, shine 1.1s var(--ease-out) both; }
-  .caption.enter.shine .caption-word     { animation: rise-in 450ms var(--ease-out) 70ms both, shine 1.1s var(--ease-out) both; }
+  .caption.enter.shine .caption-meaning  { animation: rise-in 450ms var(--ease-out) both, shine 1.1s var(--ease-out) 500ms forwards; }
+  .caption.enter.shine .caption-word     { animation: rise-in 450ms var(--ease-out) 70ms both, shine 1.1s var(--ease-out) 500ms forwards; }
   /* after the word was typed out live, it's already on screen: no rise,
      the glare plays as soon as speaking ends */
-  .caption.enter.shine.from-live .caption-word { animation: shine 1.1s var(--ease-out) both; }
+  .caption.enter.shine.from-live .caption-word { animation: shine 1.1s var(--ease-out) 500ms forwards; }
   .caption.enter.redden .caption-meaning,
   .caption.enter.redden .caption-word    { animation: fade-in 120ms ease-out both, redden 0.35s ease-out both; }
   @keyframes fade-in { from { opacity: 0; } }

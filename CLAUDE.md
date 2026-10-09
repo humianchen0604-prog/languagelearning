@@ -78,7 +78,7 @@ user double-clicks it on their Mac.
   and shake in place, Dad's glare plays (`.from-live`). The Dad caption's lines fade in rising 10u with a
   2px blur that clears (450ms, strong ease-out), the Spanish word 70ms after
   the meaning (`.caption.enter`, `rise-in`); live transcripts don't animate. When Dad is said (correct), the caption turns black and a
-  glare of the blue sweeps across it once, straight away (`.caption.shine`).
+  glare of the blue sweeps across it once, starting 0.5s after the word appears (`.caption.shine`).
   For the Pope and the potato (wrong answers) there is no glare: the caption
   starts black and quickly changes to the red, which stays (`.caption.redden`).
 - Wrong answer (the Pope or the potato): **Edges** only. A soft colour creeps
