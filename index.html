@@ -88,6 +88,30 @@
       box-shadow: none;   /* no drop shadow (by request) */
     }
   }
+  /* A phone frame around the prototype on wider screens (by request; the
+     user's image, assets/phone-frame.png, 877 × 1793 with a transparent
+     781 × 1703 screen at 48, 45 and ~116px corners). The prototype fills the
+     screen hole, rounded to match; phones keep the full-screen layout. */
+  .device { position: relative; }
+  .device-frame {
+    position: absolute;
+    left: calc(-48 / 781 * 100%);
+    top: calc(-45 / 1703 * 100%);
+    width: calc(877 / 781 * 100%);
+    height: calc(1793 / 1703 * 100%);
+    pointer-events: none;
+    user-select: none;
+    z-index: 40;
+  }
+  @media (min-width: 601px) {
+    .phone {
+      width: min((100vw - 48px) * 781 / 877, (var(--screen-h) - 40px) * 1703 / 1793 * 402 / 874);
+      border-radius: 14.85% / 6.83%;
+    }
+  }
+  @media (max-width: 600px) { .device-frame { display: none; } }
+  /* From "Book" on, the page takes no taps (by request) */
+  .stage[data-locked] .voice, .stage[data-locked] .say { pointer-events: none; cursor: default; }
 
   .stage {
     position: absolute;
@@ -815,6 +839,7 @@
 </svg>
 
 <div class="shell">
+  <div class="device">
   <main class="phone" aria-label="Say “Dad” in Spanish">
     <div class="stage" data-intro>
       <!-- Page colour; the paper's texture is laid over everything at the end -->
@@ -944,6 +969,8 @@
       <div class="grain grain-light" id="grainLight" aria-hidden="true"></div>
     </div>
   </main>
+  <img class="device-frame" src="assets/phone-frame.png" alt="" aria-hidden="true" draggable="false">
+  </div>
 </div>
 
 <button class="restart-fab" id="restartFab" type="button">↺ Restart prototype</button>
@@ -2024,6 +2051,7 @@
     step = (step + 1) % steps.length;
     steps[step].setAttribute("aria-current", "step");
     setWord(WORDS[step] || "Dad");
+    stageEl.toggleAttribute("data-locked", step >= 1);   // "Book" and after: no more taps (by request)
     document.querySelector(".progress").setAttribute("aria-label", `Word ${step + 1} of ${steps.length}`);
     await clearPicture();
   }
@@ -2040,6 +2068,7 @@
   }
   let liveTimers = [];
   function simulate(phrase) {
+    if (step >= 1) return;   // "Book" and after take no taps (by request)
     if (voice.dataset.state === "processing") return;
     clearTimeout(simTimer); liveTimers.forEach(clearTimeout); liveTimers = [];
     stopListening(true);
@@ -2227,6 +2256,7 @@
 
   voice.addEventListener("click", () => {
     const s = voice.dataset.state;
+    if (step >= 1) return;   // "Book" and after take no taps (by request)
     if (s === "processing") return;
     if (voice.hasAttribute("data-next")) { goNext(); return; }
     if (s === "listening") {

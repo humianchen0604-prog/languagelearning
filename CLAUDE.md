@@ -123,6 +123,15 @@ tuning still works.
   Safari leaves outside the page's own layers still looks like the paper
   (the user still saw an empty bottom). Home Screen meta tags make
   it open full screen when added to the Home Screen.
+- Phone frame (by request, with the user's image `assets/phone-frame.png`,
+  877 × 1793, transparent screen 781 × 1703 at (48, 45), ~116px corners): on
+  screens wider than 600px the prototype sits in `.device` with the frame
+  `<img class="device-frame">` laid over it, sized from the hole, and the
+  `.phone` is rounded to match (`border-radius: 14.85% / 6.83%`, replacing
+  the earlier square corners). Phones keep the full-screen layout, no frame.
+- From the second word ("Book") on, the page takes no taps (by request):
+  `.stage[data-locked]` (set in `goNext()`) turns off the voice button and
+  tap-words, and the click handler and `simulate()` return early.
 - The phone is a 402 × 874 design. Every size is `calc(N * var(--u))` with
   `--u: calc(100cqw / 402)` on `.stage`, scaled to fit. Page colour `#fafafa`
   (by request; Figma used `#f5f2ee`), under the paper texture; square corners (radius 0, by request).
