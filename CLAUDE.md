@@ -34,6 +34,12 @@ and a capitalised "Papa" the Pope.)
 
 Everything lives in `index.html` (no build step). Assets are in `assets/`.
 
+`sound-effects/`: app sounds the user asked for (record start, recording loop,
+record stop, correct, error), 12 styles × 5 MP3s from the CC0 audio of the npm
+package `uisfx` 0.4.0 (other sound sites are blocked from the cloud
+container; npm isn't). `sound-effects/index.html` plays them side by side.
+Not wired into the prototype yet.
+
 ## Run and check
 
 ```sh

@@ -1,0 +1,55 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sound effects</title>
+<style>
+  :root { --paper: #fafafa; --ink: #302e2a; --muted: #8a867f; --line: #e6e2dc; --sf: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.4 var(--sf); }
+  main { max-width: 860px; margin: 0 auto; padding: 32px 16px 48px; }
+  h1 { font-weight: 400; font-size: 28px; margin: 0 0 4px; }
+  p { color: var(--muted); margin: 0 0 20px; }
+  .wrap { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; min-width: 560px; }
+  th, td { border-bottom: 1px solid var(--line); padding: 10px 8px; text-align: center; }
+  th[scope="row"] { text-align: left; font-weight: 500; }
+  th[scope="row"] small { display: block; color: var(--muted); font-weight: 400; font-size: 12px; }
+  thead th { font-weight: 400; color: var(--muted); font-size: 13px; }
+  button { font: inherit; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: #fff; color: var(--ink); cursor: pointer; }
+  button[aria-pressed="true"] { background: #d5edf6; border-color: #8fc3d8; }
+  button:focus-visible { outline: 2px solid #2b1a10; outline-offset: 2px; }
+</style>
+<main>
+  <h1>Sound effects</h1>
+  <p>12 styles from <a href="https://www.npmjs.com/package/uisfx">UI SFX</a> (CC0, free for any use). Tap to listen; the recording loop plays until tapped again.</p>
+  <div class="wrap"><table>
+    <thead><tr><th scope="col"></th><th scope="col">Record start</th><th scope="col">Recording (loop)</th><th scope="col">Record stop</th><th scope="col">Correct</th><th scope="col">Error</th></tr></thead>
+    <tbody>
+    <tr><th scope="row">Minimal<small>Dry, precise, almost invisible.</small></th><td><button type="button" data-src="minimal/record-start.mp3">▶</button></td><td><button type="button" data-src="minimal/recording-loop.mp3" data-loop>▶</button></td><td><button type="button" data-src="minimal/record-stop.mp3">▶</button></td><td><button type="button" data-src="minimal/correct.mp3">▶</button></td><td><button type="button" data-src="minimal/error.mp3">▶</button></td></tr>
+    <tr><th scope="row">Soft<small>Rounded felt, warm and reassuring.</small></th><td><button type="button" data-src="soft/record-start.mp3">▶</button></td><td><button type="button" data-src="soft/recording-loop.mp3" data-loop>▶</button></td><td><button type="button" data-src="soft/record-stop.mp3">▶</button></td><td><button type="button" data-src="soft/correct.mp3">▶</button></td><td><button type="button" data-src="soft/error.mp3">▶</button></td></tr>
+    <tr><th scope="row">Glass<small>Bright, crystalline, and premium.</small></th><td><button type="button" data-src="glass/record-start.mp3">▶</button></td><td><button type="button" data-src="glass/recording-loop.mp3" data-loop>▶</button></td><td><button type="button" data-src="glass/record-stop.mp3">▶</button></td><td><button type="button" data-src="glass/correct.mp3">▶</button></td><td><button type="button" data-src="glass/error.mp3">▶</button></td></tr>
+    <tr><th scope="row">Arcade<small>Chunky pixels and cheerful voltage.</small></th><td><button type="button" data-src="arcade/record-start.mp3">▶</button></td><td><button type="button" data-src="arcade/recording-loop.mp3" data-loop>▶</button></td><td><button type="button" data-src="arcade/record-stop.mp3">▶</button></td><td><button type="button" data-src="arcade/correct.mp3">▶</button></td><td><button type="button" data-src="arcade/error.mp3">▶</button></td></tr>
+    <tr><th scope="row">Mechanical<small>Switches, relays, and firm detents.</small></th><td><button type="button" data-src="mechanical/record-start.mp3">▶</button></td><td><button type="button" data-src="mechanical/recording-loop.mp3" data-loop>▶</button></td><td><button type="button" data-src="mechanical/record-stop.mp3">▶</button></td><td><button type="button" data-src="mechanical/correct.mp3">▶</button></td><td><button type="button" data-src="mechanical/error.mp3">▶</button></td></tr>
+    <tr><th scope="row">Organic<small>Wood, water, breath, and small stones.</small></th><td><button type="button" data-src="organic/record-start.mp3">▶</button></td><td><button type="button" data-src="organic/recording-loop.mp3" data-loop>▶</button></td><td><button type="button" data-src="organic/record-stop.mp3">▶</button></td><td><button type="button" data-src="organic/correct.mp3">▶</button></td><td><button type="button" data-src="organic/error.mp3">▶</button></td></tr>
+    <tr><th scope="row">Dreamy<small>Airy blooms, soft light, and slow sparkle.</small></th><td><button type="button" data-src="dreamy/record-start.mp3">▶</button></td><td><button type="button" data-src="dreamy/recording-loop.mp3" data-loop>▶</button></td><td><button type="button" data-src="dreamy/record-stop.mp3">▶</button></td><td><button type="button" data-src="dreamy/correct.mp3">▶</button></td><td><button type="button" data-src="dreamy/error.mp3">▶</button></td></tr>
+    <tr><th scope="row">Sci-fi<small>Clean holographic pings with a restrained digital shimmer.</small></th><td><button type="button" data-src="scifi/record-start.mp3">▶</button></td><td><button type="button" data-src="scifi/recording-loop.mp3" data-loop>▶</button></td><td><button type="button" data-src="scifi/record-stop.mp3">▶</button></td><td><button type="button" data-src="scifi/correct.mp3">▶</button></td><td><button type="button" data-src="scifi/error.mp3">▶</button></td></tr>
+    <tr><th scope="row">Rubber<small>Tactile elastic taps with a quick, friendly rebound.</small></th><td><button type="button" data-src="rubber/record-start.mp3">▶</button></td><td><button type="button" data-src="rubber/recording-loop.mp3" data-loop>▶</button></td><td><button type="button" data-src="rubber/record-stop.mp3">▶</button></td><td><button type="button" data-src="rubber/correct.mp3">▶</button></td><td><button type="button" data-src="rubber/error.mp3">▶</button></td></tr>
+    <tr><th scope="row">Cinematic<small>Deep impacts, polished tails, and quiet scale.</small></th><td><button type="button" data-src="cinematic/record-start.mp3">▶</button></td><td><button type="button" data-src="cinematic/recording-loop.mp3" data-loop>▶</button></td><td><button type="button" data-src="cinematic/record-stop.mp3">▶</button></td><td><button type="button" data-src="cinematic/correct.mp3">▶</button></td><td><button type="button" data-src="cinematic/error.mp3">▶</button></td></tr>
+    <tr><th scope="row">Studio<small>Tactile editing precision with warm cinematic restraint.</small></th><td><button type="button" data-src="studio/record-start.mp3">▶</button></td><td><button type="button" data-src="studio/recording-loop.mp3" data-loop>▶</button></td><td><button type="button" data-src="studio/record-stop.mp3">▶</button></td><td><button type="button" data-src="studio/correct.mp3">▶</button></td><td><button type="button" data-src="studio/error.mp3">▶</button></td></tr>
+    <tr><th scope="row">Zen<small>Pure tones, dry wood, and brief washi detail.</small></th><td><button type="button" data-src="zen/record-start.mp3">▶</button></td><td><button type="button" data-src="zen/recording-loop.mp3" data-loop>▶</button></td><td><button type="button" data-src="zen/record-stop.mp3">▶</button></td><td><button type="button" data-src="zen/correct.mp3">▶</button></td><td><button type="button" data-src="zen/error.mp3">▶</button></td></tr>
+    </tbody>
+  </table></div>
+</main>
+<script>
+  let playing = null, btnOn = null;
+  document.querySelectorAll("button[data-src]").forEach((b) => b.addEventListener("click", () => {
+    const same = btnOn === b;
+    if (playing) { playing.pause(); playing = null; }
+    if (btnOn) { btnOn.setAttribute("aria-pressed", "false"); btnOn = null; }
+    if (same && b.hasAttribute("data-loop")) return;
+    const a = new Audio(b.dataset.src);
+    a.loop = b.hasAttribute("data-loop");
+    a.play();
+    playing = a; btnOn = b; b.setAttribute("aria-pressed", "true");
+    a.onended = () => { b.setAttribute("aria-pressed", "false"); if (btnOn === b) btnOn = null; };
+  }));
+</script>
